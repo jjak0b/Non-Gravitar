@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Level.hpp"
 
 class Player : public Entity{
-	Player( unsigned _x, unsigned int _y );
+	
+	Player( Level *world, Point2D origin );
 };

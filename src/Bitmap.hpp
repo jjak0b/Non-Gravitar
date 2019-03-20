@@ -11,7 +11,7 @@ class Bitmap{
 
 	public:
 	Bitmap(unsigned int _rows = 0, unsigned int _columns = 0 );
-	
+	bool load( BITMAP_DATA_TYPE **texture, unsigned int rows, unsigned int columns );
 	unsigned int GetRows();
 	unsigned int GetColumns();
 
