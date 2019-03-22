@@ -1,15 +1,18 @@
 #include "Player.hpp"
+#include "Entity.hpp"
 #include "Level.hpp"
 #include "ColoredBitmap.hpp"
 
-#define PLAYER_ROW_BITMAP { {0, 0, 0, 0, 0 },\
-                            {0, 0, 0, 0, 0 },\
-                            {0, 0, 0, 0, 0 },\
-                            {0, 0, 0, 0, 0 },\
-                            {0, 0, 0, 0, 0 } }
-Player::Player( Level *world, Point2D origin ){
+Player::Player( Level *world, Point2D origin ) : Entity( world, origin, NULL, "player" ){
     this->SetOrigin( origin );
     this->world = world;
     this->texture = ColoredBitmap( 5, 5, 0 );
-    this->texture.load( PLAYER_ROW_BITMAP, 5, 5 );
+    // BITMAP_DATA_TYPE *rawTexture = { PLAYER_ROW_BITMAP };
+    BITMAP_DATA_TYPE rawTextureR0[] = { ' ', '█', '█', '█', ' '};
+    BITMAP_DATA_TYPE rawTextureR1[] = { ' ', '█', '█', '█', ' '};
+    BITMAP_DATA_TYPE rawTextureR2[] = { '@', '█', '█', '█', '@'};
+    BITMAP_DATA_TYPE rawTextureR3[] = { ' ', '\\','█', '/', ' '};
+    BITMAP_DATA_TYPE rawTextureR4[] = { ' ', ' ', '@', ' ', ' '};
+    BITMAP_DATA_TYPE* rawtexture[] = { rawTextureR0, rawTextureR1, rawTextureR2, rawTextureR3, rawTextureR4 };
+    this->texture.load( rawtexture, 5, 5 );
 }
