@@ -1,6 +1,5 @@
 *.o
 *.exe
 *.json
-./vscode
-./.vscode
+[.]vscode/*
 *.stackdump
