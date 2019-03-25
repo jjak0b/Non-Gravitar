@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Entity.hpp"
+#include "DamageableEntity.hpp"
 #include "Level.hpp"
 
-class Player : public Entity{
+class Player : public DamageableEntity{
 	public:
-	Player( Level *world, Point2D origin );
+	Player( Level *world, Point2D origin, double health );
 };

@@ -14,5 +14,5 @@ public:
 		}
 	}
 
-	char* PrintableBitmap::toString();
+	char* toString();
 };

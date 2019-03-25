@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Point2D.hpp"
+#include "Level.hpp"
 #include "Bitmap.hpp"
 #include "PrintableBitmap.hpp"
 
@@ -12,14 +13,14 @@
 class ViewPort{
 protected:
 	Point2D world_origin;
-	unsigned int width, height;
+	unsigned int width = 0, height = 0;
 	PrintableBitmap *data;
 public:
 	ViewPort( unsigned int width, unsigned int height, Point2D origin );
-
+	void Dispose(); // libera le risorse di data
 	void Draw( Bitmap *texture, Level *level, Point2D world_origin );
-
-	void Update();
+	void Refresh();
+	void UpdateSize( unsigned int width, unsigned int height );
 
 	/**
 	 * @brief Stampa del testo sulla Schermata di gioco ("simula una specie di HUD") in uno specifico punto
@@ -36,6 +37,10 @@ public:
 	bool SetPixel( Point2D view_point );
 
 	Point2D WorldPointToViewPoint( Level *world, Point2D world_point );
+
+	unsigned int GetWidth();
+
+	unsigned int GetHeight();
 };
 
 Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );

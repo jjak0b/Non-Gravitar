@@ -3,7 +3,7 @@
 #include "Level.hpp"
 #include "ColoredBitmap.hpp"
 
-Player::Player( Level *world, Point2D origin ) : Entity( world, origin, NULL, "player" ){
+Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
     this->SetOrigin( origin );
     this->world = world;
     this->texture = ColoredBitmap( 5, 5, 0 );

@@ -50,3 +50,7 @@ void Bitmap::Copy( Bitmap *_data, unsigned int row, unsigned int column ){
 		}
 	}
 }
+
+void Bitmap::Dispose(){
+	delete this->data;
+}
