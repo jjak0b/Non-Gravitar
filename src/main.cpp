@@ -1,10 +1,13 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <iostream>
 #include <time.h>
 #include <conio.h>
 #include "GameEngine.hpp"
 #include "GameConfig.h"
 // dipendenti da SO
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #else
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -35,20 +38,35 @@ char getInput(){
         return c;
 }
 
-Point2D GetTerminalSize(){
-#ifdef _WIN32
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    int columns, rows;
+void setCursor( int x, int y ){
+	
+	HANDLE hOut;
+	COORD Position;
 
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-    return Point2D( columns, rows );
-#else
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    return Point2D( w.ws_col, w.ws_row );
-#endif
+	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	Position.X = x;
+	Position.Y = y;
+	SetConsoleCursorPosition(hOut, Position);
+}
+
+Point2D GetTerminalSize(){
+
+    #ifdef _WIN32
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        int columns, rows;
+        HANDLE hOut;
+        hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        GetConsoleScreenBufferInfo( hOut, &csbi);
+        columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+        return Point2D( columns, rows );
+    #else
+        struct winsize w;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        return Point2D( w.ws_col, w.ws_row );
+    #endif
+
 }
 
 int main(){

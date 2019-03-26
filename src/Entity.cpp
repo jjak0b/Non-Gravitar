@@ -2,7 +2,7 @@
 #include "Level.hpp"
 #include <cstring>
 
-Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, char *classname ){
+Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
     strcpy( this->str_classname, classname );
     if( texture != NULL ){
         this->texture = *texture;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include "Viewport.hpp"
 #include "GameConfig.h"
@@ -18,4 +20,4 @@ public:
     char GetkeyPressed();
 
     double GetTime();
-}
+};

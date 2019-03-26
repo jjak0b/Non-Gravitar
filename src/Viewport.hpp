@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Point2D.hpp"
-#include "Level.hpp"
 #include "Bitmap.hpp"
 #include "PrintableBitmap.hpp"
 
@@ -9,6 +8,8 @@
 #define CHAR_PIXEL_UP ((char)223)
 #define CHAR_PIXEL_DOWN ((char)220)
 #define CHAR_PIXEL_UP_DOWN ((char)219)
+
+class Level;
 
 class ViewPort{
 protected:

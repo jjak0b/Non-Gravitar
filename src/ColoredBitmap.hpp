@@ -2,7 +2,6 @@
 
 #include "Bitmap.hpp"
 
-
 class ColoredBitmap : public Bitmap{
 protected:
 	int color;

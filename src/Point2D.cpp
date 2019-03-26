@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Point2D.hpp"
 
 Point2D::Point2D( int _x, int _y ){

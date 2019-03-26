@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Point2D.hpp"
+
+class Level;
 
 class Projectile : public Entity{
     protected:
@@ -15,4 +18,4 @@ class Projectile : public Entity{
     Point2D GetTargetOrigin();
     double GetDamage();
     void update(); // aggiorna lo stato del proiettile, come la posizione, ecc...
-}
+};

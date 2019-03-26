@@ -1,4 +1,3 @@
-#pragma once
 #include "GameEngine.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
