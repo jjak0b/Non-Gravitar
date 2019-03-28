@@ -9,10 +9,10 @@ class GameEngine;
 
 class Entity{
 protected:
-	Level *world;
+	Level *world = NULL;
 	Point2D origin;
-	ColoredBitmap texture;
-	char *str_classname;
+	ColoredBitmap *texture = NULL;
+	char *str_classname = NULL;
 public:
 	Entity( Level *world, Point2D origin, ColoredBitmap *texture = NULL, const char classname[] = "" );
 	Point2D SetOrigin( Point2D origin );

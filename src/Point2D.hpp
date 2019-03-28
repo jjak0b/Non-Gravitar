@@ -6,4 +6,5 @@ class Point2D{
 
 	Point2D( int _x = 0, int _y = 0 );
 	int Distance( Point2D p );
+	bool Equals( Point2D p );
 };

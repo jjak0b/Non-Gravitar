@@ -20,6 +20,7 @@ public:
 	ViewPort( unsigned int width, unsigned int height, Point2D origin );
 	void Dispose(); // libera le risorse di data
 	void Draw( Bitmap *texture, Level *level, Point2D world_origin );
+	void Clear();
 	void Refresh();
 	void UpdateSize( unsigned int width, unsigned int height );
 

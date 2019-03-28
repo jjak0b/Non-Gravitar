@@ -13,7 +13,7 @@ ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 }
 
 void ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
-	if( _width != this->width || _height != this->height ){
+	if( _width != this->width || _height * 2 != this->height ){
 		this->width = _width;
 		this->height = _height * 2; // poichè usiamo il terminale, considero virtualmente il doppio dell'altezza perchè così posso lavorare sui caratteri "pixel"
 		this->Dispose();
@@ -23,14 +23,23 @@ void ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
 
 void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 	if( this->data != NULL){
-		Point2D point_relative_to_center_view = ViewPort::WorldPointToViewPoint( world, world_point );
+
+		Point2D point_relative_to_bottom_left_view = this->WorldPointToViewPoint( world, world_point );
 		// correggo le coordinate relative alla view, per far si che la texture si centrata rispetto alla coordinata
 		// ( cioè per partire a copiare da in alto a sinistra;
+		Point2D point_relative_to_center_view = point_relative_to_bottom_left_view;
 		// ovvero da x-texture->GetColumns()/2 e y+texture->GetRows()/2 )
-		point_relative_to_center_view.x -= texture->GetColumns()/2;
-		point_relative_to_center_view.y += texture->GetRows()/2;
-		Point2D point_on_bitmap = ViewPointToBitMapPoint( point_relative_to_center_view, this->data );
-		data->Copy( texture, point_on_bitmap.y, point_on_bitmap.x );
+		// point_relative_to_center_view.x -= texture->GetColumns()/2;
+		// point_relative_to_center_view.y += texture->GetRows()/2;
+
+		if( texture != NULL ){ // Jacopo TODO: da sistemare
+			Point2D point_on_bitmap = ViewPointToBitMapPoint( point_relative_to_center_view, this->data );
+			data->Copy( texture, point_on_bitmap.y, point_on_bitmap.x );
+		}
+		else{
+			this->SetPixel( point_relative_to_bottom_left_view );
+		}
+		
 	}
 }
 
@@ -86,25 +95,35 @@ bool ViewPort::SetPixel( Point2D view_point ){
 	return this->SetBitmapData( value, view_point );
 }
 
+void ViewPort::Clear(){
+	this->data->Clear();
+}
+
 void ViewPort::Refresh(){
 	if( this->data != NULL )
 		std::cout << this->data->toString();
 }
 
+
 Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap ){
 	unsigned int y = 0;
+	int offset_y = (bitmap->GetRows()*2) - 1;
 	if( ( view_point.y % 2 == 1 ) ){
-		y = ( bitmap->GetRows()-1 ) - (view_point.y-1); // quando la coordinata è dispari, considero la riga successiva
+		y =  offset_y - (view_point.y-1); // quando la coordinata è dispari, considero la riga successiva
 	}
 	else{
-		y = ( bitmap->GetRows()-1 ) - (view_point.y);
+		y =  offset_y - (view_point.y);
 	}
+	y = y /2;
 	return Point2D( view_point.x, y );
 }
 
 Point2D ViewPort::WorldPointToViewPoint( Level *world, Point2D world_point ){
-	return Point2D( ( (this->width/2) + ( world_point.x - this->world_origin.x ) ) % world->GetMaxWidth(),
-					( (this->height/2) + ( world_point.y - this->world_origin.y ) ) % world->GetMaxHeight() );
+
+	// return Point2D( ( (this->width/2) + ( world_point.x - this->world_origin.x ) ) % world->GetMaxWidth(), ( (this->height/2) + ( world_point.y - this->world_origin.y ) ) % world->GetMaxHeight() );
+	return  Point2D( (world->GetMaxWidth() - this->world_origin.x + world_point.x) % world->GetMaxWidth(),
+					 (world->GetMaxHeight() - this->world_origin.y + world_point.y) % world->GetMaxHeight() );
+				
 }
 
 void ViewPort::Dispose(){

@@ -38,4 +38,4 @@ Projectile.o : Projectile.cpp Projectile.hpp
 	g++ -c Projectile.cpp
 
 clean:
-	del *.o NonGravitar
+	rm *.o NonGravitar

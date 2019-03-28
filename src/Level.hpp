@@ -21,8 +21,8 @@ public:
 	Level( unsigned int MaxWidth, unsigned int MaxHeight, Player *player );
 	void Update( GameEngine *game );
 	void Draw( ViewPort* view );
-
-	Point2D SetOrigin(); // TODO: ovverride perchè non deve fare niente
+	Point2D GetNormalizedPoint( Point2D origin );
+	void SetOrigin(); // TODO: ovverride perchè non deve fare niente
 	// Point2D GetOrigin(); // restituirà (0,0)
 
 	/**

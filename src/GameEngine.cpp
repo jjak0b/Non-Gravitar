@@ -14,17 +14,23 @@ bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned
 }
 
 bool GameEngine::frame( double dtime ){
-    this->view->Refresh();
-    return false;
-    if( this->level == NULL ){
-        this->level = new Level( 2+this->view->GetWidth(), this->view->GetHeight(), NULL );
-    }
-    // temp
-    this->level->Update( this );
-    this->view->SetWorldOrigin( this->level->GetPlayer()->GetOrigin() );
-    this->level->Draw( this->view );
 
+ 	// temp		
+    if( this->level == NULL ){
+        this->level = new Level( this->view->GetWidth(), this->view->GetHeight(), NULL );
+    }
+
+    this->level->Update( this );
+    this->view->SetWorldOrigin( Point2D( 0, 0 ) );
+	this->view->Clear();
+    this->level->Draw( this->view );
     this->view->Refresh();
+#ifdef DEBUG
+	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
+	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
+	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
+	std::cout << "Player at (" << this->level->GetPlayer()->GetOrigin().x << ", " << this->level->GetPlayer()->GetOrigin().y << ")" <<std::endl;
+#endif
     // TODO
     return false;
 }

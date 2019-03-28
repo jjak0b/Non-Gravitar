@@ -77,24 +77,26 @@ int main(){
     char key = '\0';
     clock_t current_time = clock(), last_frame_time = current_time;
     Point2D screen_size = GetTerminalSize();
-    system( "cls");
+    system( "CLEAR");
+	screen_size.x = 120;
+	screen_size.y = 30;
     GameEngine engine = GameEngine( screen_size.x, screen_size.y );
     do{
         setCursor( 0, 0 );
         if( kbhit() ){
             key = getInput();
         }
-        else{
-            key = '\0';
-        }
+
         dtime = double( current_time - last_frame_time ) / CLOCKS_PER_SEC;
         if( dtime >= FRAME_TIME ){
-#ifndef DEBUG  // DEBUG
-			// std::cout << "Window: "<<screen_size.x << "x" << screen_size.y << " Duration: " << dtime << "\tFPS: ~" << ceil( 1.0 / dtime ) << std::endl;
-#endif
+			// system("cls");
             last_frame_time = clock();
-            engine.update( dtime, key, 120, 30 );
+            engine.update( dtime, key, screen_size.x, screen_size.y );
             b_endGame = engine.frame( dtime );
+			key = '\0';
+#ifdef DEBUG  // DEBUG
+			std::cout << "Window: "<<screen_size.x << "x" << screen_size.y << " Duration: " << dtime << "\tFPS: ~" << ceil( 1.0 / dtime ) << std::endl;
+#endif
         }
         current_time = clock();
     }while( !b_endGame );
