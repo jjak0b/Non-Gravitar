@@ -8,6 +8,7 @@ class GameEngine{
 private:
     char input_key;
     double time;
+    Level *level;
     ViewPort *view;
 public:
 

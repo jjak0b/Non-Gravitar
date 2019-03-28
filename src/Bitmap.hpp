@@ -1,7 +1,7 @@
 #pragma once
 
 typedef char BITMAP_DATA_TYPE;
-#define BITMAP_DATA_EMPTY ' '
+#define BITMAP_DATA_EMPTY '@'
 #define BITMAP_DATA_NULL '\0'
 
 class Bitmap{
@@ -12,7 +12,7 @@ class Bitmap{
 	public:
 	Bitmap(unsigned int _rows = 0, unsigned int _columns = 0 );
 	void Dispose(); // libera le risorse allocate su data
-	bool load( BITMAP_DATA_TYPE **texture, unsigned int rows, unsigned int columns );
+	bool Load( const BITMAP_DATA_TYPE **texture, unsigned int rows, unsigned int columns );
 	unsigned int GetRows();
 	unsigned int GetColumns();
 

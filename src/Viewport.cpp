@@ -6,12 +6,14 @@
 
 ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->data = NULL;
+	this->width = 0;
+	this->height = 0;
 	this->world_origin = origin;
-	this->UpdateSize( width, _height );
+	this->UpdateSize( _width, _height );
 }
 
 void ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
-	if( _width != this->GetWidth() || _height != this->height ){
+	if( _width != this->width || _height != this->height ){
 		this->width = _width;
 		this->height = _height * 2; // poichè usiamo il terminale, considero virtualmente il doppio dell'altezza perchè così posso lavorare sui caratteri "pixel"
 		this->Dispose();
@@ -110,4 +112,16 @@ void ViewPort::Dispose(){
 		this->data->Dispose();
 		delete this->data;
 	}
+}
+
+unsigned int ViewPort::GetWidth(){
+	return this->width;
+}
+
+unsigned int ViewPort::GetHeight(){
+	return this->height;
+}
+
+void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
+	this->world_origin = WorldOrigin;
 }

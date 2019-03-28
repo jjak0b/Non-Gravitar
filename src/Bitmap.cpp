@@ -1,15 +1,27 @@
 #include "Bitmap.hpp"
 #include <stddef.h>
+#include <iostream>
 
 Bitmap::Bitmap(unsigned int _rows, unsigned int _columns ){
 	this->rows = _rows;
 	this->columns = _columns;
-	// char *data = new char[((width + 1) * height)]; // il +1 è usato per aggiungere \n ad ogni riga, e \0 nell'ultima
 	unsigned int size = (_rows * _columns );
 	if( size > 0){
 		this->data = new char[ size ];
 		for (unsigned int i = 0; i < size; i += 1) {
-			this->data[ i ] = BITMAP_DATA_EMPTY;
+			this->data[ i ] = BITMAP_DATA_EMPTY; // considero come se fosse trasparente
+		}
+	}
+}
+
+bool Bitmap::Load( const BITMAP_DATA_TYPE **texture, unsigned int _rows, unsigned int _columns ){
+	if( texture != NULL ){
+		unsigned int min_rows = _rows > this->rows ? this->rows : _rows;
+		unsigned int min_columns = _columns > this->columns ? this->columns : _columns;
+		for( unsigned int i = 0; i < min_rows; i++ ){
+			for( unsigned int j = 0; j < min_columns; j++ ){
+				this->data[ i ] = this->data[ ( ( this->rows * i ) + j ) ] = texture[ i ][ j ];
+			}
 		}
 	}
 }
@@ -19,7 +31,7 @@ unsigned int Bitmap::GetRows(){
 }
 
 unsigned int Bitmap::GetColumns(){
-	return this->columns-1;
+	return this->columns;
 }
 
 bool Bitmap::SetValue( BITMAP_DATA_TYPE value, unsigned int row, unsigned int column ){

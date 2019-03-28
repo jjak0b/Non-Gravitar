@@ -1,6 +1,7 @@
 #include "Entity.hpp"
 #include "Level.hpp"
 #include <cstring>
+#include <iostream>
 
 Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
     strcpy( this->str_classname, classname );

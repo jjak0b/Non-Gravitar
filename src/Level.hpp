@@ -3,19 +3,24 @@
 #include "Entity.hpp"
 #include "Point2D.hpp"
 
+class GameEngine;
+class Player;
+
 class Level : public Entity{
 protected:
 	unsigned int width, height; // dimensioni del mondo
 	Entity *StaticEnts; // Entità statiche del mondo ( Bunker, carburante )
 	// List *DynamicEnts // Entità dinamiche del mondo ( Proiettili, etc... )
-	// Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
+	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
 	// List *WorldPoints // lista dei Point2D che costruiscono il terreno
 public:
 	/**
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le
 	 * 
 	 */
-	Level();
+	Level( unsigned int MaxWidth, unsigned int MaxHeight, Player *player );
+	void Update( GameEngine *game );
+	void Draw( ViewPort* view );
 
 	Point2D SetOrigin(); // TODO: ovverride perchè non deve fare niente
 	// Point2D GetOrigin(); // restituirà (0,0)
@@ -30,4 +35,11 @@ public:
 	 * @return unsigned int 
 	 */
 	unsigned int GetMaxHeight();
+
+	/**
+	 * @brief Restituisce il puntatore al giocatore
+	 * 
+	 * @return Player* 
+	 */
+	Player *GetPlayer();
 };

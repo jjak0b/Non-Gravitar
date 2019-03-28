@@ -5,3 +5,11 @@ DamageableEntity::DamageableEntity( Level *world, Point2D origin, ColoredBitmap 
     this->SetMaxHealth( healthmax );
     this->SetHealth( healthmax );
 }
+
+double DamageableEntity::SetMaxHealth( double amount ){
+    // TODO
+}
+
+double DamageableEntity::SetHealth( double amount ){
+    // TODO
+}

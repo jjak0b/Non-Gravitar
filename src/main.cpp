@@ -16,10 +16,11 @@
 
 char getInput(){
             char c = '\0';
-        c = std::cin.get();
+        // c = std::cin.get();
+        c = _getch();
         if (c == '\033') { // if the first value is esc
-            std::cin.get(); // getchar(); // skip the [
-            c = std::cin.get();// c = getchar();
+            getch(); // skip the [
+            c = getch();
             switch (c) { // the real value
                 case 'A':
                     c = INPUT_ARROW_UP;
@@ -76,18 +77,23 @@ int main(){
     char key = '\0';
     clock_t current_time = clock(), last_frame_time = current_time;
     Point2D screen_size = GetTerminalSize();
+    system( "cls");
     GameEngine engine = GameEngine( screen_size.x, screen_size.y );
     do{
+        setCursor( 0, 0 );
         if( kbhit() ){
             key = getInput();
         }
         else{
             key = '\0';
         }
-        dtime = double(last_frame_time - current_time) / CLOCKS_PER_SEC;
+        dtime = double( current_time - last_frame_time ) / CLOCKS_PER_SEC;
         if( dtime >= FRAME_TIME ){
+#ifndef DEBUG  // DEBUG
+			// std::cout << "Window: "<<screen_size.x << "x" << screen_size.y << " Duration: " << dtime << "\tFPS: ~" << ceil( 1.0 / dtime ) << std::endl;
+#endif
             last_frame_time = clock();
-            engine.update( dtime, key, 0, 0 );
+            engine.update( dtime, key, 120, 30 );
             b_endGame = engine.frame( dtime );
         }
         current_time = clock();

@@ -5,6 +5,7 @@
 #include "Viewport.hpp"
 #include <stddef.h> // usato per definizione di NULL
 class Level;
+class GameEngine;
 
 class Entity{
 protected:
@@ -17,7 +18,7 @@ public:
 	Point2D SetOrigin( Point2D origin );
 	Point2D GetOrigin();
 	void Draw( ViewPort *view );
-	void Update();
+	void Update( GameEngine *game );
 	void Delete();
 	void Callback_OnHit( Point2D hitOrigin, Entity *attacker );
 

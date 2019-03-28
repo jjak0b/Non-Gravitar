@@ -42,6 +42,8 @@ public:
 	unsigned int GetWidth();
 
 	unsigned int GetHeight();
+
+	void SetWorldOrigin( Point2D WorldOrigin );
 };
 
 Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );
