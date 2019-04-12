@@ -2,4 +2,6 @@
 *.exe
 *.json
 [.]vscode/*
+[.]vs/*
 *.stackdump
+*.log
