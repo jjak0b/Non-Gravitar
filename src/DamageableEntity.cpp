@@ -7,9 +7,51 @@ DamageableEntity::DamageableEntity( Level *world, Point2D origin, ColoredBitmap 
 }
 
 double DamageableEntity::SetMaxHealth( double amount ){
-    // TODO
+    if (amount < this->health) {
+        this->health = amount;
+    }
+
+    this->MaxHealth = amount;
+    return this->MaxHealth;
 }
 
 double DamageableEntity::SetHealth( double amount ){
-    // TODO
+    this->health = amount;
+    return this->health;
 }
+
+double DamageableEntity::GetHealth() {
+    return this->health;
+};
+
+double DamageableEntity::GetMaxHealth() {
+    return this->MaxHealth;
+};
+
+
+void DamageableEntity::DoDamage( double amount, Point2D damageOrigin, Entity *attacker ) {
+    this->health -= amount;
+    // if (this-> health -= amount < 0) ???
+    //this->Callback_OnHit(damageOrigin, attacker, amount);
+};
+
+    /**
+     * @brief recupera una quantità di vita a questa entità
+     * 
+     * @param amount 
+     * @return double 
+     */
+double DamageableEntity::DoHeal( double amount ) {
+    if (this->health += amount > this->MaxHealth) {
+        this->health = this->MaxHealth;
+    }
+    else
+    {
+        this->health += amount;
+    }
+	return health;
+    
+};
+
+//void Callback_OnHit( Point2D hitOrigin, Entity *attacker, double damage );
+ 

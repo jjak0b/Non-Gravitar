@@ -11,6 +11,7 @@ bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned
     this->time += time;
     this->input_key = key_pressed;
     this->view->UpdateSize( width, height );
+	return false;
 }
 
 bool GameEngine::frame( double dtime ){

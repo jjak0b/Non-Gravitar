@@ -4,8 +4,8 @@
 #include <iostream>
 
 Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
-	this->str_classname = strdup( classname );
-	this->texture = texture;
+	this->str_classname = _strdup( classname );
+	this->texture = NULL;
     this->world = world;
 	
     this->SetOrigin( origin );

@@ -1,7 +1,12 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Projectile.hpp"
+#include "Fuel.hpp"
 #include "Point2D.hpp"
+
+#include <list>
+using namespace std;
 
 class GameEngine;
 class Player;
@@ -13,6 +18,12 @@ protected:
 	// List *DynamicEnts // Entità dinamiche del mondo ( Proiettili, etc... )
 	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
 	// List *WorldPoints // lista dei Point2D che costruiscono il terreno
+	list<Projectile*> projectiles;
+	char lastInput;
+
+	list<Fuel*> fuel;
+	
+
 public:
 	/**
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le
@@ -42,4 +53,8 @@ public:
 	 * @return Player* 
 	 */
 	Player *GetPlayer();
+	void addProjectile(bool shoot);
+	void removeProjectile();
+	void checkLastInput( GameEngine* game);
+	void addFuel(int n25, int n50);
 };

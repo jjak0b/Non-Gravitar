@@ -39,6 +39,7 @@ bool Bitmap::Load( const BITMAP_DATA_TYPE **texture, unsigned int _rows, unsigne
 			}
 		}
 	}
+	return false;
 }
 
 bool Bitmap::SetValue( BITMAP_DATA_TYPE value, unsigned int row, unsigned int column ){

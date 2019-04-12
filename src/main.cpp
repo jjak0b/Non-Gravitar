@@ -19,8 +19,8 @@ char getInput(){
         // c = std::cin.get();
         c = _getch();
         if (c == '\033') { // if the first value is esc
-            getch(); // skip the [
-            c = getch();
+            _getch(); // skip the [
+            c = _getch();
             switch (c) { // the real value
                 case 'A':
                     c = INPUT_ARROW_UP;
@@ -83,7 +83,7 @@ int main(){
     GameEngine engine = GameEngine( screen_size.x, screen_size.y );
     do{
         setCursor( 0, 0 );
-        if( kbhit() ){
+        if( _kbhit() ){
             key = getInput();
         }
 

@@ -43,3 +43,17 @@ void Player::Update( GameEngine *game ){
 	if( !current_origin.Equals( this->GetOrigin() ) )
 		this->SetOrigin( current_origin );
 }
+
+bool Player::shoot(GameEngine *game) {
+    char input = game->GetkeyPressed();
+    if (input == 'f')
+        return true;
+    else return false;
+}
+
+bool Player::beam(GameEngine *game) {
+    char input = game->GetkeyPressed();
+    if (input == 'r')
+        return true;
+    else return false;
+}

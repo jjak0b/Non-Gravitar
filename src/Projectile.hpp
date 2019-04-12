@@ -7,15 +7,19 @@ class Level;
 
 class Projectile : public Entity{
     protected:
-    Entity *owner; // entità che ha sparato questo proiettile
+    int type; // entità che ha sparato questo proiettile
     double damage; // danno che infligge a qualsiasi entità che colpisce
     Point2D fireOrigin; // punto di partenza da cui è stato generato il proiettile
-    Point2D targetOrigin; // punto destinazioe che dovrebbe raggiungere il proiettile
+    Point2D targetOrigin; // punto destinazione che dovrebbe raggiungere il proiettile
+    char lastInput;
 
     public:
-    Projectile( Level *world, Point2D fireOrigin, Point2D targetOrigin, double damage, Entity *owner );
-    Point2D GetFireOrigin();
+    Projectile( Level *world, Point2D origin, Point2D targetOrigin, double damage, char lastInput);
+    
     Point2D GetTargetOrigin();
     double GetDamage();
-    void update(); // aggiorna lo stato del proiettile, come la posizione, ecc...
+    bool Update(); // aggiorna lo stato del proiettile, come la posizione, ecc...
+    
+    void GetTargetOrigin(Point2D target);
+    void GetDamage(double damage);
 };
