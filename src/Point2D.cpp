@@ -1,10 +1,26 @@
 #include "Point2D.hpp"
 
-Point2D::Point2D( int _x, int _y ){
-	this->x = _x;
-	this->y = _y;
+Point2D::Point2D( VECTOR_TYPE _x, VECTOR_TYPE _y ) : Point( 2 ) {
+	this->SetX( _x );
+	this->SetY( _y );
 }
 
-bool Point2D::Equals( Point2D p ){
-	return p.x == this->x && p.y == this->y;
+int Point2D::GetX(){
+	int value;
+	this->Vector::Get( 0, &value );
+	return value;
+}
+
+void Point2D::SetX( VECTOR_TYPE value ){
+	this->Vector::Set( 0, value );
+}
+
+int Point2D::GetY(){
+	int value;
+	this->Vector::Get( 1, &value );
+	return value;
+}
+
+void Point2D::SetY( VECTOR_TYPE value ){
+	this->Vector::Set( 1, value );
 }
