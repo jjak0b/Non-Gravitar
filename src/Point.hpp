@@ -23,4 +23,6 @@ public:
 	 * @return double 
 	 */
 	double Distance( Point p );
-}
+};
+
+Vector BuildDirection( Point start, Point end );

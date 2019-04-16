@@ -18,7 +18,7 @@ public:
 	Point2D SetOrigin( Point2D origin );
 	Point2D GetOrigin();
 	void Draw( ViewPort *view );
-	
+	bool Update( GameEngine *game );
 	void Delete();
 	void Callback_OnHit( Point2D hitOrigin, Entity *attacker );
 

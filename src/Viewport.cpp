@@ -34,7 +34,7 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 
 		if( texture != NULL ){ // Jacopo TODO: da sistemare
 			Point2D point_on_bitmap = ViewPointToBitMapPoint( point_relative_to_center_view, this->data );
-			data->Copy( texture, point_on_bitmap.y, point_on_bitmap.x );
+			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
 		}
 		else{
 			this->SetPixel( point_relative_to_bottom_left_view );
@@ -46,7 +46,7 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 BITMAP_DATA_TYPE ViewPort::GetBitmapData( Point2D view_point ){
 	Point2D bitmapPoint = ViewPointToBitMapPoint( view_point, this->data );
 	if( this->data != NULL ){
-		return this->data->GetValue( bitmapPoint.y, bitmapPoint.x );
+		return this->data->GetValue( bitmapPoint.GetY(), bitmapPoint.GetX() );
 	}
 	return BITMAP_DATA_NULL;
 }
@@ -54,7 +54,7 @@ BITMAP_DATA_TYPE ViewPort::GetBitmapData( Point2D view_point ){
 bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Point2D view_point ){
 	Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
 	if( this->data != NULL ){
-		return this->data->SetValue( value, bitmap_point.y, bitmap_point.x );
+		return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
 	}
 	return false; 
 }
@@ -64,7 +64,7 @@ bool ViewPort::SetPixel( Point2D view_point ){
 	BITMAP_DATA_TYPE current_pixel = this->GetBitmapData( view_point );
 	bool b_isPixelDown = false;
 
-	if( ( view_point.y % 2 == 0 ) ){
+	if( ( view_point.GetY() % 2 == 0 ) ){
 		b_isPixelDown = true;
 	}
 
@@ -108,21 +108,21 @@ void ViewPort::Refresh(){
 Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap ){
 	unsigned int y = 0;
 	int offset_y = (bitmap->GetRows()*2) - 1;
-	if( ( view_point.y % 2 == 1 ) ){
-		y =  offset_y - (view_point.y-1); // quando la coordinata è dispari, considero la riga successiva
+	if( ( view_point.GetY() % 2 == 1 ) ){
+		y =  offset_y - (view_point.GetY()-1); // quando la coordinata è dispari, considero la riga successiva
 	}
 	else{
-		y =  offset_y - (view_point.y);
+		y =  offset_y - (view_point.GetY());
 	}
 	y = y /2;
-	return Point2D( view_point.x, y );
+	return Point2D( view_point.GetX(), y );
 }
 
 Point2D ViewPort::WorldPointToViewPoint( Level *world, Point2D world_point ){
 
 	// return Point2D( ( (this->width/2) + ( world_point.x - this->world_origin.x ) ) % world->GetMaxWidth(), ( (this->height/2) + ( world_point.y - this->world_origin.y ) ) % world->GetMaxHeight() );
-	return  Point2D( (world->GetMaxWidth() - this->world_origin.x + world_point.x) % world->GetMaxWidth(),
-					 (world->GetMaxHeight() - this->world_origin.y + world_point.y) % world->GetMaxHeight() );
+	return  Point2D( (world->GetMaxWidth() - this->world_origin.GetX() + world_point.GetX()) % world->GetMaxWidth(),
+					 (world->GetMaxHeight() - this->world_origin.GetY() + world_point.GetY()) % world->GetMaxHeight() );
 				
 }
 

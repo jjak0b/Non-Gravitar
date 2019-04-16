@@ -3,13 +3,25 @@
 #define VECTOR_TYPE int
 
 class Vector{
-private:
-	VECTOR_TYPE *data; // puntatore dell'array contenente le componenti del vettore
 protected:
+	VECTOR_TYPE *data; // puntatore dell'array contenente le componenti del vettore
 	unsigned int size; // dimensione vettore
 public:
 	Vector( unsigned int _size = 1 );
 
+	/**
+	 * @brief Dealloca le risorse utilizzate
+	 * 
+	 */
+	void Dispose();
+
+	/**
+	 * @brief Alloca e duplica questo oggetto
+	 * 
+	 * @return Vector* 
+	 */
+	Vector *Duplicate();
+	
 	/**
 	 * @brief Restituisce la dimensione del vettore
 	 * @return unsigned int 
@@ -31,6 +43,12 @@ public:
 	 * @param value 
 	 */
 	void Set( unsigned int i, VECTOR_TYPE value );
+	
+	/**
+	 * @brief Assegna a tutte le componenti il valore 0
+	 * 
+	 */
+	void Reset();
 
 	/**
 	 * @brief Somma tutte le componenti del vettore v alle componenti dell'oggetto da cui viene chiamata questa funzione
@@ -69,4 +87,5 @@ public:
 	 * @return false altrimenti
 	 */
 	bool Equals( Vector v );
+
 };

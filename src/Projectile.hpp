@@ -10,16 +10,12 @@ class Projectile : public Entity{
     int type; // entità che ha sparato questo proiettile
     double damage; // danno che infligge a qualsiasi entità che colpisce
     Point2D fireOrigin; // punto di partenza da cui è stato generato il proiettile
-    Point2D targetOrigin; // punto destinazione che dovrebbe raggiungere il proiettile
-    char lastInput;
+    Vector direction; // vettore che indica la direzione dell'entità
 
     public:
-    Projectile( Level *world, Point2D origin, Point2D targetOrigin, double damage, char lastInput);
-    
+    Projectile( Level *world, Point2D origin, Vector direction, double damage );
     Point2D GetTargetOrigin();
     double GetDamage();
+    Vector GetDirection();
     bool Update(); // aggiorna lo stato del proiettile, come la posizione, ecc...
-    
-    void GetTargetOrigin(Point2D target);
-    void GetDamage(double damage);
 };

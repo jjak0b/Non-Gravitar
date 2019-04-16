@@ -3,6 +3,8 @@
 #include "Level.hpp"
 #include "ColoredBitmap.hpp"
 #include "GameEngine.hpp"
+#include "Projectile.hpp"
+#include "Point.hpp"
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
 	this->world = world;
@@ -22,38 +24,68 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
 void Player::Update( GameEngine *game ){
     char input = game->GetkeyPressed();
     Point2D current_origin = this->GetOrigin();	
+
+    current_origin.Add( direction );
+
+	if( !current_origin.Equals( this->GetOrigin() ) ){
+        this->SetOrigin( current_origin );
+        this->lastMove = direction;
+    }
+
+    if( this->ShouldFire( input ) ){
+        this->Fire( direction );
+    }
+    else if( this->ShouldBeam( input ) ){
+        // TODO: logica del raggio traente
+    }
+
+    this->lastInput = input;
+
+    direction.Dispose();
+}
+
+Projectile *Player::Fire( Vector direction ){
+    Projectile *p = new Projectile( this->world, this->origin, direction, 150 );
+    // TODO: Da aggiungere alla lista delle entità
+    return p;
+}
+
+bool Player::ShouldFire(char input) {
+    if (input == 'f')
+        return true;
+    return false;
+}
+
+bool Player::ShouldBeam(char input) {
+    if (input == 'r')
+        return true;
+    return false;
+}
+
+Vector Player::GetDirectionFromInput( char input ){
+    Vector direction = Vector( this->origin.GetSize() );
     switch (input)
     {
         case 'w':
-            current_origin.y += 1;
+            direction.Set( 1, 1 );
             break;
         case 's':
-           current_origin.y -= 1;
+            direction.Set( 1, -1 );
             break;
         case 'a':
-            current_origin.x -= 1;
+            direction.Set( 0, -1 );
             break;
         case 'd':
-            current_origin.x += 1;
+            direction.Set( 0, 1 );
             break;
         default:
             break;
     }
-
-	if( !current_origin.Equals( this->GetOrigin() ) )
-		this->SetOrigin( current_origin );
 }
 
-bool Player::shoot(GameEngine *game) {
-    char input = game->GetkeyPressed();
-    if (input == 'f')
-        return true;
-    else return false;
-}
+char Player::GetLastInput(){
 
-bool Player::beam(GameEngine *game) {
-    char input = game->GetkeyPressed();
-    if (input == 'r')
-        return true;
-    else return false;
+}
+Vector Player::GetLastMove(){
+
 }

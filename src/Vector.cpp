@@ -6,7 +6,19 @@ Vector::Vector( unsigned int _size ){
 	this->size = _size;
 	if( _size > 0 ){
 		this->data = new VECTOR_TYPE[ _size ];
+		this->Reset();
 	}
+}
+
+Vector *Vector::Duplicate(){
+	Vector *v = new Vector( this->size );
+	v->Add( *this );
+	return v;
+}
+
+void Vector::Dispose(){
+	if( this->data != NULL )
+		delete this->data;
 }
 
 unsigned int Vector::GetSize(){
@@ -28,10 +40,16 @@ void Vector::Set( unsigned int i, VECTOR_TYPE value ){
 	}
 }
 
+void Vector::Reset(){
+	for( unsigned int i = 0; i < this->size; i += 1 ){
+		this->data[ i ] = 0.0;
+	}
+}
+
 bool Vector::Add( Vector v ){
 	if( this->size == v.size ){
 		for( unsigned int i = 0; i < this->size; i += 1 ){
-			data[ i ] += v.data[ i ];
+			this->data[ i ] += v.data[ i ];
 		}
 		return true;
 	}

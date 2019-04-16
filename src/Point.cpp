@@ -23,3 +23,14 @@ double Point::Distance( Point p ){
 	}
 	return result;
 }
+
+Vector BuildDirection( Point start, Point end ){
+	Vector direction = Vector( end.GetSize() );
+	for( int i = 0; i < direction.GetSize(); i++ ){
+		VECTOR_TYPE valueEnd, valueStart;
+		end.Get( i, &valueEnd);
+		end.Get( i, &valueStart);
+		direction.Set( i, valueEnd - valueStart );
+	}
+	return direction;
+}
