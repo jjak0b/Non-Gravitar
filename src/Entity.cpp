@@ -25,3 +25,13 @@ Point2D Entity::GetOrigin(){
 void Entity::Draw( ViewPort *view ){
 	view->Draw( this->texture, this->world, this->GetOrigin() );
 }
+
+bool Entity::IsColliding( Entity *entity, Point2D *collisionOrigin ){
+	bool isColliding = false;
+	Point2D collidingPoint;
+	// TODO
+	if( collisionOrigin != NULL ){
+		*collisionOrigin = collidingPoint;
+	}
+	return isColliding;
+}

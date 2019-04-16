@@ -42,18 +42,18 @@ void Level::SetOrigin(){
 }
 
 Point2D Level::GetNormalizedPoint( Point2D _origin ){
-	if( _origin.x < 0 ){
-		_origin.x = this->GetMaxWidth() + _origin.x;
+	if( _origin.GetX() < 0 ){
+		_origin.SetX( this->GetMaxWidth() + _origin.GetX() );
 	}
 	else{
-		_origin.x = _origin.x % this->GetMaxWidth();
+		_origin.SetX( _origin.GetX() % this->GetMaxWidth() );
 	}
 
-	if( _origin.y < 0 ){
-		_origin.y = 0;
+	if( _origin.GetY() < 0 ){
+		_origin.SetY( 0 );
 	}
-	else if( _origin.y > this->GetMaxHeight() ){ // non >= perchè se y = this->GetMaxHeight() lo consideriamo come fuori dal livello
-		_origin.y =  this->GetMaxHeight();
+	else if( _origin.GetY() > this->GetMaxHeight() ){ // non >= perchè se y = this->GetMaxHeight() lo consideriamo come fuori dal livello
+		_origin.SetY( this->GetMaxHeight() );
 	}
 
 	return _origin;
@@ -64,14 +64,9 @@ void Level::Update( GameEngine *game ){
 	this->checkLastInput( game );
     this->player->Update( game );
 
-	addProjectile(this->player->shoot( game ));
-
-
 	for (std::list<Projectile*>::iterator it=this->projectiles.begin(); it != this->projectiles.end(); ++it) {
-		(*it)->Update();
+		(*it)->Update( game );
 	}
-	removeProjectile();
-    
 };
 	
 

@@ -4,6 +4,7 @@
 #include "Point2D.hpp"
 
 class Level;
+class GameEngine;
 
 class Projectile : public Entity{
     protected:
@@ -17,5 +18,6 @@ class Projectile : public Entity{
     Point2D GetTargetOrigin();
     double GetDamage();
     Vector GetDirection();
-    bool Update(); // aggiorna lo stato del proiettile, come la posizione, ecc...
+    bool Update( GameEngine *game ); // aggiorna lo stato del proiettile, come la posizione, ecc...
+    bool IsColliding( Entity *entity );
 };

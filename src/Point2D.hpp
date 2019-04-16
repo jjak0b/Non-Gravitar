@@ -27,4 +27,9 @@ public:
 	 * @param value 
 	 */
 	void SetY( int value );
+
+	protected:
+	// override per non essere accessibile dall'esterno
+	void Get( unsigned int i, VECTOR_TYPE *return_value );
+	void Set( unsigned int i, VECTOR_TYPE value );
 };

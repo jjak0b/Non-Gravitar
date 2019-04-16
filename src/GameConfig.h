@@ -7,12 +7,13 @@
 #define INPUT_ARROW_DOWN ((char)194)
 #define INPUT_ARROW_LEFT ((char)180)
 #define INPUT_ARROW_RIGHT ((char)195)
-
-#define INPUT_DIRECTION_UP 'w'
-#define INPUT_DIRECTION_LEFT 'a'
-#define INPUT_DIRECTION_DOWN 's'
-#define INPUT_DIRECTION_RIGHT 'd'
-
+typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più complessa, questo equivale ad un refactor.
+#define INPUT_MOVE_UP 'w'
+#define INPUT_MOVE_DOWN 's'
+#define INPUT_MOVE_LEFT 'a'
+#define INPUT_MOVE_RIGHT 'd'
+#define INPUT_USE_FIRE 'f'
+#define INPUT_USE_BEAM 'r'
 
 #define DEBUG
 #define _DEFAULT_WINDOW_HEIGHT 30

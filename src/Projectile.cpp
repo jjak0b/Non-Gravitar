@@ -20,11 +20,10 @@ double Projectile::GetDamage() {
     return this->damage;
 }
 
-
-bool Projectile::Update() {
+bool Projectile::Update( GameEngine *game ) {
+    bool shouldUpdateNextFrame = true;
     Point2D current_origin = this->GetOrigin();	
     current_origin.Add( this->direction );
 	this->SetOrigin( current_origin );
-    current_origin.Dispose();
-	return false;
+	return shouldUpdateNextFrame;
 }

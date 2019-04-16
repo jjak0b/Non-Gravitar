@@ -3,22 +3,19 @@
 #include <cmath>
 
 Vector::Vector( unsigned int _size ){
+	if( _size > VECTOR_DIMENSIONS ){
+		_size = VECTOR_DIMENSIONS;
+	}
 	this->size = _size;
 	if( _size > 0 ){
-		this->data = new VECTOR_TYPE[ _size ];
 		this->Reset();
 	}
 }
 
-Vector *Vector::Duplicate(){
-	Vector *v = new Vector( this->size );
-	v->Add( *this );
+Vector Vector::Duplicate(){
+	Vector v = Vector( this->size );
+	v.Add( *this );
 	return v;
-}
-
-void Vector::Dispose(){
-	if( this->data != NULL )
-		delete this->data;
 }
 
 unsigned int Vector::GetSize(){
@@ -90,4 +87,16 @@ bool Vector::Equals( Vector v ){
 		}
 	}
 	return isEqual;
+}
+
+bool Vector::IsNull(){
+	bool isNull = true;
+	int i = 0;
+	while( isNull && i < this->size ){
+		if( this->data[ i ] != 0 ){
+			isNull = false;
+		}
+		i++;
+	}
+	return isNull;
 }

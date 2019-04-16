@@ -1,26 +1,29 @@
 #pragma once
 
-#define VECTOR_TYPE int
+#define VECTOR_TYPE int // tipo delle singole componenti di un vettore
+// NOTA: definire VECTOR_DIMENSION prima di includere questo header per sovrascrivere
+#ifndef VECTOR_DIMENSIONS
+#define VECTOR_DIMENSIONS 2 // dimensione vettore standard
+#endif
 
 class Vector{
 protected:
-	VECTOR_TYPE *data; // puntatore dell'array contenente le componenti del vettore
+	VECTOR_TYPE data[ VECTOR_DIMENSIONS ]; // array contenente le componenti del vettore
 	unsigned int size; // dimensione vettore
 public:
-	Vector( unsigned int _size = 1 );
+	/**
+	 * @brief Costruttore di un vettore aventi _size componenti
+	 * PreCondition: _size deve essere <= VECTOR_DIMENSIONS
+	 * @param int 
+	 */
+	Vector( unsigned int _size = VECTOR_DIMENSIONS );
 
 	/**
-	 * @brief Dealloca le risorse utilizzate
+	 * @brief Restituisce un copia di questo oggetto
 	 * 
+	 * @return Vector
 	 */
-	void Dispose();
-
-	/**
-	 * @brief Alloca e duplica questo oggetto
-	 * 
-	 * @return Vector* 
-	 */
-	Vector *Duplicate();
+	Vector Duplicate();
 	
 	/**
 	 * @brief Restituisce la dimensione del vettore
@@ -88,4 +91,10 @@ public:
 	 */
 	bool Equals( Vector v );
 
+	/**
+	 * @brief Indica se il vettore è nullo, cioè tutte le componenti del vettore sono = 0
+	 * @return true se è un vettore nullo
+	 * @return false altrimenti 
+	 */
+	bool IsNull();
 };

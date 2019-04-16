@@ -30,7 +30,7 @@ bool GameEngine::frame( double dtime ){
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
-	std::cout << "Player at (" << this->level->GetPlayer()->GetOrigin().x << ", " << this->level->GetPlayer()->GetOrigin().y << ")" <<std::endl;
+	std::cout << "Player at (" << this->level->GetPlayer()->GetOrigin().GetX() << ", " << this->level->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
 #endif
     // TODO
     return false;

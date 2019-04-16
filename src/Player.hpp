@@ -5,16 +5,16 @@
 #include "Vector.hpp"
 
 class Player : public DamageableEntity{
-	char lastInput; // l'ultimo input ricevuto
+	INPUT_TYPE lastInput; // l'ultimo input ricevuto
 	Vector lastMove; // l'ultimo spostamento effettuato
 	public:
 	Player( Level *world, Point2D origin, double health );
-	void Update( GameEngine *game );
-	bool ShouldFire(char input);
-	bool ShouldBeam(char input);
+	bool Update( GameEngine *game );
+	bool ShouldFire(INPUT_TYPE input);
+	bool ShouldBeam(INPUT_TYPE input);
 	Projectile *Fire( Vector direction );
-	Vector GetDirectionFromInput( char input );
-	void SetLastInput( char input );
-	char GetLastInput();
+	Vector GetDirectionFromInput( INPUT_TYPE input );
+	void SetLastInput( INPUT_TYPE input );
+	INPUT_TYPE GetLastInput();
 	Vector GetLastMove();
 };

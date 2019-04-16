@@ -3,6 +3,7 @@
 #include "Level.hpp"
 #include "ColoredBitmap.hpp"
 #include "GameEngine.hpp"
+#include "GameConfig.h"
 #include "Projectile.hpp"
 #include "Point.hpp"
 
@@ -21,13 +22,16 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
 
 }
 
-void Player::Update( GameEngine *game ){
+bool Player::Update( GameEngine *game ){
+    bool isAlive = true;
     char input = game->GetkeyPressed();
     Point2D current_origin = this->GetOrigin();	
+    Vector direction = GetDirectionFromInput( input );
+    // eventualmente qui ci potrebbe stare uno Vector.Scale( accel )
+    // ed impostare la posizione come spostamento r(t) in base al moto uniformemente accelerato
+    current_origin.Add( direction ); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
 
-    current_origin.Add( direction );
-
-	if( !current_origin.Equals( this->GetOrigin() ) ){
+	if( !direction.IsNull() ){ // aggiorno la posizione solo il vettore spostamento non è nullo
         this->SetOrigin( current_origin );
         this->lastMove = direction;
     }
@@ -41,7 +45,7 @@ void Player::Update( GameEngine *game ){
 
     this->lastInput = input;
 
-    direction.Dispose();
+    return isAlive;
 }
 
 Projectile *Player::Fire( Vector direction ){
@@ -51,41 +55,39 @@ Projectile *Player::Fire( Vector direction ){
 }
 
 bool Player::ShouldFire(char input) {
-    if (input == 'f')
-        return true;
-    return false;
+    return input == INPUT_USE_FIRE;
 }
 
 bool Player::ShouldBeam(char input) {
-    if (input == 'r')
-        return true;
-    return false;
+    return input == INPUT_USE_BEAM;
 }
 
 Vector Player::GetDirectionFromInput( char input ){
     Vector direction = Vector( this->origin.GetSize() );
     switch (input)
     {
-        case 'w':
+        case INPUT_MOVE_UP:
             direction.Set( 1, 1 );
             break;
-        case 's':
+        case INPUT_MOVE_DOWN:
             direction.Set( 1, -1 );
             break;
-        case 'a':
+        case INPUT_MOVE_LEFT:
             direction.Set( 0, -1 );
             break;
-        case 'd':
+        case INPUT_MOVE_RIGHT:
             direction.Set( 0, 1 );
             break;
-        default:
+        default: // Nessun movimento
             break;
     }
+
+    return direction;
 }
 
 char Player::GetLastInput(){
-
+    return this->lastInput;
 }
 Vector Player::GetLastMove(){
-
+    return this->lastMove;
 }

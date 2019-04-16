@@ -14,11 +14,11 @@ public:
 
     GameEngine( unsigned int screen_width = DEFAULT_WINDOW_WIDTH, unsigned int screen_height = DEFAULT_WINDOW_HEIGHT );
 
-    bool update( double time, char key_pressed, unsigned int width, unsigned int height );
+    bool update( double time, INPUT_TYPE key_pressed, unsigned int width, unsigned int height );
 
     bool frame( double dtime );
 
-    char GetkeyPressed();
+    INPUT_TYPE GetkeyPressed();
 
     double GetTime();
 };
