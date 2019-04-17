@@ -17,4 +17,5 @@ class Player : public DamageableEntity{
 	void SetLastInput( INPUT_TYPE input );
 	INPUT_TYPE GetLastInput();
 	Vector GetLastMove();
+	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
 };

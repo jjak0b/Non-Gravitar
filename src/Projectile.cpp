@@ -12,12 +12,13 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 Vector Projectile::GetDirection(){
     return this->direction;
 }
+
 double Projectile::GetDamage() {
     return this->damage;
 }
 
-double Projectile::GetDamage() {
-    return this->damage;
+Point2D Projectile::GetFireOrigin(){
+    return this->fireOrigin;
 }
 
 bool Projectile::Update( GameEngine *game ) {
@@ -25,5 +26,10 @@ bool Projectile::Update( GameEngine *game ) {
     Point2D current_origin = this->GetOrigin();	
     current_origin.Add( this->direction );
 	this->SetOrigin( current_origin );
+
 	return shouldUpdateNextFrame;
+}
+
+void Projectile::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
+    this->garbage = true;
 }

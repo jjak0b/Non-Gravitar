@@ -1,5 +1,7 @@
 #include "DamageableEntity.hpp"
 #include "Entity.hpp"
+#include "Projectile.hpp"
+#include <cstring>
 
 DamageableEntity::DamageableEntity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[], double healthmax) : Entity( world, origin, texture, classname ){
     this->SetMaxHealth( healthmax );
@@ -22,18 +24,18 @@ double DamageableEntity::SetHealth( double amount ){
 
 double DamageableEntity::GetHealth() {
     return this->health;
-};
+}
 
 double DamageableEntity::GetMaxHealth() {
     return this->MaxHealth;
-};
+}
 
 
 void DamageableEntity::DoDamage( double amount, Point2D damageOrigin, Entity *attacker ) {
     this->health -= amount;
     // if (this-> health -= amount < 0) ???
     //this->Callback_OnHit(damageOrigin, attacker, amount);
-};
+}
 
     /**
      * @brief recupera una quantità di vita a questa entità
@@ -51,7 +53,16 @@ double DamageableEntity::DoHeal( double amount ) {
     }
 	return health;
     
-};
+}
 
 //void Callback_OnHit( Point2D hitOrigin, Entity *attacker, double damage );
+
+void DamageableEntity::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
+    if( collide_ent != NULL ){
+        if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
+            Projectile *e = (Projectile*)collide_ent;
+            this->DoDamage( e->GetDamage(), hitOrigin, collide_ent );
+        }
+    }
+}
  

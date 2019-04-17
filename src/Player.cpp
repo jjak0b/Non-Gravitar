@@ -6,6 +6,9 @@
 #include "GameConfig.h"
 #include "Projectile.hpp"
 #include "Point.hpp"
+#include <iostream>
+#include <list>
+#include <iterator>
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
 	this->world = world;
@@ -42,6 +45,15 @@ bool Player::Update( GameEngine *game ){
     else if( this->ShouldBeam( input ) ){
         // TODO: logica del raggio traente
     }
+    
+    std::list<Entity*> ents = this->world->GetEntities( "Player", true );
+    for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it.operator++) {
+        Point2D *collisionOrigin = NULL;
+        if( this->IsColliding( *it, collisionOrigin ) ){
+            this->Callback_OnCollide( *it, *collisionOrigin );
+        }
+    }
+    ents.clear();
 
     this->lastInput = input;
 
@@ -90,4 +102,17 @@ char Player::GetLastInput(){
 }
 Vector Player::GetLastMove(){
     return this->lastMove;
+}
+
+void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
+    if( collide_ent != NULL ){
+        if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
+            Projectile *proj = (Projectile*)collide_ent;
+            this->DoDamage( proj->GetDamage(), hitOrigin, proj );
+            proj->Callback_OnCollide( collide_ent, hitOrigin );
+        }
+        else{ // la collisione contro qualsiasi altra entità, danneggia totalmente il giocatore
+            this->DoDamage( this->GetHealth(), hitOrigin, collide_ent );
+        }
+    }
 }

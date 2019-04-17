@@ -13,6 +13,7 @@ protected:
 	Point2D origin; // Coordinate dell'entità nel mondo di gioco
 	ColoredBitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
+	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
 public:
 	Entity( Level *world, Point2D origin, ColoredBitmap *texture = NULL, const char classname[] = "" );
 	/**
@@ -28,6 +29,14 @@ public:
 	 * @return Point2D
 	 */
 	Point2D GetOrigin();
+
+	/**
+	 * @brief Restituisce il nome della tipologia di entità
+	 * PostCondition: il valore restituito è un puntatore ad un stringa,
+	 * Nota: il valore restituito non è una nuova allocazione di una nuova stringa
+	 * @return char* 
+	 */
+	char *GetClassname();
 
 	/**
 	 * @brief Disegna l'entità nella viewport asssociata all camera di gioco,
@@ -49,6 +58,13 @@ public:
 	bool Update( GameEngine *game );
 
 	/**
+	 * @brief Indica se questa entità è significativa in gioco ( true ) o dovrebbe essere cancellata ( false )
+	 * @return true 
+	 * @return false 
+	 */
+	bool IsDefined();
+
+	/**
 	 * @brief prepara questa entità per essere eliminata,
 	 * PostCondition: dopo essere chiamata deve effettuare il delete comunque per essere deallocata
 	 */
@@ -66,10 +82,10 @@ public:
 	bool IsColliding( Entity *entity, Point2D *collisionOrigin);
 
 	/**
-	 * @brief funzione di callback o risposta che deve essere richiamata nel caso questa entità venga colpita
-	 * e ne gestisce il suo comportamento
-	 * @param hitOrigin : posizione di collisione
-	 * @param attacker  : entità che ha colpito
+	 * @brief funzione di callback o risposta che deve essere richiamata nel caso questa entità collida con un altra
+	 * e ne gestirà il comportamento
+	 * @param collide_ent 
+	 * @param hitOrigin 
 	 */
-	void Callback_OnHit( Point2D hitOrigin, Entity *attacker );
+	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
 };

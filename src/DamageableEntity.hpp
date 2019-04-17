@@ -41,8 +41,8 @@ class DamageableEntity : public Entity{
      */
     double DoHeal( double amount );
 
-    void Callback_OnHit( Point2D hitOrigin, Entity *attacker, double damage );
-
+    void DamageableEntity::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+    
     protected:
     /**
      * @brief Imposta la vita massima si questa entità

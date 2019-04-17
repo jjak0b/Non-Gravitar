@@ -7,8 +7,11 @@ Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char
 	this->str_classname = _strdup( classname );
 	this->texture = NULL;
     this->world = world;
-	
+	if( this->world != NULL ){
+		this->world->AddEntity( this );
+	}
     this->SetOrigin( origin );
+	this->garbage = false;
 }
 
 Point2D Entity::SetOrigin( Point2D _origin ){
@@ -29,9 +32,30 @@ void Entity::Draw( ViewPort *view ){
 bool Entity::IsColliding( Entity *entity, Point2D *collisionOrigin ){
 	bool isColliding = false;
 	Point2D collidingPoint;
-	// TODO
+	if( !strcmp(entity->GetClassname(), "Level" ) ){
+		this->world->IsColliding( entity, collisionOrigin );
+	}
+	else{
+		// TODO
+	}
+
 	if( collisionOrigin != NULL ){
 		*collisionOrigin = collidingPoint;
 	}
 	return isColliding;
+}
+
+
+bool Entity::IsDefined(){
+	return !garbage;
+}
+
+void Entity::Delete(){
+	if( this->texture != NULL ){
+		this->texture->Dispose();
+		delete this->texture;
+	}
+	if( this->str_classname != NULL ){
+		delete this->str_classname;
+	}
 }
