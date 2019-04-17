@@ -47,4 +47,19 @@ public:
 	void SetWorldOrigin( Point2D WorldOrigin );
 };
 
+/**
+ * @brief Converte le coordinate locali relative alla viewport nelle corrispondenti relative alla bitmap specificata
+ * @param view_point 
+ * @param bitmap 
+ * @return Point2D 
+ */
 Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );
+
+/**
+ * @brief Disegna nella ViewPort un linea a partire da start fino a end, dove start e end sono coordinate del mondo
+ * @param view 
+ * @param world 
+ * @param start 
+ * @param end 
+ */
+void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end );

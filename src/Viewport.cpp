@@ -144,3 +144,29 @@ unsigned int ViewPort::GetHeight(){
 void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
 	this->world_origin = WorldOrigin;
 }
+
+void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
+	Point2D temp_point = start;
+	bool isVertical = false; // la retta è verticale
+	double angular_coeffcient = 0.0; // coeff. angolare della retta
+	if( end.GetX() - start.GetX() != 0){
+		angular_coeffcient = (end.GetY() - start.GetY()) / ( end.GetX() - start.GetX() );
+	}
+	else{ // il coeff angolare non è definito per tan( 90° )
+		isVertical = true;
+	}
+
+	view->Draw( NULL, world, start );
+	while( ( !isVertical && temp_point.GetX() < end.GetX() ) || ( isVertical && temp_point.GetY() < end.GetY() ) ) {
+		if( !isVertical ){
+			temp_point.SetX( temp_point.GetX() + 1 );
+			temp_point.SetY( (temp_point.GetX()*angular_coeffcient) + temp_point.GetY() ); // y = m*x + q
+		}
+		else{
+			temp_point.SetY( temp_point.GetY() + 1 ); // x = q
+		}
+		temp_point = world->GetNormalizedPoint( temp_point );
+		view->Draw( NULL, world, temp_point );
+	}
+	view->Draw( NULL, world, end );
+}
