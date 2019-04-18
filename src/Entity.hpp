@@ -58,11 +58,11 @@ public:
 	bool Update( GameEngine *game );
 
 	/**
-	 * @brief Indica se questa entità è significativa in gioco ( true ) o dovrebbe essere cancellata ( false )
+	 * @brief Indica se questa entità è significativa in gioco ( false ) o dovrebbe essere cancellata ( true )
 	 * @return true 
 	 * @return false 
 	 */
-	bool IsDefined();
+	bool IsGarbage();
 
 	/**
 	 * @brief prepara questa entità per essere eliminata,
@@ -88,4 +88,13 @@ public:
 	 * @param hitOrigin 
 	 */
 	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+
+	/**
+	 * @brief Indica se questa entità si trova in una posizione esterna al pianeta preso in considerazione
+	 * 
+	 * @param entity 
+	 * @return true 
+	 * @return false 
+	 */
+	bool IsOutOfTheWorld();
 };

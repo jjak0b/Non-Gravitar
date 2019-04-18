@@ -3,12 +3,14 @@
 #include <iostream>
 #include "Viewport.hpp"
 #include "GameConfig.h"
+#include "SolarSystem.hpp"
 
 class GameEngine{
 private:
-    char input_key;
+    INPUT_TYPE input_key;
     double time;
-    Level *level;
+    Level *currentLevel; // livello in esecuzione
+	SolarSystem *currentSolarSystem; // Sistema solare di riferimento attivo
     ViewPort *view;
 public:
 
@@ -22,3 +24,13 @@ public:
 
     double GetTime();
 };
+
+
+/**
+ * @brief Verifica se l'entità è significativa nel gioco
+ * 
+ * @param entity 
+ * @return true 
+ * @return false 
+ */
+bool IsDefined( Entity *entity );

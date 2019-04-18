@@ -14,26 +14,23 @@ class Player;
 class Level : public Entity{
 protected:
 	unsigned int width, height; // dimensioni del mondo
-	Entity *StaticEnts; // Entità statiche del mondo ( Bunker, carburante )
-	// List *DynamicEnts // Entità dinamiche del mondo ( Proiettili, etc... )
 	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
-	// List *WorldPoints // lista dei Point2D che costruiscono il terreno
+	// list<Point2D*> surface; // lista dei punti che costruiscono il terreno
 	list<Entity*> entities;
-	list<Projectile*> projectiles;
-	list<Fuel*> fuel;
 public:
 	/**
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le entità del livello
 	 * PostCondition: se player != NULL allora esso non viene reinstanziato
 	 */
-	Level( unsigned int MaxWidth, unsigned int MaxHeight, Player *player );
+	Level( Level *parentWorld = NULL, unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "", Player *player = NULL );
 
 	/**
 	 * @brief Aggiorna lo stato delle entità del mondo, richiamando internamente i loro metodi Update( ... )
+	 * Restituisce true se il giocatore si trova in questo Livello, altrimenti se lo ha
 	 * PostCondition: Dealloca le entità il cui metodo Update( ... ) restituisce valore false, quindi ne invoca il metodo Delete()
 	 * @param game 
 	 */
-	void Update( GameEngine *game );
+	bool Update( GameEngine *game );
 
 	/**
 	 * @brief Disegna nella Viewport tutte le entità del mondo, richiamando internamente i loro metodi Draw( ... ) 
@@ -75,7 +72,7 @@ public:
 	void AddEntity( Entity *entity );
 
 	/**
-	 * @brief Verifica se l'entità specificata collide con il terreno di gioco
+	 * @brief Verifica se l'entità specificata collide con il mondo di gioco
 	 * PreCondition: impostare puntatore collisionOrigin = NULL se non si vuole ottenere il punto di collisione
 	 * PostCondition: se avviene una collisione: il valore puntato da collisionOrigin contiene la posizione di collisione
 	 * @param entity 
@@ -114,6 +111,13 @@ public:
 	 * @return list<Entity*> 
 	 */
 	list<Entity*> Level::GetEntities( const char *str_className, bool b_exclude );
+
+	/**
+	 * @brief Rimuove Il giocatore dal livello, restituendone il riferimento
+	 * 
+	 * @return Player* 
+	 */
+	Player *GetOutPlayer();
 
 	private:
 	/**

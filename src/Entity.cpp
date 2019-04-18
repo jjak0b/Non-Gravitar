@@ -1,9 +1,11 @@
 #include "Entity.hpp"
+#include "GameEngine.hpp"
 #include "Level.hpp"
 #include <cstring>
 #include <iostream>
 
 Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
+	this->garbage = false;
 	this->str_classname = _strdup( classname );
 	this->texture = NULL;
     this->world = world;
@@ -11,7 +13,6 @@ Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char
 		this->world->AddEntity( this );
 	}
     this->SetOrigin( origin );
-	this->garbage = false;
 }
 
 Point2D Entity::SetOrigin( Point2D _origin ){
@@ -46,8 +47,15 @@ bool Entity::IsColliding( Entity *entity, Point2D *collisionOrigin ){
 }
 
 
-bool Entity::IsDefined(){
+bool Entity::IsGarbage(){
 	return !garbage;
+}
+
+bool Entity::IsOutOfTheWorld(){
+	if( IsDefined( this->world ) ){
+		return this->GetOrigin().GetY() <= 0 || this->GetOrigin().GetY() >= this->world->GetMaxHeight();
+	}
+	return true;
 }
 
 void Entity::Delete(){

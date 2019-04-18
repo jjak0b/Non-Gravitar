@@ -1,9 +1,11 @@
 #include "GameEngine.hpp"
 #include "Player.hpp"
+#include <cstring>
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
     this->time = 0.0;
-    this->level = NULL;
+    this->currentLevel = NULL;
+	this->currentSolarSystem = NULL;
     this->view = new ViewPort( screen_width, screen_height, Point2D(0,0) );
 }
 
@@ -16,21 +18,25 @@ bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned
 
 bool GameEngine::frame( double dtime ){
 
+	bool keepPlaying = true;
+
+	// TODO: da implementare logica di scambio di currentLevel e currentLevel->world
+	// cioè quando il giocatore passa dal sistema solare al pianeta
  	// temp		
-    if( this->level == NULL ){
-        this->level = new Level( this->view->GetWidth(), this->view->GetHeight(), NULL );
+    if( this->currentLevel == NULL ){
+        this->currentLevel = new Level( this->currentSolarSystem, this->view->GetWidth(), this->view->GetHeight(), "Level", NULL );
     }
 
-    this->level->Update( this );
+    keepPlaying = this->currentLevel->Update( this );
     this->view->SetWorldOrigin( Point2D( 0, 0 ) );
 	this->view->Clear();
-    this->level->Draw( this->view );
+    this->currentLevel->Draw( this->view );
     this->view->Refresh();
 #ifdef DEBUG
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
-	std::cout << "Player at (" << this->level->GetPlayer()->GetOrigin().GetX() << ", " << this->level->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
+	std::cout << "Player at (" << this->currentLevel->GetPlayer()->GetOrigin().GetX() << ", " << this->currentLevel->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
 #endif
     // TODO
     return false;
@@ -42,4 +48,9 @@ char GameEngine::GetkeyPressed(){
 
 double GameEngine::GetTime(){
     return this->time;
+}
+
+
+bool IsDefined( Entity *entity ){
+	return entity != NULL && entity->IsGarbage();
 }

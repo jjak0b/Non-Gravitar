@@ -4,13 +4,14 @@
 #include "GameEngine.hpp"
 #include "Projectile.hpp"
 #include "Fuel.hpp"
-
+#include "Planet.hpp"
 #include <iostream>
 #include <list>
 #include <iterator>
+#include <cstring>
 using namespace std;
 
-Level::Level(unsigned int MaxWidth, unsigned int MaxHeight, Player *_player) : Entity( NULL, Point2D(0,0), NULL, "Level" ){
+Level::Level( Level *parentWorld, unsigned int MaxWidth, unsigned int MaxHeight, const char _className[], Player *_player) : Entity( parentWorld, Point2D(0,0), NULL, _className ){
 	this->width = MaxWidth;
     this->height = MaxHeight;
 
@@ -18,12 +19,8 @@ Level::Level(unsigned int MaxWidth, unsigned int MaxHeight, Player *_player) : E
         this->player = player;
     }
     else{
-        this->player = new Player( this, Point2D(  30, 30 ), 150 );
+        this->player = new Player( this, Point2D( this->width/2, this->height/2 ), 150 );
     }
-
-	// TODO: Generazione terreno
-	// TODO: Generazione Bunker
-	// TODO: Generazione Fuel
 };
 
 void Level::SetOrigin(){} // La ridefinizione serve per non renderla visibile esternamente
@@ -46,36 +43,44 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 	return _origin;
 }
 
-void Level::Update( GameEngine *game ){
+bool Level::Update( GameEngine *game ){
 	bool shouldUpdateNextFrame = true;
-    shouldUpdateNextFrame = this->player->Update( game );
-	for (list<Projectile*>::iterator entity_it = this->entities.begin(); entity_it != this->entities.end(); entity_it.operator++ ) {
-		if( (*entity_it)->IsDefined() ){
-			shouldUpdateNextFrame = (*entity_it)->Update( game );
+	shouldUpdateNextFrame = this->player->Update( game );
+
+	for (list<Entity*>::iterator entity_it = this->entities.begin(); entity_it != this->entities.end(); entity_it.operator++ ) {
+		if( IsDefined( *entity_it ) ){
+			(*entity_it)->Update( game );
 		}
 		else{
-			(*it)->Delete();
+			(*entity_it)->Delete();
 			// TODO: aggiungere *it ad uno stack di entità da deallocare, tipo un garbage collector
-			// TEMP finchè  il TODO precente non è stato effettuato
-			delete *it;
-			this->entities.erase( it );
+			// TEMP finchè  il TODO precedente non è stato effettuato
+			delete *entity_it;
+			this->entities.erase( entity_it );
 		}
 	}
+
+	return shouldUpdateNextFrame;
 }
 
 void Level::Draw( ViewPort *view ){
-
+	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it.operator++) {
+		if( !strcmp( (*it)->GetClassname(), "Planet" ) ){
+			Planet *ent = (Planet*)(*it);
+			ent->Draw( view );
+		}
+		else if( !strcmp( (*it)->GetClassname(), "Projectile" ) ){
+			Projectile *ent = (Projectile*)(*it);
+			ent->Draw( view );
+		}
+		else{
+			(*it)->Draw( view );
+		}
+	}
+	
 	if( this->player != NULL ){
 		this->player->Draw( view );
 	}
-
-	/*for (std::list<Fuel*>::iterator it=this->fuel.begin(); it != this->fuel.end(); ++it) {
-		(*it)->Draw( view );
-	}*/
-	for (std::list<Projectile*>::iterator it=this->projectiles.begin(); it != this->projectiles.end(); ++it) {
-		(*it)->Draw( view );
-	}
-	
 }
 
 unsigned int Level::GetMaxHeight(){
@@ -91,13 +96,13 @@ Player *Level::GetPlayer(){
 }
 
 void Level::AddEntity( Entity* entity ){
-	// upcasting forzato ma tengo traccia della classe originaria, quindi l'upcasting non avrà conseguenze indesiderate
-	if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-		Projectile *ent = (Projectile*)entity;
-		this->projectiles.push_front( ent );
-	}
-	else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
-		// TODO
+	if( IsDefined( entity ) ){
+		if( !strcmp( entity->GetClassname(), "Player" ) ){
+			this->player = (Player*)entity;
+		}
+		else{
+			this->entities.push_front( entity );
+		}
 	}
 }
 

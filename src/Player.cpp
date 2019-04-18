@@ -9,6 +9,7 @@
 #include <iostream>
 #include <list>
 #include <iterator>
+#include <cstring>
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
 	this->world = world;
