@@ -30,6 +30,6 @@ public:
 
 	protected:
 	// override per non essere accessibile dall'esterno
-	void Get( unsigned int i, VECTOR_TYPE *return_value );
-	void Set( unsigned int i, VECTOR_TYPE value );
+	bool Get( unsigned int i, VECTOR_TYPE *return_value );
+	bool Set( unsigned int i, VECTOR_TYPE value );
 };

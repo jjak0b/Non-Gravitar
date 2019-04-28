@@ -72,7 +72,7 @@ Point2D GetTerminalSize(){
 
 int main(){
 
-    bool b_endGame = false;
+    bool b_keep_playing = true;
     double dtime = 0.0;
     char key = '\0';
     clock_t current_time = clock(), last_frame_time = current_time;
@@ -92,14 +92,14 @@ int main(){
 			// system("cls");
             last_frame_time = clock();
             engine.update( dtime, key, screen_size.GetX(), screen_size.GetY() );
-            b_endGame = engine.frame( dtime );
+            b_keep_playing = engine.frame( dtime );
 			key = '\0';
 #ifdef DEBUG  // DEBUG
 			std::cout << "Window: "<<screen_size.GetX() << "x" << screen_size.GetY() << " Duration: " << dtime << "\tFPS: ~" << ceil( 1.0 / dtime ) << std::endl;
 #endif
         }
         current_time = clock();
-    }while( !b_endGame );
+    }while( b_keep_playing );
 
     return 0;
 }

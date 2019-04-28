@@ -3,6 +3,7 @@
 #include "DamageableEntity.hpp"
 #include "Level.hpp"
 #include "Vector.hpp"
+#include "GameConfig.h"
 
 class Player : public DamageableEntity{
 	INPUT_TYPE lastInput; // l'ultimo input ricevuto

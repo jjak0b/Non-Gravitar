@@ -9,7 +9,7 @@ Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char
 	this->str_classname = _strdup( classname );
 	this->texture = NULL;
     this->world = world;
-	if( this->world != NULL ){
+	if( this->world != NULL && strcmp( this->str_classname, "Player" ) ){
 		this->world->AddEntity( this );
 	}
     this->SetOrigin( origin );
@@ -24,6 +24,17 @@ Point2D Entity::SetOrigin( Point2D _origin ){
 
 Point2D Entity::GetOrigin(){
     return this->origin;
+}
+
+char* Entity::GetClassname(){
+	return this->str_classname;
+}
+
+bool Entity::Update( GameEngine *game ){
+	if( IsDefined( this ) ){
+		return true;
+	}
+	return false;
 }
 
 void Entity::Draw( ViewPort *view ){
@@ -48,11 +59,11 @@ bool Entity::IsColliding( Entity *entity, Point2D *collisionOrigin ){
 
 
 bool Entity::IsGarbage(){
-	return !garbage;
+	return garbage;
 }
 
 bool Entity::IsOutOfTheWorld(){
-	if( IsDefined( this->world ) ){
+	if( this->world != NULL ){
 		return this->GetOrigin().GetY() <= 0 || this->GetOrigin().GetY() >= this->world->GetMaxHeight();
 	}
 	return true;
@@ -66,4 +77,5 @@ void Entity::Delete(){
 	if( this->str_classname != NULL ){
 		delete this->str_classname;
 	}
+	this->garbage = true;
 }

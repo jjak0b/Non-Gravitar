@@ -110,7 +110,7 @@ public:
 	 * @param b_exclude 
 	 * @return list<Entity*> 
 	 */
-	list<Entity*> Level::GetEntities( const char *str_className, bool b_exclude );
+	list<Entity*> GetEntities( const char *str_className, bool b_exclude );
 
 	/**
 	 * @brief Rimuove Il giocatore dal livello, restituendone il riferimento
@@ -125,3 +125,20 @@ public:
 	 */
 	void SetOrigin();
 };
+
+/**
+ * @brief Richiama il metodo Update(...) dell'entità in base alla sua classe ( come se i metodi Update delle entità fossero virtual ); e ritorna il valore restituito da Update
+ * 
+ * @param game 
+ * @param entity 
+ * @return bool 
+ */
+bool EntityUpdateSelector( GameEngine *game, Entity *entity );
+
+/**
+ * @brief Richiama il metodo Draw(...) dell'entità in base alla sua classe ( come se i metodi Update delle entità fossero virtual )
+ * 
+ * @param view 
+ * @param entity 
+ */
+void EntityDrawSelector( ViewPort *view, Entity *entity );

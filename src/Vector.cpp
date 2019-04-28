@@ -22,19 +22,20 @@ unsigned int Vector::GetSize(){
 	return this->size;
 }
 
-void Vector::Get( unsigned int i, VECTOR_TYPE *return_value ){
+bool Vector::Get( unsigned int i, VECTOR_TYPE *return_value ){
 	if( i < this->size && return_value != NULL ){
 		*return_value = this->data[ i ];
+		return true;
 	}
-	else{
-		*return_value = NULL;
-	}
+	return false;
 }
 
-void Vector::Set( unsigned int i, VECTOR_TYPE value ){
+bool Vector::Set( unsigned int i, VECTOR_TYPE value ){
 	if( i < this->size ){
 		this->data[ i ] = value;
+		return true;
 	}
+	return false;
 }
 
 void Vector::Reset(){

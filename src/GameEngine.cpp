@@ -19,18 +19,41 @@ bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned
 bool GameEngine::frame( double dtime ){
 
 	bool keepPlaying = true;
-
+    bool update_result = false;
 	// TODO: da implementare logica di scambio di currentLevel e currentLevel->world
 	// cioè quando il giocatore passa dal sistema solare al pianeta
- 	// temp		
+ 	
+    // temp
     if( this->currentLevel == NULL ){
         this->currentLevel = new Level( this->currentSolarSystem, this->view->GetWidth(), this->view->GetHeight(), "Level", NULL );
     }
-
-    keepPlaying = this->currentLevel->Update( this );
+    // if( this->currentSolarSystem == NULL ){
+    //    this->currentSolarSystem = new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4, NULL );
+    //    this->currentLevel = this->currentSolarSystem;
+    // }
+    update_result = EntityUpdateSelector( this, this->currentLevel );
+    if( !update_result ){
+        Player *player = this->currentLevel->GetOutPlayer();
+        if( !IsDefined( player ) ){ // il giocatore è garbage, quindi lo elimino
+            player = this->currentSolarSystem->GetOutPlayer();
+            player->Delete();
+            delete player;
+            keepPlaying = false;
+        }
+        else{// il giocatore è definito e il mondo non dovrebbe essere più aggiornato, quindi esce dal mondo
+            // il livello di gioco ora diventa quello del sistema solare
+            this->currentLevel = this->currentSolarSystem;
+            if( !IsDefined( this->currentLevel ) ){ // TODO: quando ogni bunker è stato distrutto, opure ogni pianeta il livello dovrà essere flaggato come garbage
+                // TODO: eliminare il pianeta dal sistema solare
+            }
+        }
+    }
+    
+    // TEMP finchè i test non sono ultimati
     this->view->SetWorldOrigin( Point2D( 0, 0 ) );
+    // this->view->SetWorldOrigin( Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2), 0 ) );
 	this->view->Clear();
-    this->currentLevel->Draw( this->view );
+    EntityDrawSelector( this->view, this->currentLevel );
     this->view->Refresh();
 #ifdef DEBUG
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
@@ -38,8 +61,8 @@ bool GameEngine::frame( double dtime ){
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
 	std::cout << "Player at (" << this->currentLevel->GetPlayer()->GetOrigin().GetX() << ", " << this->currentLevel->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
 #endif
-    // TODO
-    return false;
+
+    return keepPlaying;
 }
 
 char GameEngine::GetkeyPressed(){
@@ -52,5 +75,5 @@ double GameEngine::GetTime(){
 
 
 bool IsDefined( Entity *entity ){
-	return entity != NULL && entity->IsGarbage();
+	return entity != NULL && !entity->IsGarbage();
 }

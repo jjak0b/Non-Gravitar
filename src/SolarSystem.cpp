@@ -16,7 +16,12 @@ SolarSystem::SolarSystem( unsigned int MaxWidth, unsigned int MaxHeight, unsigne
 		Planet *p = new Planet( this, planet_origin, MaxWidth );
 		// imposta l'offset di posizione (del prossimo pianeta) dalla posizione del pianeta generato in precedenza
 		offset_distance.Reset();
-		offset_distance.Set( 1, rand() % (int)(MaxHeight/2.0) ); // l'offset y sarà casuale da 0 + o - (MaxHeight/2.0)-1 
+		if( MaxHeight != 0 ){
+			offset_distance.Set( 1, rand() % (int)(MaxHeight/2.0) ); // l'offset y sarà casuale da 0 + o - (MaxHeight/2.0)-1 
+		}
+		else{
+			offset_distance.Set( 1, 0 );
+		}
 		offset_distance.Scale( pow( -1, rand() % 2 ) );
 		offset_distance.Set( 0, MaxWidth / number_of_planets );
 		planet_origin.Add( offset_distance );

@@ -34,18 +34,21 @@ public:
 	/**
 	 * @brief assegna il valore dell'i-esima componente al puntatore return_value
 	 * PostCondition: a return_value viene assegnato il valore della i-esima componente del vettore, 
-	 * se i < GetSize() sarà assegnato il valore NULL
+	 * restituisce true se è stato assegnato un valore al valore puntato da return_value, false altrimenti
 	 * @param i 
 	 * @param return_value : indirizzo in cui verrà memorizzato il valore da restituire
+	 * @return bool 
 	 */
-	void Get( unsigned int i, VECTOR_TYPE *return_value );
+	bool Get( unsigned int i, VECTOR_TYPE *return_value );
 
 	/**
 	 * @brief Assegna il valore indicato alla i-esima componente del vettore
+	 * PostCondition: Restituisce true se è stato impostato il valore nell'indice specificato, false altrimenti
 	 * @param i
 	 * @param value 
+	 * @return bool
 	 */
-	void Set( unsigned int i, VECTOR_TYPE value );
+	bool Set( unsigned int i, VECTOR_TYPE value );
 	
 	/**
 	 * @brief Assegna a tutte le componenti il valore 0

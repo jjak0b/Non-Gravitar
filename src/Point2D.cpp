@@ -25,9 +25,9 @@ void Point2D::SetY( VECTOR_TYPE value ){
 	this->Vector::Set( 1, value );
 }
 
-void Point2D::Get( unsigned int i, VECTOR_TYPE *return_value ){
-	Vector::Get( i, return_value );
+bool Point2D::Get( unsigned int i, VECTOR_TYPE *return_value ){
+	return Vector::Get( i, return_value );
 }
-void Point2D::Set( unsigned int i, VECTOR_TYPE value ){
-	Vector::Set( i, value );
+bool Point2D::Set( unsigned int i, VECTOR_TYPE value ){
+	return Vector::Set( i, value );
 }

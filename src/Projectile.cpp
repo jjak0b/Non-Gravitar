@@ -3,7 +3,6 @@
 #include <stddef.h>
 
 Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage ) : Entity( world, origin, NULL , "Projectile" ){
-    this->origin = origin;
     this->fireOrigin = origin;
     this->direction = direction;
     this->damage = damage;
@@ -23,10 +22,15 @@ Point2D Projectile::GetFireOrigin(){
 
 bool Projectile::Update( GameEngine *game ) {
     bool shouldUpdateNextFrame = true;
+
     Point2D current_origin = this->GetOrigin();	
     current_origin.Add( this->direction );
-	this->SetOrigin( current_origin );
+    this->SetOrigin( current_origin );
 
+    if( this->IsOutOfTheWorld() ){
+        shouldUpdateNextFrame = false;
+        this->garbage = true;
+    }
 	return shouldUpdateNextFrame;
 }
 

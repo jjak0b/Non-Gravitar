@@ -28,7 +28,7 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
 
 bool Player::Update( GameEngine *game ){
     bool isAlive = true;
-    char input = game->GetkeyPressed();
+    INPUT_TYPE input = game->GetkeyPressed();
     Point2D current_origin = this->GetOrigin();	
     Vector direction = GetDirectionFromInput( input );
     // eventualmente qui ci potrebbe stare uno Vector.Scale( accel )
@@ -41,14 +41,14 @@ bool Player::Update( GameEngine *game ){
     }
 
     if( this->ShouldFire( input ) ){
-        this->Fire( direction );
+        this->Fire( this->lastMove );
     }
     else if( this->ShouldBeam( input ) ){
         // TODO: logica del raggio traente
     }
     
     std::list<Entity*> ents = this->world->GetEntities( "Player", true );
-    for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it.operator++) {
+    for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
         Point2D *collisionOrigin = NULL;
         if( this->IsColliding( *it, collisionOrigin ) ){
             this->Callback_OnCollide( *it, *collisionOrigin );
@@ -62,16 +62,17 @@ bool Player::Update( GameEngine *game ){
 }
 
 Projectile *Player::Fire( Vector direction ){
-    Projectile *p = new Projectile( this->world, this->origin, direction, 150 );
-    // TODO: Da aggiungere alla lista delle entità
+    Point2D projectile_origin = this->GetOrigin();
+    projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
+    Projectile *p = new Projectile( this->world, projectile_origin, direction, 150 );
     return p;
 }
 
-bool Player::ShouldFire(char input) {
+bool Player::ShouldFire( INPUT_TYPE input ) {
     return input == INPUT_USE_FIRE;
 }
 
-bool Player::ShouldBeam(char input) {
+bool Player::ShouldBeam( INPUT_TYPE input) {
     return input == INPUT_USE_BEAM;
 }
 
