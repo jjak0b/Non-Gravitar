@@ -14,15 +14,22 @@
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
 	this->world = world;
     this->SetOrigin( origin );
-    /*this->texture = ColoredBitmap( 5, 5, 0 );
+    this->texture = new ColoredBitmap( 5, 5, 0 );
     const BITMAP_DATA_TYPE raw_texturer0[] = " ███ ";
     const BITMAP_DATA_TYPE raw_texturer1[] = " ███ ";
     const BITMAP_DATA_TYPE raw_texturer2[] = "@███@";
     const BITMAP_DATA_TYPE raw_texturer3[] = " \\█/ ";
     const BITMAP_DATA_TYPE raw_texturer4[] = "  @  ";
+    /*for( unsigned int j = 0; j < 5; j++ ){
+        this->texture->SetValue( raw_texturer0[j], 0, j );
+        this->texture->SetValue( raw_texturer1[j], 1, j );
+        this->texture->SetValue( raw_texturer2[j], 2, j );
+        this->texture->SetValue( raw_texturer3[j], 3, j );
+        this->texture->SetValue( raw_texturer4[j], 4, j );
+    }*/
     const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2, raw_texturer3, raw_texturer4 };
-    this->texture.Load( rawtexture, 5, 5 );*/
-	this->texture = NULL;
+    this->texture->Load( rawtexture, 5, 5 );
+	//this->texture = NULL;
 
 }
 

@@ -3,6 +3,7 @@
 #include "ColoredBitmap.hpp"
 #include "Level.hpp"
 #include <iostream>
+#include <cmath>
 
 ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->data = NULL;
@@ -23,18 +24,32 @@ void ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
 
 void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 	if( this->data != NULL){
-
 		Point2D point_relative_to_bottom_left_view = this->WorldPointToViewPoint( world, world_point );
-		// correggo le coordinate relative alla view, per far si che la texture si centrata rispetto alla coordinata
-		// ( cioè per partire a copiare da in alto a sinistra;
-		Point2D point_relative_to_center_view = point_relative_to_bottom_left_view;
 		// ovvero da x-texture->GetColumns()/2 e y+texture->GetRows()/2 )
 		// point_relative_to_center_view.x -= texture->GetColumns()/2;
 		// point_relative_to_center_view.y += texture->GetRows()/2;
 
 		if( texture != NULL ){ // Jacopo TODO: da sistemare
-			Point2D point_on_bitmap = ViewPointToBitMapPoint( point_relative_to_center_view, this->data );
+			Point2D point_on_bitmap = ViewPointToBitMapPoint( point_relative_to_bottom_left_view, this->data );
+			// correggo le coordinate relative alla view, per far si che la texture sia centrata rispetto alla coordinata
+			// ( cioè per partire a copiare da in alto a sinistra;
+			Vector offset_from_bitmap_point_to_texture_top_left = Vector( point_on_bitmap.GetSize() );
+			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns()/2.0) );
+			offset_from_bitmap_point_to_texture_top_left.Set( 1, -(texture->GetRows()-1) );
+			point_on_bitmap.Add( offset_from_bitmap_point_to_texture_top_left );
+/*
+			// Bitmap *_texture = new Bitmap( 3, 1 );
+			for( unsigned int i = 0; i < texture->GetRows(); i++ ){
+				for( unsigned int j = 0; j < texture->GetColumns(); j++ ){
+					if( i == texture->GetRows()-1 && j == (unsigned int)(texture->GetColumns()/2.0) )
+						texture->SetValue( '0', i, j );
+					else
+						texture->SetValue( '@', i, j );
+				}
+			}
+*/
 			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
+			this->SetPixel( point_relative_to_bottom_left_view );
 		}
 		else{
 			this->SetPixel( point_relative_to_bottom_left_view );
