@@ -71,7 +71,6 @@ Point2D GetTerminalSize(){
 }
 
 int main(){
-    setlocale(LC_ALL, "");
     bool b_keep_playing = true;
     double dtime = 0.0;
     char key = '\0';
