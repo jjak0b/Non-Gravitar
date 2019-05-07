@@ -34,6 +34,11 @@ bool Projectile::Update( GameEngine *game ) {
 	return shouldUpdateNextFrame;
 }
 
+void Projectile::Draw( ViewPort *view ){
+    // test
+    DrawCircle( view, this->world, this->origin, 9 );
+}
+
 void Projectile::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
     this->garbage = true;
 }

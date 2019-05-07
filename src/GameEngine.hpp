@@ -23,6 +23,15 @@ public:
     INPUT_TYPE GetkeyPressed();
 
     double GetTime();
+
+    Level *GetCurrentLevel();
+
+    void SetCurrentLevel( Level *level );
+
+    SolarSystem *GetCurrentSolarSystem();
+
+    void SetCurrentSolarSystem( SolarSystem *solarsystem );
+    
 };
 
 

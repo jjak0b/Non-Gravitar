@@ -63,3 +63,13 @@ Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );
  * @param end 
  */
 void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end );
+
+/**
+ * @brief Disegna nella Viewport un cerchio con centro le coordinate dell'origine, e raggio specificati
+ * 
+ * @param view 
+ * @param world 
+ * @param world_origin 
+ * @param radius 
+ */
+void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius );

@@ -73,6 +73,21 @@ double GameEngine::GetTime(){
     return this->time;
 }
 
+Level *GameEngine::GetCurrentLevel(){
+    return this->currentLevel;
+}
+
+void GameEngine::SetCurrentLevel( Level *level ){
+    this->currentLevel = level;
+}
+
+SolarSystem *GameEngine::GetCurrentSolarSystem(){
+    return this->currentSolarSystem;
+}
+
+void GameEngine::SetCurrentSolarSystem( SolarSystem *solarsystem ){
+    this->currentSolarSystem = solarsystem;
+}
 
 bool IsDefined( Entity *entity ){
 	return entity != NULL && !entity->IsGarbage();

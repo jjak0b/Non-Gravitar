@@ -19,7 +19,7 @@ class Projectile : public Entity{
     double GetDamage();
     Vector GetDirection();
     bool Update( GameEngine *game ); // aggiorna lo stato del proiettile, come la posizione, ecc...
-
+    void Draw( ViewPort *view );
     /**
      * @brief funzione risposta / callback che dovrà essere chiamata quando questo proiettile ha colpito una qualche entità
      * @param collide_ent 

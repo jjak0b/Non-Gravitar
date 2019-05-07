@@ -24,5 +24,5 @@ class Planet : public Entity{
 	void Draw( ViewPort *view );
 	void Delete();
 	bool IsColliding( Entity *entity );
-	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+	void Callback_OnCollide( GameEngine *game, Entity *collide_ent, Point2D hitOrigin );
 };

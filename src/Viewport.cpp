@@ -3,7 +3,8 @@
 #include "ColoredBitmap.hpp"
 #include "Level.hpp"
 #include <iostream>
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->data = NULL;
@@ -184,4 +185,25 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
 		view->Draw( NULL, world, temp_point );
 	}
 	view->Draw( NULL, world, end );
+}
+
+void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius ){
+	Point2D circle_point;
+	double tmp_x = 0, tmp_y = 0;
+	const double DEGREESTEP = 0.5;
+	const double DEGREES = 180.0;
+	double rad = 0.0;
+	
+	for (double deg = 0.0; deg < DEGREES; deg += DEGREESTEP )
+	{
+		rad = deg * M_PI / 180.0;
+		tmp_y = radius * sin( rad );
+		tmp_x = radius * cos( rad );
+		tmp_x = (M_PI_2 - rad);
+		
+		circle_point.SetX( tmp_x );
+		circle_point.SetY( tmp_y );
+		circle_point.Add( world_origin );
+		view->Draw( NULL, world, circle_point );
+	}
 }
