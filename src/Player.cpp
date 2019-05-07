@@ -40,6 +40,14 @@ bool Player::Update( GameEngine *game ){
     // ed impostare la posizione come spostamento r(t) in base al moto uniformemente accelerato
     current_origin.Add( direction ); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
 
+    if( this->world != NULL && this->IsOutOfTheWorld() ){
+        if( !strcmp( this->world->GetClassname(), "Planet") ) )
+        if( this->world->GetWorld() ){
+
+        }
+        this->SetWorld( );
+    }
+
 	if( !direction.IsNull() ){ // aggiorno la posizione solo il vettore spostamento non è nullo
         this->SetOrigin( current_origin );
         this->lastMove = direction;
@@ -122,4 +130,11 @@ void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
             this->DoDamage( this->GetHealth(), hitOrigin, collide_ent );
         }
     }
+}
+
+void Player::SetWorld( Level *_world){
+    if( this->GetWorld() != NULL )
+        this->GetWorld()->GetOutPlayer();
+    if( _world != NULL )
+        _world->AddEntity( this );
 }

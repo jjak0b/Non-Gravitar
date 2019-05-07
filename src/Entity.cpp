@@ -9,10 +9,18 @@ Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char
 	this->str_classname = _strdup( classname );
 	this->texture = NULL;
     this->world = world;
-	if( this->world != NULL && strcmp( this->str_classname, "Player" ) ){
+	if( this->world != NULL ){
 		this->world->AddEntity( this );
 	}
     this->SetOrigin( origin );
+}
+
+Level *Entity::GetWorld(){
+	return this->world;
+}
+
+void Entity::SetWorld( Level *_world ){
+	this->world = _world;
 }
 
 Point2D Entity::SetOrigin( Point2D _origin ){

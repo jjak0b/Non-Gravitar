@@ -169,6 +169,19 @@ void Level::AddEntity( Entity* entity ){
 		else{
 			this->entities.push_front( entity );
 		}
+		entity->SetWorld( this );
+	}
+}
+
+void Level::RemoveEntity( Entity *entity ){
+	if( entity != NULL ){
+		if( !strcmp( entity->GetClassname(), "Player" ) ){
+			this->GetOutPlayer();
+		}
+		else{
+			this->entities.remove( entity );
+		}
+		entity->SetWorld( NULL );
 	}
 }
 
@@ -219,5 +232,6 @@ list<Entity*> Level::GetEntities( const char *className, bool b_exclude ){
 Player *Level::GetOutPlayer(){
 	Player *_player = this->GetPlayer();
 	this->player = NULL;
+	_player->SetWorld( NULL );
 	return _player;
 }

@@ -16,6 +16,21 @@ protected:
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
 public:
 	Entity( Level *world, Point2D origin, ColoredBitmap *texture = NULL, const char classname[] = "" );
+
+	/**
+	 * @brief Restituisce il riferimento del livello in cui "risiede" l'entità
+	 * 
+	 * @return Level* 
+	 */
+	Level *GetWorld();
+
+	/** 
+	 * @brief Imposta il livello di riferimento in cui risiede l'entità, senza deallocare quello già impostato
+	 * 
+	 * @param world 
+	 */
+	void SetWorld( Level *world );
+
 	/**
 	 * @brief Imposta la posizione attuale dell'entità nel mondo
 	 * PostCondition: le coordinate saranno normalizzate in base alle dimensioni (limiti) del mondo

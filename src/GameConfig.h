@@ -24,3 +24,5 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 
 #define DEFAULT_VIEWPORT_HEIGHT (DEFAULT_WINDOW_HEIGHT*2)
 #define DEFAULT_VIEWPORT_WIDTH (DEFAULT_WINDOW_WIDTH)
+
+#define _USE_MATH_DEFINES

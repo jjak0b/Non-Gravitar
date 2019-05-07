@@ -19,4 +19,10 @@ class Player : public DamageableEntity{
 	INPUT_TYPE GetLastInput();
 	Vector GetLastMove();
 	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+	/**
+	 * @brief il giocatore abbandona il mondo corrente, viene aggiunto al livello specificato, e lo assegna come suo mondo in cui risiede
+	 * 
+	 * @param world 
+	 */
+	void SetWorld( Level *world );
 };

@@ -2,9 +2,9 @@
 #include "Entity.hpp"
 #include "ColoredBitmap.hpp"
 #include "Level.hpp"
+#include "GameConfig.h"
 #include <iostream>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 
 ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->data = NULL;

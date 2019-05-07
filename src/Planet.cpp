@@ -5,11 +5,11 @@
 #include "Player.hpp"
 #include "Point2D.hpp"
 #include <cstring>
-#include <cmath>
 
-Planet::Planet( SolarSystem *_solarSystem, Point2D _origin, unsigned int _circumference ) : Entity( _solarSystem, _origin, NULL, "Planet"){
-	this->circumference = _circumference;
-	this->player = NULL;
+Planet::Planet( SolarSystem *_solarSystem, Point2D _origin, unsigned int _radius, unsigned int _max_longitude, unsigned int _max_altitude ) : Entity( _solarSystem, _origin, NULL, "Planet"){
+	this->radius = _radius;
+	this->max_longitude = _max_longitude;
+	this->max_altitude = _max_altitude;
 }
 
 bool Planet::Update( GameEngine *game ){
@@ -26,23 +26,24 @@ bool Planet::Update( GameEngine *game ){
 }
 
 void Planet::Draw( ViewPort *view ){
-	double radius = this->circumference / 2.0;
-	DrawCircle( view, this->world, this->origin, radius );
+	DrawCircle( view, this->world, this->origin, this->radius );
 }
 
 bool Planet::IsColliding( Entity *entity ){
-	// TODO
+	if( entity != NULL && this->GetOrigin().Distance( entity->GetOrigin() ) <= this->radius ){
+		return true;
+	}
 	return false;
 }
 
 void Planet::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Point2D hitOrigin ){
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Player" ) ){
-			this->player = this->world->GetOutPlayer();
+			Player *player = (Player*)collide_ent;
+			this->player = player->GetWorld()->GetOutPlayer();
+
 			if( this->subWorld == NULL ){
-				unsigned int width = circumference;
-				unsigned int height = circumference / 360;
-				this->subWorld = new Level( NULL, width, height, "Level", this->player );
+				this->subWorld = new Level( NULL, this->max_longitude, this->max_altitude, "Level", this->player );
 			}
 			else{
 				this->subWorld->AddEntity( this->player );

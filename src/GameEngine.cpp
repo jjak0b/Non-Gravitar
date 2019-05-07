@@ -1,6 +1,6 @@
 #include "GameEngine.hpp"
-#include "Player.hpp"
 #include <cstring>
+#include "Player.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
     this->time = 0.0;
@@ -20,32 +20,54 @@ bool GameEngine::frame( double dtime ){
 
 	bool keepPlaying = true;
     bool update_result = false;
-	// TODO: da implementare logica di scambio di currentLevel e currentLevel->world
-	// cioè quando il giocatore passa dal sistema solare al pianeta
- 	
-    // temp
-    if( this->currentLevel == NULL ){
-        this->currentLevel = new Level( this->currentSolarSystem, this->view->GetWidth(), this->view->GetHeight(), "Level", NULL );
+
+    Level *old_level = this->currentLevel;
+    Player *player = NULL;
+
+    // se il giocatore esce da un pianeta, viene verificato se il pianeta è stato distrutto oppure
+    if( this->GetCurrentSolarSystem() != NULL ){
+        if( old_level != NULL && old_level->IsGarbage() ){ // quando ogni bunker è stato distrutto, ogni livello dovrà essere flaggato come garbage
+            if( !strcmp( old_level->GetClassname(), "Planet" ) ){
+                Planet *old_planet = (Planet*)old_level;
+                player = old_planet->GetPlayer();
+
+                old_planet->Delete();
+                this->GetCurrentSolarSystem()->RemoveEntity( old_planet );
+                delete old_planet;
+
+                this->SetCurrentLevel( this->GetCurrentSolarSystem() );
+            }
+            else{ // eravamo nel sistema solare
+                SolarSystem *old_ss = (SolarSystem*)old_level;
+                player = old_ss->GetOutPlayer();
+
+                old_ss->Delete( false );
+                delete old_ss;
+
+                this->SetCurrentSolarSystem( NULL );
+                this->SetCurrentLevel( NULL );
+            }
+        }
     }
-    // if( this->currentSolarSystem == NULL ){
-    //    this->currentSolarSystem = new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4, NULL );
-    //    this->currentLevel = this->currentSolarSystem;
-    // }
+
+    // se la partita è appena iniziata, oppure se il giocatore ha cambiato sistema solare    
+    if( this->GetCurrentSolarSystem() == NULL ){
+        this->currentSolarSystem = new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4, player );
+        this->currentLevel = this->currentSolarSystem;
+    }
+
     update_result = EntityUpdateSelector( this, this->currentLevel );
+
     if( !update_result ){
         Player *player = this->currentLevel->GetOutPlayer();
         if( !IsDefined( player ) ){ // il giocatore è garbage, quindi lo elimino
             player = this->currentSolarSystem->GetOutPlayer();
             player->Delete();
             delete player;
-            keepPlaying = false;
+            keepPlaying = false; // GAME OVER
         }
         else{// il giocatore è definito e il mondo non dovrebbe essere più aggiornato, quindi esce dal mondo
-            // il livello di gioco ora diventa quello del sistema solare
-            this->currentLevel = this->currentSolarSystem;
-            if( !IsDefined( this->currentLevel ) ){ // TODO: quando ogni bunker è stato distrutto, opure ogni pianeta il livello dovrà essere flaggato come garbage
-                // TODO: eliminare il pianeta dal sistema solare
-            }
+           
         }
     }
     

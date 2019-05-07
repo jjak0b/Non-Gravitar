@@ -66,10 +66,17 @@ public:
 	Player *GetPlayer();
 
 	/**
-	 * @brief Aggiunge l'entità alle lista delle entità nel mondo
+	 * @brief Aggiunge l'entità alla lista delle entità nel mondo, e assegna questo livello come suo mondo in cui risiede
 	 * @param entity 
 	 */
 	void AddEntity( Entity *entity );
+
+	/**
+	 * @brief Rimuove l'entità dalla lista delle entità, senza deallocare l'entità stessa
+	 * Inoltre il suo mondo in cui risiede è = NULL
+	 * @param entity 
+	 */
+	void RemoveEntity( Entity *entity );
 
 	/**
 	 * @brief Verifica se l'entità specificata collide con il mondo di gioco

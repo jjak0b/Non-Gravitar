@@ -1,10 +1,6 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <iostream>
 #include <time.h>
 #include <conio.h>
-#include "GameEngine.hpp"
-#include "GameConfig.h"
 // dipendenti da SO
 #ifdef _WIN32
 #include <Windows.h>
@@ -13,6 +9,10 @@
 #include <sys/ioctl.h>
 #include <stdio.h>
 #endif
+
+#include "GameEngine.hpp"
+#include "GameConfig.h"
+#include <math.h> // così definisco le costanti per tutto il resto del programma con _USE_MATH_DEFINES
 
 char getInput(){
             char c = '\0';
