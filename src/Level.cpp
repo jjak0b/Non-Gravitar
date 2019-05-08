@@ -79,67 +79,6 @@ bool Level::Update( GameEngine *game ){
 	return shouldUpdateNextFrame;
 }
 
-bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
-	bool update_result = false;
-	if( IsDefined( entity ) ){
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			Player *ent = (Player*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Level" ) ){
-			Level *ent = (Level*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Planet" ) ){
-			Planet *ent = (Planet*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "SolarSystem" ) ){
-			SolarSystem *ent = (SolarSystem*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		// TODO: aggiungere altri tipi di Update
-		else{
-			update_result = entity->Update( game );
-		}
-	}
-	
-	return update_result;
-}
-
-void EntityDrawSelector( ViewPort *view, Entity *entity ){
-	if( IsDefined( entity ) ){
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			Player *ent = (Player*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "Level" ) ){
-			Level *ent = (Level*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "Planet" ) ){
-			Planet *ent = (Planet*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "SolarSystem" ) ){
-			SolarSystem *ent = (SolarSystem*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-			Projectile *ent = (Projectile*)entity;
-			ent->Draw( view );
-		}
-		// TODO: aggiungere altri tipi di Draw
-		else{
-			entity->Draw( view );
-		}
-	}
-}
-
 void Level::Draw( ViewPort *view ){
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
 		EntityDrawSelector( view, *it );

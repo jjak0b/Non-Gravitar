@@ -26,18 +26,19 @@ bool Planet::Update( GameEngine *game ){
 }
 
 void Planet::Draw( ViewPort *view ){
-	DrawCircle( view, this->world, this->origin, this->radius );
+	if( IsDefined( this ) )
+		DrawCircle( view, this->world, this->origin, this->radius );
 }
 
 bool Planet::IsColliding( Entity *entity ){
-	if( entity != NULL && this->GetOrigin().Distance( entity->GetOrigin() ) <= this->radius ){
+	if( IsDefined(this) && IsDefined(entity) && this->GetOrigin().Distance( entity->GetOrigin() ) <= this->radius ){
 		return true;
 	}
 	return false;
 }
 
 void Planet::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Point2D hitOrigin ){
-	if( collide_ent != NULL ){
+	if( IsDefined( this ) && IsDefined( collide_ent ) ){
 		if( !strcmp( collide_ent->GetClassname(), "Player" ) ){
 			Player *player = (Player*)collide_ent;
 			this->player = player->GetWorld()->GetOutPlayer();
