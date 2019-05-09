@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "Projectile.hpp"
-#include "Fuel.hpp"
 #include "Point2D.hpp"
-
 #include <list>
 using namespace std;
 
@@ -13,16 +10,16 @@ class Player;
 
 class Level : public Entity{
 protected:
-	unsigned int width, height; // dimensioni del mondo
+	unsigned int width, height; // dimensioni del mondo rispettivamente per le ascisse e ordinate
 	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
-	// list<Point2D*> surface; // lista dei punti che costruiscono il terreno
+	list<Point2D> surface; // lista dei punti che costruiscono il terreno
 	list<Entity*> entities;
 public:
 	/**
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le entità del livello
 	 * PostCondition: se player != NULL allora esso non viene reinstanziato
 	 */
-	Level( Level *parentWorld = NULL, unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "", Player *player = NULL );
+	Level( unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "" );
 
 	/**
 	 * @brief Aggiorna lo stato delle entità del mondo, richiamando internamente i loro metodi Update( ... )
@@ -37,6 +34,14 @@ public:
 	 * @param view 
 	 */
 	void Draw( ViewPort* view );
+
+	/**
+	 * @brief Genera il Livello di gioco, generando il terreno e le sue entità,
+	 * se è stato generato in precedenza esso viene rigenerato ( sempre casualmente )
+	 * 
+	 * @param game 
+	 */
+	void Generate( GameEngine *game );
 
 	/**
 	 * @brief Normalizza il punto in base alle dimensioni del mondo: 
@@ -96,28 +101,22 @@ public:
 	void Delete( bool b_delete_player );
 
 	/**
-	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo,
-	 * se str_className è specificato, la lista contiene solo entità della classe specificata
-	 * PreCondition: se str_className != NULL deve essere una stringa
-	 * PostCondition: se str_classname == NULL la lista contiene tutte le entità del mondo senza filtri
-	 * @param str_className 
-	 * @return list<Entity*> 
-	 */
-
-	/**
-	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo,
+	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo, in base alle seguenti condizioni
+	 * ( Nota: Sia '€' simbolo di appartenza )
 	 * se str_className != NULL
 	 * 		se b_exclude == true list = { e € entities | e.GetClassname() != str_className }
-	 * 		se b_exclude == false list = { e € entities | e.GetClassname() == str_className }
+	 * 		se b_exclude == false list = { e € entities | e.GetClassname() = str_className }
 	 * altrimenti
 	 * 		list = { entities }
+	 * Nota: se b_search_className_as_subString == true invece di effettuare un esatto confronto, verifica se str_className € e.GetClassname
 	 * PreCondition: se str_className != NULL deve essere una stringa
 	 * PostCondition: se str_classname == NULL la lista contiene tutte le entità del mondo ignorando il filtro, e b_exclude
 	 * @param str_className 
 	 * @param b_exclude 
+	 * @param b_search_className_as_subString
 	 * @return list<Entity*> 
 	 */
-	list<Entity*> GetEntities( const char *str_className, bool b_exclude );
+	list<Entity*> GetEntities( const char *str_className, bool b_exclude, bool b_search_className_as_subString );
 
 	/**
 	 * @brief Rimuove Il giocatore dal livello, restituendone il riferimento
@@ -125,6 +124,14 @@ public:
 	 * @return Player* 
 	 */
 	Player *GetOutPlayer();
+
+	/**
+	 * @brief Indica se la superficie del livello è stato generato
+	 * 
+	 * @return true se la superficie del livello è stata generata
+	 * @return false altrimenti
+	 */
+	bool IsGenerated();
 
 	private:
 	/**

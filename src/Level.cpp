@@ -1,17 +1,13 @@
-#include "Entity.hpp"
 #include "Level.hpp"
 #include "Player.hpp"
 #include "GameEngine.hpp"
-#include "Projectile.hpp"
-#include "Fuel.hpp"
-#include "Planet.hpp"
 #include <iostream>
 #include <list>
 #include <iterator>
 #include <cstring>
 using namespace std;
 
-Level::Level( Level *parentWorld, unsigned int MaxWidth, unsigned int MaxHeight, const char _className[], Player *_player) : Entity( parentWorld, Point2D(0,0), NULL, _className ){
+Level::Level( unsigned int MaxWidth, unsigned int MaxHeight, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
 	this->width = MaxWidth;
 	if( this->width <= 0 ){
 		this->width = 1;
@@ -22,13 +18,8 @@ Level::Level( Level *parentWorld, unsigned int MaxWidth, unsigned int MaxHeight,
 		this->height = 1;
 	}
 
-    if( _player != NULL ){
-        this->player = player;
-    }
-    else{
-        this->player = new Player( this, Point2D( this->width/2, this->height/2 ), 150 );
-    }
-};
+	this->player = NULL;
+}
 
 void Level::SetOrigin(){} // La ridefinizione serve per non renderla visibile esternamente
 
@@ -51,11 +42,18 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 }
 
 bool Level::Update( GameEngine *game ){
+	if( !this->Entity::Update( game ) ){
+		return false;
+	}
+	else if( !this->IsGenerated() ){
+		this->Generate( game );
+	}
+
 	bool shouldUpdateNextFrame = false;
 	if( IsDefined( this->player ) ){
 		shouldUpdateNextFrame = this->player->Update( game );
 	}
-	else{
+	else if( this->player != NULL ) {
 		this->player->Delete();
 		delete this->player;
 		this->player = NULL;
@@ -86,6 +84,10 @@ void Level::Draw( ViewPort *view ){
 	if( this->player != NULL ){
 		this->player->Draw( view );
 	}
+}
+
+void Level::Generate( GameEngine *game){
+	// TODO: Genera il terreno di gioco
 }
 
 unsigned int Level::GetMaxHeight(){
@@ -152,18 +154,32 @@ void Level::Delete( bool b_delete_player ){
 		}
 	}
 	this->entities.clear();
+
+	this->surface.clear();
 }
 
-list<Entity*> Level::GetEntities( const char *className, bool b_exclude ){
+list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_search_className_as_subString){
 	list<Entity*> ents;
+	string *s_ent_classname = NULL;
 	bool isClassNameMatching = false;
 	for (list<Entity*>::iterator it=this->entities.begin(); it != this->entities.end(); it++ ) {
+		s_ent_classname = new string( (*it)->GetClassname() );
+		
 		if( className != NULL ){
-			isClassNameMatching = !strcmp( (*it)->GetClassname(), className );
+			if( !b_search_className_as_subString ){
+				isClassNameMatching = !s_ent_classname->compare( className ); // !strcmp( (*it)->GetClassname(), className );
+			}
+			else{
+				isClassNameMatching = s_ent_classname->rfind( className ) != s_ent_classname->npos;
+			}
 		}
+
 		if( className == NULL || (isClassNameMatching && !b_exclude) || (!isClassNameMatching && b_exclude) ){
 			ents.push_front( *it );
 		}
+		
+		s_ent_classname->clear();
+		delete s_ent_classname;
 	}
 	return ents;
 }
@@ -173,4 +189,8 @@ Player *Level::GetOutPlayer(){
 	this->player = NULL;
 	_player->SetWorld( NULL );
 	return _player;
+}
+
+bool Level::IsGenerated(){
+	return !this->surface.empty();
 }

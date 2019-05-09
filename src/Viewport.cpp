@@ -190,8 +190,8 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
 void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius ){
 	Point2D circle_point;
 	double tmp_x = 0, tmp_y = 0;
-	const double DEGREESTEP = 0.5;
-	const double DEGREES = 180.0;
+	const double DEGREESTEP = 5;
+	const double DEGREES = 360.0;
 	double rad = 0.0;
 	
 	for (double deg = 0.0; deg < DEGREES; deg += DEGREESTEP )
@@ -199,7 +199,6 @@ void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radi
 		rad = deg * M_PI / 180.0;
 		tmp_y = radius * sin( rad );
 		tmp_x = radius * cos( rad );
-		tmp_x = (M_PI_2 - rad);
 		
 		circle_point.SetX( tmp_x );
 		circle_point.SetY( tmp_y );

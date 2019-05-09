@@ -76,7 +76,7 @@ int main(){
     char key = '\0';
     clock_t current_time = clock(), last_frame_time = current_time;
     Point2D screen_size = GetTerminalSize();
-    system( "CLEAR");
+    system( "cls");
     screen_size.SetX( 120 );
 	screen_size.SetY( 30 );
     GameEngine engine = GameEngine( screen_size.GetX(), screen_size.GetY() );
@@ -100,5 +100,6 @@ int main(){
         current_time = clock();
     }while( b_keep_playing );
 
+    system( "pause" );
     return 0;
 }

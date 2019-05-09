@@ -1,9 +1,12 @@
 #pragma once
 
 #include "DamageableEntity.hpp"
-#include "Level.hpp"
-#include "Vector.hpp"
+#include "Point2D.hpp"
 #include "GameConfig.h"
+
+class GameEngine;
+class Level;
+class Projectile;
 
 class Player : public DamageableEntity{
 	INPUT_TYPE lastInput; // l'ultimo input ricevuto

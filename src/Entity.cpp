@@ -27,6 +27,9 @@ Point2D Entity::SetOrigin( Point2D _origin ){
 	if( this->world != NULL ){
 		this->origin = this->world->GetNormalizedPoint( _origin );
 	}
+	else{
+		this->origin = _origin;
+	}
 	return this->origin;
 }
 
@@ -39,10 +42,7 @@ char* Entity::GetClassname(){
 }
 
 bool Entity::Update( GameEngine *game ){
-	if( IsDefined( this ) ){
-		return true;
-	}
-	return false;
+	return IsDefined( this );
 }
 
 void Entity::Draw( ViewPort *view ){

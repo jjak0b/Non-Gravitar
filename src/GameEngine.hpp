@@ -10,7 +10,6 @@ private:
     INPUT_TYPE input_key;
     double time;
     Level *currentLevel; // livello in esecuzione
-	SolarSystem *currentSolarSystem; // Sistema solare di riferimento attivo
     ViewPort *view;
 public:
 
@@ -27,11 +26,8 @@ public:
     Level *GetCurrentLevel();
 
     void SetCurrentLevel( Level *level );
-
-    SolarSystem *GetCurrentSolarSystem();
-
-    void SetCurrentSolarSystem( SolarSystem *solarsystem );
     
+    void UnloadLevel( Level *last_loaded_level );
 };
 
 

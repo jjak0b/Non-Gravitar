@@ -1,5 +1,5 @@
-NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o Planet.o SolarSystem.o DamageableEntity.o Player.o Projectile.o
-	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o Planet.o SolarSystem.o DamageableEntity.o Player.o Projectile.o
+NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o
+	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o
 
 main.o: main.cpp GameConfig.h GameEngine.hpp
 	g++ -c main.cpp
@@ -34,11 +34,14 @@ Entity.o : Entity.cpp Entity.hpp
 Level.o : Level.cpp level.hpp
 	g++ -c Level.cpp
 
-Planet.o : Planet.cpp Planet.hpp
-	g++ -c Planet.cpp
-
 SolarSystem.o : SolarSystem.cpp SolarSystem.hpp
 	g++ -c SolarSystem.cpp
+
+PlanetLevel.o : PlanetLevel.cpp PlanetLevel.hpp
+	g++ -c PlanetLevel.cpp
+
+PlanetEntity.o : PlanetEntity.cpp PlanetEntity.hpp
+	g++ -c PlanetEntity.cpp
 
 DamageableEntity.o: DamageableEntity.cpp DamageableEntity.hpp
 	g++ -c DamageableEntity.cpp

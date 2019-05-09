@@ -1,18 +1,16 @@
 #include "Player.hpp"
-#include "Entity.hpp"
 #include "Level.hpp"
 #include "ColoredBitmap.hpp"
 #include "GameEngine.hpp"
 #include "GameConfig.h"
 #include "Projectile.hpp"
-#include "Point.hpp"
+#include "Point2D.hpp"
 #include <iostream>
 #include <list>
 #include <iterator>
 #include <cstring>
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
-	this->world = world;
     this->SetOrigin( origin );
     this->texture = new ColoredBitmap( 3, 5, 0 );
     const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
@@ -40,14 +38,6 @@ bool Player::Update( GameEngine *game ){
     // ed impostare la posizione come spostamento r(t) in base al moto uniformemente accelerato
     current_origin.Add( direction ); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
 
-    if( this->world != NULL && this->IsOutOfTheWorld() ){
-        if( !strcmp( this->world->GetClassname(), "Planet") ) )
-        if( this->world->GetWorld() ){
-
-        }
-        this->SetWorld( );
-    }
-
 	if( !direction.IsNull() ){ // aggiorno la posizione solo il vettore spostamento non è nullo
         this->SetOrigin( current_origin );
         this->lastMove = direction;
@@ -60,7 +50,7 @@ bool Player::Update( GameEngine *game ){
         // TODO: logica del raggio traente
     }
     
-    std::list<Entity*> ents = this->world->GetEntities( "Player", true );
+    std::list<Entity*> ents = this->world->GetEntities( "Player", true, false );
     for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
         Point2D *collisionOrigin = NULL;
         if( this->IsColliding( *it, collisionOrigin ) ){

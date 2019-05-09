@@ -1,11 +1,14 @@
 #include "GameEngine.hpp"
 #include <cstring>
 #include "Player.hpp"
+#include "SolarSystem.hpp"
+#include "PlanetEntity.hpp"
+#include "PlanetLevel.hpp"
+#include "Projectile.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
     this->time = 0.0;
     this->currentLevel = NULL;
-	this->currentSolarSystem = NULL;
     this->view = new ViewPort( screen_width, screen_height, Point2D(0,0) );
 }
 
@@ -21,71 +24,77 @@ bool GameEngine::frame( double dtime ){
 	bool keepPlaying = true;
     bool update_result = false;
 
-    Level *old_level = this->currentLevel;
+    Level *last_loaded_level = this->GetCurrentLevel();
     Player *player = NULL;
+	
+	do{
+		if( last_loaded_level != NULL ){
+			if( last_loaded_level->IsGarbage() && this->GetCurrentLevel() == NULL ){ // caso in cui abbandonia totalmente il livello e non ci interressa ritornarci
+				player = last_loaded_level->GetOutPlayer();
+				this->UnloadLevel( last_loaded_level );
+				last_loaded_level = NULL;
+			}
+			else{
+				player = last_loaded_level->GetPlayer();
+			}
+		}
 
-    // se il giocatore esce da un pianeta, viene verificato se il pianeta è stato distrutto oppure
-    if( this->GetCurrentSolarSystem() != NULL ){
-        if( old_level != NULL && old_level->IsGarbage() ){ // quando ogni bunker è stato distrutto, ogni livello dovrà essere flaggato come garbage
-            if( !strcmp( old_level->GetClassname(), "Planet" ) ){
-                Planet *old_planet = (Planet*)old_level;
-                player = old_planet->GetPlayer();
+		// se la partita è appena iniziata oppure se il player ha cambiato sistema solare viene istanziato un nuovo sistema solare come livello
+		if( this->GetCurrentLevel() == NULL){
+			this->SetCurrentLevel( new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4 ) );
 
-                old_planet->Delete();
-                this->GetCurrentSolarSystem()->RemoveEntity( old_planet );
-                delete old_planet;
+			// logica di spawn o trasferimento giocatore da un sistema solare ad un altro
+			Point2D spawn_point = Point2D( this->GetCurrentLevel()->GetMaxWidth()/2.0, this->GetCurrentLevel()->GetMaxHeight()/2.0 );
+			if( player == NULL ){ // generiamo il giocatore e viene aggiunto al livello in automatico
+				player = new Player( this->GetCurrentLevel(), spawn_point, 150.0 );
+			}
+			else{ // il giocatore già definito entra nel livello
+				this->GetCurrentLevel()->AddEntity( player );
+			}
+		}
 
-                this->SetCurrentLevel( this->GetCurrentSolarSystem() );
-            }
-            else{ // eravamo nel sistema solare
-                SolarSystem *old_ss = (SolarSystem*)old_level;
-                player = old_ss->GetOutPlayer();
+		last_loaded_level = this->GetCurrentLevel();
+		// Le entità del livello si aggiornano
+		update_result = EntityUpdateSelector( this, this->GetCurrentLevel() );
+		// a questo punto il livello attuale potrebbe essere diverso
 
-                old_ss->Delete( false );
-                delete old_ss;
+		if( this->GetCurrentLevel() != NULL ){
+			player = this->GetCurrentLevel()->GetPlayer();
+		}
 
-                this->SetCurrentSolarSystem( NULL );
-                this->SetCurrentLevel( NULL );
-            }
-        }
-    }
+		keepPlaying = IsDefined( player );
 
-    // se la partita è appena iniziata, oppure se il giocatore ha cambiato sistema solare    
-    if( this->GetCurrentSolarSystem() == NULL ){
-        this->currentSolarSystem = new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4, player );
-        this->currentLevel = this->currentSolarSystem;
-    }
-
-    Level *last_loaded_level = this->currentLevel;
-    update_result = EntityUpdateSelector( this, this->currentLevel );
-
-    if( last_loaded_level == this->currentLevel ){ // il livello potrebbe essere cambiato quindi salto questo frame per prepararmi al prossimo
-        if( !update_result ){
-            Player *player = this->currentLevel->GetOutPlayer();
-            if( !IsDefined( player ) ){ // il giocatore è garbage, quindi lo elimino
-                player = this->currentSolarSystem->GetOutPlayer();
-                player->Delete();
-                delete player;
-                keepPlaying = false; // GAME OVER
-            }
-            else{// il giocatore è definito e il mondo non dovrebbe essere più aggiornato, quindi esce dal mondo
-            
-            }
-        }
-    }
+	// nel caso questa condizione si verifichi, in questo frame viene generato un nuovo livello quando ricomicomincia il ciclo
+	}while( keepPlaying && this->GetCurrentLevel() == NULL );
+	
     // TEMP finchè i test non sono ultimati
     this->view->SetWorldOrigin( Point2D( 0, 0 ) );
     // this->view->SetWorldOrigin( Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2), 0 ) );
 	this->view->Clear();
-    EntityDrawSelector( this->view, this->currentLevel );
+    EntityDrawSelector( this->view, last_loaded_level );
     this->view->Refresh();
 #ifdef DEBUG
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
-	std::cout << "Player at (" << this->currentLevel->GetPlayer()->GetOrigin().GetX() << ", " << this->currentLevel->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
+	std::cout << "Player at (" << last_loaded_level->GetPlayer()->GetOrigin().GetX() << ", " << last_loaded_level->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
 #endif
 
+	if( !keepPlaying ){ // GameOver -> Libero le risorse occuppate
+		this->UnloadLevel( last_loaded_level );
+
+		if( player != NULL ){
+			player->Delete();
+			delete player;
+			player = NULL;
+		}
+
+		if( this->view != NULL ){
+			this->view->Dispose();
+			delete this->view;
+			this->view = NULL;
+		}
+	}
     return keepPlaying;
 }
 
@@ -105,12 +114,21 @@ void GameEngine::SetCurrentLevel( Level *level ){
     this->currentLevel = level;
 }
 
-SolarSystem *GameEngine::GetCurrentSolarSystem(){
-    return this->currentSolarSystem;
-}
+void GameEngine::UnloadLevel( Level *last_loaded_level ){
+	if( this->GetCurrentLevel() == last_loaded_level ){
+		this->SetCurrentLevel( NULL ); // poichè è lo stesso livello, dealloco l'ultimo livello specificato
+	}
+	else if( this->GetCurrentLevel() != NULL ){
+		this->GetCurrentLevel()->Delete( false );
+		delete this->GetCurrentLevel();
+		this->SetCurrentLevel( NULL );
+	}
 
-void GameEngine::SetCurrentSolarSystem( SolarSystem *solarsystem ){
-    this->currentSolarSystem = solarsystem;
+	if( last_loaded_level != NULL ){
+		last_loaded_level->Delete( false );
+		delete last_loaded_level;
+		last_loaded_level = NULL;
+	}
 }
 
 bool IsDefined( Entity *entity ){
@@ -128,8 +146,12 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
 			Level *ent = (Level*)entity;
 			update_result = ent->Update( game );
 		}
-		else if( !strcmp( entity->GetClassname(), "Planet" ) ){
-			Planet *ent = (Planet*)entity;
+		else if( !strcmp( entity->GetClassname(), "PlanetEntity" ) ){
+			PlanetEntity *ent = (PlanetEntity*)entity;
+			update_result = ent->Update( game );
+		}
+		else if( !strcmp( entity->GetClassname(), "PlanetLevel" ) ){
+			PlanetLevel *ent = (PlanetLevel*)entity;
 			update_result = ent->Update( game );
 		}
 		else if( !strcmp( entity->GetClassname(), "SolarSystem" ) ){
@@ -159,8 +181,12 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 			Level *ent = (Level*)entity;
 			ent->Draw( view );
 		}
-		else if( !strcmp( entity->GetClassname(), "Planet" ) ){
-			Planet *ent = (Planet*)entity;
+		else if( !strcmp( entity->GetClassname(), "PlanetEntity" ) ){
+			PlanetEntity *ent = (PlanetEntity*)entity;
+			ent->Draw( view );
+		}
+		else if( !strcmp( entity->GetClassname(), "PlanetLevel" ) ){
+			PlanetLevel *ent = (PlanetLevel*)entity;
 			ent->Draw( view );
 		}
 		else if( !strcmp( entity->GetClassname(), "SolarSystem" ) ){
