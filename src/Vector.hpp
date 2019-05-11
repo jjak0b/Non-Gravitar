@@ -1,6 +1,7 @@
 #pragma once
 
-#define VECTOR_TYPE int // tipo delle singole componenti di un vettore
+#define VECTOR_VALUE_TYPE int // tipo delle singole componenti di un vettore
+typedef VECTOR_VALUE_TYPE VECTOR_TYPE; // ora impostato come tipo di dato
 // NOTA: definire VECTOR_DIMENSION prima di includere questo header per sovrascrivere
 #ifndef VECTOR_DIMENSIONS
 #define VECTOR_DIMENSIONS 2 // dimensione vettore standard
@@ -85,6 +86,11 @@ public:
 	 * @return double 
 	 */
 	double Lenght();
+
+	/**
+	 * @brief Normalizza il vettore per far in modo che il vettore abbia lunghezza = 1
+	 */
+	void Normalize();
 
 	/**
 	 * @brief Verifica se le componenti di v sono uguali a quelle di questo oggetto chiamante

@@ -12,17 +12,30 @@ PlanetEntity *PlanetLevel::GetPlanetEntity(){
 }
 
 bool PlanetLevel::Update( GameEngine *game ){
+	if( !this->IsGenerated() ){
+		this->Generate( game );
+	}
 	bool update_result = Level::Update( game );
 	if( update_result ){
 		if( IsDefined( this->GetPlayer() ) && this->GetPlayer()->IsOutOfTheWorld() ){
-			game->SetCurrentLevel( this->GetPlanetEntity()->GetWorld() ); // carica il sistema solare come prossimo livello del successivo Update
-			game->GetCurrentLevel()->AddEntity( this->GetOutPlayer() );
-			
-			if( this->IsFree() ){
-				this->garbage = true;
-				this->Delete( false );
+			SolarSystem *solar_system = NULL;
+			if( IsDefined( this->GetPlanetEntity() ) ){
+				solar_system = (SolarSystem*)this->GetPlanetEntity()->GetWorld();
+				Player *_player = this->GetPlayer();
+				if( IsDefined( solar_system ) ){
+					solar_system->AddEntity( _player );
+				}
+				// Il giocatore nel prossimo frame si deve trovare nel punto di fuga vicino a dove è si era diretto prima di entrare nel pianeta
+				Point2D spawn_point = this->GetPlanetEntity()->escape_point;
+				_player->SetOrigin( spawn_point );
 			}
 
+			// Carica il sistema solare come prossimo livello del successivo frame
+			// Nota facoltativa: solar_system dovrebbe essere sempre definito per come è stata impostata la logica di cambio di livello,
+			// comunque nel caso esso non sia definito per un qualche motivo quale ad esempio un livello speciale o futuri cambiamenti
+			// di comportamento dell'uscita del pianeta, sarà il frame dell'Engine principale a gestirsi il cambio di livello nel caso il livello cambiato non sia definito
+			game->SetCurrentLevel( solar_system );
+			
 			update_result = false;
 		}
 	}
@@ -35,4 +48,13 @@ bool PlanetLevel::IsFree(){
 	bool isFree = bunkers.empty();
 	bunkers.clear();
 	return isFree;
+}
+
+void PlanetLevel::Generate( GameEngine *game ){
+	// temp per linea di testing
+	Point2D start = Point2D( this->GetMaxWidth()/2.0, this->GetMaxHeight() / 2.0 );
+	Point2D end = start;
+	end.Add( Point2D( 10, 0 ) );
+	this->surface.push_front( start );
+	this->surface.push_front( end );
 }

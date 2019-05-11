@@ -33,24 +33,23 @@ bool SolarSystem::Update( GameEngine *game ){
 	if( update_result ){
 		list<Entity*> planet_entities = this->GetEntities( "Planet", false, true );
 		if( planet_entities.empty() ){
-			Player *player = this->GetPlayer();
 			// dirigi il giocatore verso il centro del sistema solare ( questo creerebbe una specie di animazione )
 			// quando arriva al centro: setto questo livello come garbage
 			Point2D center_off_solar_system = Point2D( this->GetMaxWidth() / 2.0, this->GetMaxHeight() / 2.0 );
-			if( player->GetOrigin().Equals( center_off_solar_system ) ){
+			if( this->player->GetOrigin().Equals( center_off_solar_system ) ){
+				this->player->SetMoveOverride( NULL );
 				game->SetCurrentLevel( NULL );
 				this->garbage = true;
 				update_result = false;
 			}
 			else{
-				// direzione = punto fine - punto inizio
-				Vector direction = player->GetOrigin();
-				direction.Scale( -1.0 );
-				direction.Add( center_off_solar_system );
-
-				player->SetOrigin( player->GetOrigin().Add( direction ) ); // la posizione sarà normalizzata quando l'update del player sarà eseguito
+				Vector *direction = new Vector( this->player->GetOrigin().GetSize() );
+				*direction = BuildDirection( this->player->GetOrigin(), center_off_solar_system );
+				direction->Normalize();
+				this->player->SetMoveOverride( direction );
 			}
 		}
+		planet_entities.clear();
 	}
 	return update_result;
 }

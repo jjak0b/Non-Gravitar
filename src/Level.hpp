@@ -19,7 +19,7 @@ public:
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le entità del livello
 	 * PostCondition: se player != NULL allora esso non viene reinstanziato
 	 */
-	Level( unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "" );
+	Level( unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "Level" );
 
 	/**
 	 * @brief Aggiorna lo stato delle entità del mondo, richiamando internamente i loro metodi Update( ... )
@@ -36,7 +36,7 @@ public:
 	void Draw( ViewPort* view );
 
 	/**
-	 * @brief Genera il Livello di gioco, generando il terreno e le sue entità,
+	 * @brief Interfaccia Dedicata per generare il Livello di gioco, generando il terreno e le sue entità,
 	 * se è stato generato in precedenza esso viene rigenerato ( sempre casualmente )
 	 * 
 	 * @param game 
@@ -71,7 +71,8 @@ public:
 	Player *GetPlayer();
 
 	/**
-	 * @brief Aggiunge l'entità alla lista delle entità nel mondo, e assegna questo livello come suo mondo in cui risiede
+	 * @brief Aggiunge l'entità alla lista delle entità nel mondo, e assegna questo livello come suo mondo in cui risiede.
+	 * PostCondition: Se prima risiedeva in un altro livello, esso viene prima rimosso con RemoveEntity(...)
 	 * @param entity 
 	 */
 	void AddEntity( Entity *entity );
@@ -138,4 +139,6 @@ public:
 	 * @brief Non fa niente, ma viene nascosta la visibilità esterna tramite overriding
 	 */
 	void SetOrigin();
+
+	void RemoveEntityFromLevel( Level *world, Entity *entity );
 };

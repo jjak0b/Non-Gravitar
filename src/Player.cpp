@@ -11,7 +11,6 @@
 #include <cstring>
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
-    this->SetOrigin( origin );
     this->texture = new ColoredBitmap( 3, 5, 0 );
     const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
     const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
@@ -25,43 +24,69 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
     }*/
     const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
     this->texture->Load( rawtexture, 3, 5 );
-	//this->texture = NULL;
-
+    this->moveOverride = NULL;
 }
 
 bool Player::Update( GameEngine *game ){
-    bool isAlive = true;
-    INPUT_TYPE input = game->GetkeyPressed();
-    Point2D current_origin = this->GetOrigin();	
-    Vector direction = GetDirectionFromInput( input );
-    // eventualmente qui ci potrebbe stare uno Vector.Scale( accel )
-    // ed impostare la posizione come spostamento r(t) in base al moto uniformemente accelerato
-    current_origin.Add( direction ); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
+    bool update_result = this->Entity::Update( game );
 
-	if( !direction.IsNull() ){ // aggiorno la posizione solo il vettore spostamento non è nullo
-        this->SetOrigin( current_origin );
-        this->lastMove = direction;
-    }
+    if( update_result ){
+        INPUT_TYPE input = game->GetkeyPressed();
+        Point2D current_origin = this->GetOrigin();	
+        Vector direction;
 
-    if( this->ShouldFire( input ) ){
-        this->Fire( this->lastMove );
-    }
-    else if( this->ShouldBeam( input ) ){
-        // TODO: logica del raggio traente
-    }
-    
-    std::list<Entity*> ents = this->world->GetEntities( "Player", true, false );
-    for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-        Point2D *collisionOrigin = NULL;
-        if( this->IsColliding( *it, collisionOrigin ) ){
-            this->Callback_OnCollide( *it, *collisionOrigin );
+        if( this->moveOverride != NULL ){
+            direction = *this->moveOverride;
         }
+        else{
+            // eventualmente qui ci potrebbe stare uno Vector.Scale( accel )
+            // ed impostare la posizione come spostamento r(t) in base al moto uniformemente accelerato
+            direction = GetDirectionFromInput( input );
+        }
+        current_origin.Add( direction ); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
+
+        if( !direction.IsNull() ){ // aggiorno la posizione solo il vettore spostamento non è nullo
+            this->SetOrigin( current_origin );
+            this->lastMove = direction;
+        }
+
+        if( this->ShouldFire( input ) ){
+            this->Fire( this->lastMove );
+        }
+        else if( this->ShouldBeam( input ) ){
+            // TODO: logica del raggio traente
+        }
+
+        std::list<Entity*> ents = this->world->GetEntities( "Player", true, false );
+        for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
+            Point2D *collisionOrigin = NULL;
+            if( this->IsColliding( *it, collisionOrigin ) ){
+                this->Callback_OnCollide( *it, *collisionOrigin );
+                update_result = this->GetHealth() > 0;
+            }
+        }
+        ents.clear();
+
+        this->lastInput = input;
     }
-    ents.clear();
+    return update_result;
+}
 
-    this->lastInput = input;
+void Player::Draw( ViewPort *view ){
+/*#ifdef DEBUG
+    if( this->GetWorld() != NULL ){
+        Point2D start = this->GetOrigin();
+        Vector _direction = GetDirectionFromInput( INPUT_MOVE_RIGHT );
 
-    return isAlive;
+        start.Add( _direction );
+        Point2D end = start;
+
+        _direction.Scale( 5.0 );
+        end.Add( _direction );
+        // DrawLine( view, this->GetWorld(), start, end );
+    }
+#endif*/
+    Entity::Draw( view );
 }
 
 Projectile *Player::Fire( Vector direction ){
@@ -123,8 +148,17 @@ void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 }
 
 void Player::SetWorld( Level *_world){
-    if( this->GetWorld() != NULL )
-        this->GetWorld()->GetOutPlayer();
-    if( _world != NULL )
-        _world->AddEntity( this );
+    this->Entity::SetWorld( world );
+}
+
+void Player::SetMoveOverride( Vector *direction ){
+        if( this->moveOverride != NULL ){
+            delete this->moveOverride;
+        }
+        this->moveOverride = direction;
+}
+
+void Player::Delete(){
+    this->SetMoveOverride( NULL );
+    Entity::Delete();
 }

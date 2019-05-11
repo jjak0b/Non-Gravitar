@@ -8,6 +8,11 @@
 PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, ColoredBitmap *texture, unsigned int _radius, unsigned int max_longitude, unsigned int max_altitude ) : Entity( world, origin, texture, "PlanetEntity" ){
 	this->radius = _radius;
 	this->planet_level = new PlanetLevel( this, max_longitude, max_altitude );
+
+	this->escape_point = this->GetOrigin(); // origine pianeta + offset di ( 0, this->radius + 1 )
+	Vector default_escape_point_offset = Vector( this->escape_point.GetSize() );
+	default_escape_point_offset.Set( 1, this->radius + 1 );
+	this->escape_point.Add( default_escape_point_offset );
 }
 
 PlanetLevel *PlanetEntity::GetPlanetLevel(){
@@ -17,8 +22,14 @@ PlanetLevel *PlanetEntity::GetPlanetLevel(){
 bool PlanetEntity::Update( GameEngine *game ){
 	bool update_result = this->Entity::Update( game ); // Update Fondamentale
 
-	if( update_result && IsDefined( this->GetPlanetLevel() ) ){
-		// Mi interessa verificare solo la collisione con l'entità giocatore per verifica se vuole entrare nel pianeta
+	// il giocatore ha liberato il pianeta, quindi possiamo considerare questo livello come garbage, quindi non sarà più accessibile da questo frame
+	if( IsDefined( this->GetPlanetLevel() ) && this->GetPlanetLevel()->IsGenerated() && this->GetPlanetLevel()->IsFree() ){
+		this->GetPlanetLevel()->Delete( false );
+		update_result = false;
+	}
+
+	if( update_result ){
+		// Mi interessa verificare solo la collisione con l'entità giocatore per verificare se vuole entrare nel pianeta
 		Player *player = this->GetWorld()->GetPlayer();
 		if( this->IsColliding( player ) ){
 			this->Callback_OnCollide( game, player, player->GetOrigin() );
@@ -48,8 +59,22 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 	if( IsDefined( this ) && IsDefined( collide_ent ) ){
 		if( !strcmp( collide_ent->GetClassname(), "Player" ) ){
 			Player *player = (Player*)collide_ent;
-			player = player->GetWorld()->GetOutPlayer();
+
+			// il punto di fuga è vicino al punto di collisione ma distaccato dal punto di -2(direction) unità,
+			// così che nel frame successivo alla fuga dal pianeta non sarà ancora considerato come in collisione con esso
+			this->escape_point = hitOrigin;
+			Vector direction = player->GetLastMove();
+			direction.Scale( -2.0 ); // inverto la direzione con la quale si è diretto verso il pianeta
+			this->escape_point.Add( direction );
+			this->escape_point = this->GetWorld()->GetNormalizedPoint( this->escape_point );
+
+			// Il giocatore entra nel Livello
 			this->GetPlanetLevel()->AddEntity( player );
+			// Creo il punto di atterraggio nel pianeta
+			// GetMaxHeight() è il valore dell'altezza secondo cui si è considerati fuori dal pianeta,
+			// quindi dovrà partire dal un'unità più in basso
+			Point2D spawn_point = Point2D( 0, player->GetWorld()->GetMaxHeight() - 1 );
+			player->SetOrigin( spawn_point );
 			game->SetCurrentLevel( this->GetPlanetLevel() );
 		}
 	}

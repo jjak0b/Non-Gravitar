@@ -50,44 +50,54 @@ bool Level::Update( GameEngine *game ){
 	}
 
 	bool shouldUpdateNextFrame = false;
-	if( IsDefined( this->player ) ){
-		shouldUpdateNextFrame = this->player->Update( game );
+	if( IsDefined( this->GetPlayer() ) ){
+		shouldUpdateNextFrame = this->GetPlayer()->Update( game );
 	}
-	else if( this->player != NULL ) {
+	/*else if( this->player != NULL ) {
 		this->player->Delete();
 		delete this->player;
 		this->player = NULL;
-	}
-
+	}*/
 	if( shouldUpdateNextFrame ){
 		bool update_result = false;
 		for (list<Entity*>::iterator entity_it = this->entities.begin(); entity_it != this->entities.end(); entity_it++ ) {
 			if( IsDefined( *entity_it ) ){
 				update_result = EntityUpdateSelector(game, *entity_it );
 			}
-			else{
+			/*else{
 				(*entity_it)->Delete();
 				// TODO: aggiungere *it ad uno stack di entità da deallocare, tipo un garbage collector
 				// TEMP finchè  il TODO precedente non è stato effettuato
 				delete *entity_it;
 				this->entities.erase( entity_it );
-			}
+			}*/
 		}
 	}
 	return shouldUpdateNextFrame;
 }
 
 void Level::Draw( ViewPort *view ){
+/*	std::list<Point2D>::iterator surface_it, surface_next_it;
+	surface_it = this->surface.begin();
+	surface_next_it = surface_it;
+	
+	// TODO: ricontrollare
+	while( surface_next_it != this->surface.end() ){
+		surface_next_it++;
+		DrawLine( view, this, *surface_it, *surface_next_it );
+		surface_it++;
+	}*/
+
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
 		EntityDrawSelector( view, *it );
 	}
-	if( this->player != NULL ){
+	if( IsDefined( this->player ) ){
 		this->player->Draw( view );
 	}
 }
 
-void Level::Generate( GameEngine *game){
-	// TODO: Genera il terreno di gioco
+void Level::Generate( GameEngine *game ){
+	// La classe base Level non fornisce alcuna generazione del terreno, dovranno essere le classe derivate a implementare questo metodo
 }
 
 unsigned int Level::GetMaxHeight(){
@@ -102,27 +112,53 @@ Player *Level::GetPlayer(){
     return this->player;
 }
 
-void Level::AddEntity( Entity* entity ){
+void Level::AddEntity( Entity *entity ){
 	if( IsDefined( entity ) ){
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			this->player = (Player*)entity;
+		// printf("Trying to Add entity %s to World %s\n", entity->GetClassname(), this->GetClassname() );
+		Level *world_entity = entity->GetWorld();
+		if( this != world_entity ){
+			if( IsDefined( world_entity ) ){
+				world_entity->RemoveEntity( entity );
+			}
+			entity->SetWorld( this );
+			if( !strcmp( entity->GetClassname(), "Player" ) ){
+				this->player = (Player*)entity;
+			}
+			else{
+				this->entities.push_front( entity );
+			}
+			// printf("Added Successfully\n");
 		}
-		else{
-			this->entities.push_front( entity );
+	}
+}
+
+void Level::RemoveEntityFromLevel( Level *world, Entity *entity ){
+	if( IsDefined( entity ) ){
+		if( IsDefined( world ) ){
+			if( !strcmp( entity->GetClassname(), "Player" ) ){
+				world->player = NULL;
+			}
+			else if( !world->entities.empty() ){
+				world->entities.remove( entity );
+			}
+			entity->SetWorld( NULL );
 		}
-		entity->SetWorld( this );
 	}
 }
 
 void Level::RemoveEntity( Entity *entity ){
-	if( entity != NULL ){
+	if( IsDefined( entity ) ){
+		// printf("Trying to Remove entity %s From %s\n", entity->GetClassname(), this->GetClassname() );
 		if( !strcmp( entity->GetClassname(), "Player" ) ){
+			// printf("RemoveEntity\n");
 			this->GetOutPlayer();
 		}
 		else{
-			this->entities.remove( entity );
+			if( !this->entities.empty() )
+				this->entities.remove( entity );
 		}
 		entity->SetWorld( NULL );
+		// printf("Removed Succesfully\n" );
 	}
 }
 
@@ -153,7 +189,6 @@ void Level::Delete( bool b_delete_player ){
 			delete *it;
 		}
 	}
-	this->entities.clear();
 
 	this->surface.clear();
 }
@@ -185,9 +220,9 @@ list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_
 }
 
 Player *Level::GetOutPlayer(){
-	Player *_player = this->GetPlayer();
+	Player *_player = this->player;
+	this->player->SetWorld( NULL );
 	this->player = NULL;
-	_player->SetWorld( NULL );
 	return _player;
 }
 

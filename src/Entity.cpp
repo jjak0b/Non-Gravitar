@@ -4,13 +4,12 @@
 #include <cstring>
 #include <iostream>
 
-Entity::Entity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
+Entity::Entity( Level *_world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
 	this->garbage = false;
 	this->str_classname = _strdup( classname );
 	this->texture = NULL;
-    this->world = world;
-	if( this->world != NULL ){
-		this->world->AddEntity( this );
+	if( IsDefined( _world ) ){
+		_world->AddEntity( this );
 	}
     this->SetOrigin( origin );
 }
@@ -21,6 +20,9 @@ Level *Entity::GetWorld(){
 
 void Entity::SetWorld( Level *_world ){
 	this->world = _world;
+	if( _world != NULL ){
+		this->SetOrigin( this->origin ); // Aggiorno le mie coordinate in base al livello in cui si trova
+	}
 }
 
 Point2D Entity::SetOrigin( Point2D _origin ){

@@ -58,7 +58,11 @@ VECTOR_TYPE Vector::ScalarProduct( Vector v ){
 	VECTOR_TYPE result = 0.0;
 	if( v.size == this->size ){
 		for( unsigned int i = 0; i < this->size; i++ ){
+#if (VECTOR_VALUE_TYPE == int)
+			result += round(this->data[ i ] * v.data[ i ]);
+#else
 			result += (this->data[ i ] * v.data[ i ]);
+#endif
 		}
 	}
 	return result;
@@ -66,7 +70,11 @@ VECTOR_TYPE Vector::ScalarProduct( Vector v ){
 
 void Vector::Scale( double r ){
 	for( unsigned int i = 0; i < this->size; i++ ){
-		this->data[ i ] = (double)this->data[ i ] * r;
+#if (VECTOR_VALUE_TYPE == int)
+		this->data[ i ] = round( (double)this->data[ i ] * r );
+#else
+		this->data[ i ] = this->data[ i ] * r;
+#endif
 	}
 }
 
@@ -75,10 +83,16 @@ double Vector::Lenght(){
 	return sqrt( result_squared );
 }
 
+void Vector::Normalize(){
+	double v_lenght = this->Lenght();
+	if( v_lenght != 0.0 ){
+		this->Scale( 1.0 / v_lenght );
+	}
+}
+
 bool Vector::Equals( Vector v ){
-	bool isEqual = false;
-	if( this->size == v.size ){
-		bool isEqual = true;
+	bool isEqual = this->size == v.size;
+	if( isEqual ){
 		unsigned int i = 0;
 		while( i < this->size && isEqual ){
 			if( this->data[ i ] != v.data[ i ] ){

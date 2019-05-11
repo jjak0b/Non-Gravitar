@@ -38,7 +38,6 @@ bool GameEngine::frame( double dtime ){
 				player = last_loaded_level->GetPlayer();
 			}
 		}
-
 		// se la partita è appena iniziata oppure se il player ha cambiato sistema solare viene istanziato un nuovo sistema solare come livello
 		if( this->GetCurrentLevel() == NULL){
 			this->SetCurrentLevel( new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4 ) );
@@ -50,20 +49,19 @@ bool GameEngine::frame( double dtime ){
 			}
 			else{ // il giocatore già definito entra nel livello
 				this->GetCurrentLevel()->AddEntity( player );
+				player->SetOrigin( spawn_point );
 			}
 		}
 
 		last_loaded_level = this->GetCurrentLevel();
 		// Le entità del livello si aggiornano
-		update_result = EntityUpdateSelector( this, this->GetCurrentLevel() );
+		update_result = EntityUpdateSelector( this, last_loaded_level );
 		// a questo punto il livello attuale potrebbe essere diverso
 
 		if( this->GetCurrentLevel() != NULL ){
 			player = this->GetCurrentLevel()->GetPlayer();
 		}
-
 		keepPlaying = IsDefined( player );
-
 	// nel caso questa condizione si verifichi, in questo frame viene generato un nuovo livello quando ricomicomincia il ciclo
 	}while( keepPlaying && this->GetCurrentLevel() == NULL );
 	
@@ -77,12 +75,15 @@ bool GameEngine::frame( double dtime ){
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
-	std::cout << "Player at (" << last_loaded_level->GetPlayer()->GetOrigin().GetX() << ", " << last_loaded_level->GetPlayer()->GetOrigin().GetY() << ")" <<std::endl;
+	if( player != NULL ){
+		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" <<std::endl;
+	}
 #endif
 
 	if( !keepPlaying ){ // GameOver -> Libero le risorse occuppate
 		this->UnloadLevel( last_loaded_level );
-
+		last_loaded_level = NULL;
+		
 		if( player != NULL ){
 			player->Delete();
 			delete player;

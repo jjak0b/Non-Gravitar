@@ -25,4 +25,11 @@ public:
 	double Distance( Point p );
 };
 
+/**
+ * @brief Restituisce il vettore direzione dal punto start a end
+ * PreCondition: start.GetSize() == end.GetSize(), altrimenti verrà restituito un vettore con componenti nulle
+ * @param start 
+ * @param end 
+ * @return Vector 
+ */
 Vector BuildDirection( Point start, Point end );

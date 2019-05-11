@@ -9,11 +9,15 @@ class Level;
 class Projectile;
 
 class Player : public DamageableEntity{
+	protected:
 	INPUT_TYPE lastInput; // l'ultimo input ricevuto
 	Vector lastMove; // l'ultimo spostamento effettuato
+	Vector *moveOverride; // spostamento obbligato dal gioco
 	public:
 	Player( Level *world, Point2D origin, double health );
 	bool Update( GameEngine *game );
+	void Draw( ViewPort *view );
+	void Delete();
 	bool ShouldFire(INPUT_TYPE input);
 	bool ShouldBeam(INPUT_TYPE input);
 	Projectile *Fire( Vector direction );
@@ -28,4 +32,13 @@ class Player : public DamageableEntity{
 	 * @param world 
 	 */
 	void SetWorld( Level *world );
+
+	/**
+	 * @brief Imposta il movimento che il giocatore deve compiere forzatamente durante l'update succesivo di questa entità alla chiamata di questo metodo.
+	 * Impostare direction = NULL se si vuole annullare il movimento forzato, altrimenti esso viene mantenuto ad ogni Update
+	 * PreCondition: la dimensione del vettore direzione deve essere la stessa del punto posizione ( origin )
+	 * PostCondition: Se un moveOverride è stato già precedentemente impostato, esso viene deallocato e sostituito con questo.
+	 * @param direction 
+	 */
+	void SetMoveOverride( Vector *direction );
 };
