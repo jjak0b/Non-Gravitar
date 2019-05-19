@@ -14,6 +14,17 @@ Bitmap::Bitmap(unsigned int _rows, unsigned int _columns ){
 	}
 }
 
+Bitmap::~Bitmap(){
+	if( this->data != NULL ){
+		delete this->data;
+		this->data = NULL;
+	}
+	this->realRows = 0;	
+	this->realColumns = 0;
+	this->rows = 0;
+	this->columns = 0;
+}
+
 void Bitmap::SetSignificantRows( unsigned int _rows ){
 	this->rows = _rows < this->realRows ? _rows : this->realRows;
 }
@@ -69,15 +80,6 @@ void Bitmap::Copy( Bitmap *_data, unsigned int row, unsigned int column ){
 			}
 		}
 	}
-}
-
-void Bitmap::Dispose(){
-	delete this->data;
-	this->data = NULL;
-	this->realRows = 0;	
-	this->realColumns = 0;
-	this->rows = 0;
-	this->columns = 0;
 }
 
 void Bitmap::Clear(){

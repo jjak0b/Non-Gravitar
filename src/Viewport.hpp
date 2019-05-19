@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Point2D.hpp"
-#include "Bitmap.hpp"
 #include "PrintableBitmap.hpp"
 
 #define CHAR_PIXEL_EMPTY ((char)32)
@@ -18,7 +17,7 @@ protected:
 	PrintableBitmap *data;
 public:
 	ViewPort( unsigned int width, unsigned int height, Point2D origin );
-	void Dispose(); // libera le risorse di data
+	~ViewPort();
 	void Draw( Bitmap *texture, Level *level, Point2D world_origin );
 	void Clear();
 	void Refresh();
@@ -45,6 +44,10 @@ public:
 	unsigned int GetHeight();
 
 	void SetWorldOrigin( Point2D WorldOrigin );
+
+	protected:
+
+	void Dispose(); // libera le risorse di data
 };
 
 /**

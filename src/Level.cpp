@@ -21,6 +21,10 @@ Level::Level( unsigned int MaxWidth, unsigned int MaxHeight, const char _classNa
 	this->player = NULL;
 }
 
+Level::~Level(){
+	this->Delete();
+}
+
 void Level::SetOrigin(){} // La ridefinizione serve per non renderla visibile esternamente
 
 Point2D Level::GetNormalizedPoint( Point2D _origin ){
@@ -42,42 +46,49 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 }
 
 bool Level::Update( GameEngine *game ){
+	printf("LEVEL UPDATE START\n");
 	if( !this->Entity::Update( game ) ){
+		printf("Defined check true\n");
 		return false;
 	}
 	else if( !this->IsGenerated() ){
 		this->Generate( game );
+		printf("Generating\n");
 	}
 
 	bool shouldUpdateNextFrame = false;
 	if( IsDefined( this->GetPlayer() ) ){
 		shouldUpdateNextFrame = this->GetPlayer()->Update( game );
+		printf("Update Player = %d\n", shouldUpdateNextFrame );
 	}
-	/*else if( this->player != NULL ) {
-		this->player->Delete();
-		delete this->player;
-		this->player = NULL;
-	}*/
+
 	if( shouldUpdateNextFrame ){
 		bool update_result = false;
-		for (list<Entity*>::iterator entity_it = this->entities.begin(); entity_it != this->entities.end(); entity_it++ ) {
+
+		list<Entity*>::iterator
+			entity_it, // iteratore che tiene traccia dell'entità corrente
+			entity_it_next; // iteratore che tiene traccia dell'entità successiva
+		// entity_it_next è necessario perchè se per qualche motivo l'entità puntata da entity_it viene rimossa da Update(), ho l'iteratore successivo
+		entity_it = this->entities.begin();
+		entity_it_next = entity_it;
+
+		// NOTA: Soluzione temporanea ma non 100% affidabile;
+		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
+		while( !this->entities.empty() && entity_it != this->entities.end() ){
+			entity_it_next++;
 			if( IsDefined( *entity_it ) ){
-				update_result = EntityUpdateSelector(game, *entity_it );
+				update_result = (*entity_it)->Update( game ); // EntityUpdateSelector(game, *entity_it );
+				printf("Update Entity '%s' = %d\n",(*entity_it)->GetClassname() ,shouldUpdateNextFrame );
 			}
-			/*else{
-				(*entity_it)->Delete();
-				// TODO: aggiungere *it ad uno stack di entità da deallocare, tipo un garbage collector
-				// TEMP finchè  il TODO precedente non è stato effettuato
-				delete *entity_it;
-				this->entities.erase( entity_it );
-			}*/
+			entity_it = entity_it_next;
 		}
 	}
+	printf("LEVEL UPDATE END: %d\n", shouldUpdateNextFrame);
 	return shouldUpdateNextFrame;
 }
 
 void Level::Draw( ViewPort *view ){
-/*	std::list<Point2D>::iterator surface_it, surface_next_it;
+	/*std::list<Point2D>::iterator surface_it, surface_next_it;
 	surface_it = this->surface.begin();
 	surface_next_it = surface_it;
 	
@@ -89,8 +100,11 @@ void Level::Draw( ViewPort *view ){
 	}*/
 
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
-		EntityDrawSelector( view, *it );
+		if( IsDefined( *it ) ){
+			(*it)->Draw( view ); // EntityDrawSelector( view, *it );
+		}
 	}
+	
 	if( IsDefined( this->player ) ){
 		this->player->Draw( view );
 	}
@@ -116,19 +130,17 @@ void Level::AddEntity( Entity *entity ){
 	if( IsDefined( entity ) ){
 		// printf("Trying to Add entity %s to World %s\n", entity->GetClassname(), this->GetClassname() );
 		Level *world_entity = entity->GetWorld();
-		if( this != world_entity ){
-			if( IsDefined( world_entity ) ){
-				world_entity->RemoveEntity( entity );
-			}
-			entity->SetWorld( this );
-			if( !strcmp( entity->GetClassname(), "Player" ) ){
-				this->player = (Player*)entity;
-			}
-			else{
-				this->entities.push_front( entity );
-			}
-			// printf("Added Successfully\n");
+		if( IsDefined( world_entity ) ){
+			world_entity->RemoveEntity( entity );
 		}
+		entity->SetWorld( this );
+		if( !strcmp( entity->GetClassname(), "Player" ) ){
+			this->player = (Player*)entity;
+		}
+		else{
+			this->entities.push_back( entity );			
+		}
+		// printf("Added Successfully\n");
 	}
 }
 
@@ -154,8 +166,9 @@ void Level::RemoveEntity( Entity *entity ){
 			this->GetOutPlayer();
 		}
 		else{
-			if( !this->entities.empty() )
+			if( !this->entities.empty() ){
 				this->entities.remove( entity );
+			}
 		}
 		entity->SetWorld( NULL );
 		// printf("Removed Succesfully\n" );
@@ -176,21 +189,25 @@ bool Level::IsColliding( Entity *entity, Point2D *collisionOrigin ){
 	return false;
 }
 
-void Level::Delete( bool b_delete_player ){
-	if( b_delete_player && this->player != NULL ){
-		this->player->Delete();
-		delete this->player;
-		this->player = NULL;
-	}
+void Level::Delete(){
+	this->Entity::Delete();
+	
+	this->GetOutPlayer();
 
-	for (list<Entity*>::iterator it=this->entities.begin(); it != this->entities.end(); it++ ) {
-		if( *it != NULL ){
-			(*it)->Delete();
-			delete *it;
-		}
-	}
-
+	// pulisce i dati riigardanti la superficie
 	this->surface.clear();
+
+	// pulisco i dati riguardanti le entità in questo livello, e le elimina
+	list<Entity*>::iterator entity_iterator = this->entities.begin();
+	while( !this->entities.empty() && entity_iterator != this->entities.end() ){
+		if( *entity_iterator != NULL ){
+			(*entity_iterator)->Delete();
+			entity_iterator = this->entities.erase( entity_iterator );
+		}
+		else{
+			entity_iterator++;
+		}
+	}	
 }
 
 list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_search_className_as_subString){
@@ -221,8 +238,10 @@ list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_
 
 Player *Level::GetOutPlayer(){
 	Player *_player = this->player;
-	this->player->SetWorld( NULL );
-	this->player = NULL;
+	if( this->player != NULL ){
+		this->player->SetWorld( NULL );
+		this->player = NULL;
+	}
 	return _player;
 }
 

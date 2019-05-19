@@ -7,14 +7,28 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, unsigned int max_longitud
 	this->planet_entity = planet_entity;
 }
 
+PlanetLevel::~PlanetLevel(){
+	this->Delete();
+}
+
+void PlanetLevel::Delete(){
+	if( this->planet_entity != NULL ){
+		this->planet_entity->SetPlanetLevel( NULL );
+		this->planet_entity = NULL;
+	}
+	this->Level::Delete();
+}
+
 PlanetEntity *PlanetLevel::GetPlanetEntity(){
 	return this->planet_entity;
 }
 
+void PlanetLevel::SetPlanetEntity( PlanetEntity *entity ){
+	this->planet_entity = entity;
+}
+
 bool PlanetLevel::Update( GameEngine *game ){
-	if( !this->IsGenerated() ){
-		this->Generate( game );
-	}
+	printf("PlanetLevel UPDATE START\n");
 	bool update_result = Level::Update( game );
 	if( update_result ){
 		if( IsDefined( this->GetPlayer() ) && this->GetPlayer()->IsOutOfTheWorld() ){
@@ -35,11 +49,12 @@ bool PlanetLevel::Update( GameEngine *game ){
 			// comunque nel caso esso non sia definito per un qualche motivo quale ad esempio un livello speciale o futuri cambiamenti
 			// di comportamento dell'uscita del pianeta, sarà il frame dell'Engine principale a gestirsi il cambio di livello nel caso il livello cambiato non sia definito
 			game->SetCurrentLevel( solar_system );
-			
+			printf("SetCurrentLevel ->%s\n", solar_system->GetClassname() );
+			system("pause");
 			update_result = false;
 		}
 	}
-
+	printf("PlanetLevel UPDATE END %d\n", update_result );
 	return update_result;
 }
 

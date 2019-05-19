@@ -11,6 +11,11 @@ private:
     double time;
     Level *currentLevel; // livello in esecuzione
     ViewPort *view;
+    /**
+     * @brief lista di entità contenente i puntatori delle entità considerate da deallocare alla fine del frame
+     * 
+     */
+    list<Entity*> garbage_collector;
 public:
 
     GameEngine( unsigned int screen_width = DEFAULT_WINDOW_WIDTH, unsigned int screen_height = DEFAULT_WINDOW_HEIGHT );
@@ -28,6 +33,8 @@ public:
     void SetCurrentLevel( Level *level );
     
     void UnloadLevel( Level *last_loaded_level );
+
+    void ClearGarbageCollector();
 };
 
 

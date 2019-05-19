@@ -26,6 +26,10 @@ class PlanetLevel : public Level{
 	 */
 	PlanetLevel( PlanetEntity *planet_entity = NULL, unsigned int max_longitude = 0, unsigned int max_altitude = 0 );
 
+	virtual ~PlanetLevel();
+
+	virtual void Delete();
+	
 	/**
 	 * @brief Restituisce il riferrimento all'entità pianeta a cui questo livello è associato
 	 * 
@@ -34,13 +38,20 @@ class PlanetLevel : public Level{
 	PlanetEntity *GetPlanetEntity();
 
 	/**
+	 * @brief Imposta l'entità pianeta a cui questo livello deve essere associato
+	 * 
+	 * @param entity 
+	 */
+	void SetPlanetEntity( PlanetEntity *entity );
+
+	/**
 	 * @brief funzione di aggiornamento degli stati delle delle entità
 	 * PostCondition: quando il giocatore abbandona il pianeta, questo livello sarà flaggato come IsGarbage
 	 * @param game 
 	 * @return false se il giocatore abbandona il pianeta
 	 * @return true altrimenti
 	 */
-	bool Update( GameEngine *game );
+	virtual bool Update( GameEngine *game );
 
 	/**
 	 * @brief Genera il Livello di gioco, generando il terreno e le sue entità,
@@ -48,7 +59,7 @@ class PlanetLevel : public Level{
 	 * 
 	 * @param game 
 	 */
-	void Generate( GameEngine *game );
+	virtual void Generate( GameEngine *game );
 
 	/**
 	 * @brief Indica se il pianeta e privo di bunker

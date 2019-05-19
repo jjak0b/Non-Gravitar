@@ -29,6 +29,7 @@ SolarSystem::SolarSystem( unsigned int MaxWidth, unsigned int MaxHeight, unsigne
 }
 
 bool SolarSystem::Update( GameEngine *game ){
+	printf("SolarSystem UPDATE START\n");
 	bool update_result = Level::Update( game );
 	if( update_result ){
 		list<Entity*> planet_entities = this->GetEntities( "Planet", false, true );
@@ -38,8 +39,8 @@ bool SolarSystem::Update( GameEngine *game ){
 			Point2D center_off_solar_system = Point2D( this->GetMaxWidth() / 2.0, this->GetMaxHeight() / 2.0 );
 			if( this->player->GetOrigin().Equals( center_off_solar_system ) ){
 				this->player->SetMoveOverride( NULL );
+				this->Delete();
 				game->SetCurrentLevel( NULL );
-				this->garbage = true;
 				update_result = false;
 			}
 			else{
@@ -51,6 +52,7 @@ bool SolarSystem::Update( GameEngine *game ){
 		}
 		planet_entities.clear();
 	}
+	printf("SolarSystem UPDATE END %d\n", update_result );
 	return update_result;
 }
 

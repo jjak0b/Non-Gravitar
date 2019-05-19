@@ -88,7 +88,7 @@ int main(){
 
         dtime = double( current_time - last_frame_time ) / CLOCKS_PER_SEC;
         if( dtime >= FRAME_TIME ){
-			// system("cls");
+			system("cls");
             last_frame_time = clock();
             engine.update( dtime, key, screen_size.GetX(), screen_size.GetY() );
             b_keep_playing = engine.frame( dtime );

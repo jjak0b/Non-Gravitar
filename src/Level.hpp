@@ -20,6 +20,7 @@ public:
 	 * PostCondition: se player != NULL allora esso non viene reinstanziato
 	 */
 	Level( unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "Level" );
+	virtual ~Level();
 
 	/**
 	 * @brief Aggiorna lo stato delle entità del mondo, richiamando internamente i loro metodi Update( ... )
@@ -27,13 +28,13 @@ public:
 	 * PostCondition: Dealloca le entità il cui metodo Update( ... ) restituisce valore false, quindi ne invoca il metodo Delete()
 	 * @param game 
 	 */
-	bool Update( GameEngine *game );
+	virtual bool Update( GameEngine *game );
 
 	/**
 	 * @brief Disegna nella Viewport tutte le entità del mondo, richiamando internamente i loro metodi Draw( ... ) 
 	 * @param view 
 	 */
-	void Draw( ViewPort* view );
+	virtual void Draw( ViewPort* view );
 
 	/**
 	 * @brief Interfaccia Dedicata per generare il Livello di gioco, generando il terreno e le sue entità,
@@ -41,7 +42,7 @@ public:
 	 * 
 	 * @param game 
 	 */
-	void Generate( GameEngine *game );
+	virtual void Generate( GameEngine *game );
 
 	/**
 	 * @brief Normalizza il punto in base alle dimensioni del mondo: 
@@ -96,10 +97,9 @@ public:
 
 	/**
 	 * @brief Elimina le entità nel mondo, deallocando le risorse occupate
-	 * se b_delete_player = true, il giocatore verrà deallocato
-	 * @param b_delete_player 
+	 * PostCondition: il giocatore non verrà eliminato, quindi deve essere rimosso prima di richiamare questo metodo
 	 */
-	void Delete( bool b_delete_player );
+	virtual void Delete();
 
 	/**
 	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo, in base alle seguenti condizioni
@@ -132,7 +132,7 @@ public:
 	 * @return true se la superficie del livello è stata generata
 	 * @return false altrimenti
 	 */
-	bool IsGenerated();
+	virtual bool IsGenerated();
 
 	private:
 	/**

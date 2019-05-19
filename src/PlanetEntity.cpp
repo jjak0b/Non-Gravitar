@@ -15,20 +15,38 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, ColoredBitmap *t
 	this->escape_point.Add( default_escape_point_offset );
 }
 
+PlanetEntity::~PlanetEntity(){
+	this->Delete(); // aggiungerà eventualmente il livello associato al garbage collector
+}
+
+void PlanetEntity::Delete(){
+	if( !this->IsGarbage() ){
+		if( IsDefined( this->planet_level ) ){
+			this->planet_level->Delete(); // questo livello verrà aggiunto al garbage collector
+			this->planet_level = NULL;
+		}
+		this->Entity::Delete();
+	}
+}
+
 PlanetLevel *PlanetEntity::GetPlanetLevel(){
 	return this->planet_level;
 }
 
+void PlanetEntity::SetPlanetLevel( PlanetLevel *planet_world ){
+	this->planet_level = planet_world;
+}
+
 bool PlanetEntity::Update( GameEngine *game ){
+	printf("PlanetEntity UPDATE START\n");
 	bool update_result = this->Entity::Update( game ); // Update Fondamentale
 
 	// il giocatore ha liberato il pianeta, quindi possiamo considerare questo livello come garbage, quindi non sarà più accessibile da questo frame
 	if( IsDefined( this->GetPlanetLevel() ) && this->GetPlanetLevel()->IsGenerated() && this->GetPlanetLevel()->IsFree() ){
-		this->GetPlanetLevel()->Delete( false );
 		update_result = false;
+		this->Delete(); // Il Planetlevel associato e questa entità non saranno più significativi
 	}
-
-	if( update_result ){
+	else if( update_result ){
 		// Mi interessa verificare solo la collisione con l'entità giocatore per verificare se vuole entrare nel pianeta
 		Player *player = this->GetWorld()->GetPlayer();
 		if( this->IsColliding( player ) ){
@@ -36,10 +54,8 @@ bool PlanetEntity::Update( GameEngine *game ){
 			update_result = false;
 		}
 	}
-	else{
-		this->Delete();
-		update_result = false;
-	}
+
+	printf("PlanetEntity UPDATE END %d\n", update_result );
 	return update_result;
 }
 
@@ -49,7 +65,7 @@ void PlanetEntity::Draw( ViewPort *view ){
 }
 
 bool PlanetEntity::IsColliding( Entity *entity ){
-	if( IsDefined(this) && IsDefined(entity) && this->GetOrigin().Distance( entity->GetOrigin() ) <= this->radius ){
+	if( IsDefined(this) && IsDefined(entity) && this->GetOrigin().DistanceSquared( entity->GetOrigin() ) <= ( this->radius * this->radius ) ){
 		return true;
 	}
 	return false;
@@ -61,7 +77,7 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 			Player *player = (Player*)collide_ent;
 
 			// il punto di fuga è vicino al punto di collisione ma distaccato dal punto di -2(direction) unità,
-			// così che nel frame successivo alla fuga dal pianeta non sarà ancora considerato come in collisione con esso
+			// così che nel frame successivo alla fuga dal pianeta non sarà ancora eventualemente considerato come in collisione con esso ( anche se non può accadere )
 			this->escape_point = hitOrigin;
 			Vector direction = player->GetLastMove();
 			direction.Scale( -2.0 ); // inverto la direzione con la quale si è diretto verso il pianeta
@@ -69,22 +85,15 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 			this->escape_point = this->GetWorld()->GetNormalizedPoint( this->escape_point );
 
 			// Il giocatore entra nel Livello
-			this->GetPlanetLevel()->AddEntity( player );
-			// Creo il punto di atterraggio nel pianeta
-			// GetMaxHeight() è il valore dell'altezza secondo cui si è considerati fuori dal pianeta,
-			// quindi dovrà partire dal un'unità più in basso
-			Point2D spawn_point = Point2D( 0, player->GetWorld()->GetMaxHeight() - 1 );
-			player->SetOrigin( spawn_point );
-			game->SetCurrentLevel( this->GetPlanetLevel() );
+			if( IsDefined( this->GetPlanetLevel() ) ){
+				this->GetPlanetLevel()->AddEntity( player );
+				// Creo il punto di atterraggio nel pianeta
+				// GetMaxHeight() è il valore dell'altezza secondo cui si è considerati fuori dal pianeta,
+				// quindi dovrà partire dal un'unità più in basso
+				Point2D spawn_point = Point2D( 0, player->GetWorld()->GetMaxHeight() - 1 );
+				player->SetOrigin( spawn_point );
+				game->SetCurrentLevel( this->GetPlanetLevel() );
+			}
 		}
 	}
-}
-
-void PlanetEntity::Delete(){
-	if( this->planet_level != NULL ){
-		this->planet_level->Delete( false );
-		delete this->planet_level;
-		this->planet_level = NULL;
-	}
-	this->Entity::Delete();
 }

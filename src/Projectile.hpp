@@ -15,11 +15,17 @@ class Projectile : public Entity{
 
     public:
     Projectile( Level *world, Point2D origin, Vector direction, double damage );
+
     Point2D GetFireOrigin();
+
     double GetDamage();
+
     Vector GetDirection();
-    bool Update( GameEngine *game ); // aggiorna lo stato del proiettile, come la posizione, ecc...
-    void Draw( ViewPort *view );
+
+    virtual bool Update( GameEngine *game ); // aggiorna lo stato del proiettile, come la posizione, ecc...
+
+    virtual void Draw( ViewPort *view );
+
     /**
      * @brief funzione risposta / callback che dovrà essere chiamata quando questo proiettile ha colpito una qualche entità
      * @param collide_ent 

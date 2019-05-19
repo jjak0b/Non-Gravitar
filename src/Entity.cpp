@@ -13,6 +13,33 @@ Entity::Entity( Level *_world, Point2D origin, ColoredBitmap *texture, const cha
 	}
     this->SetOrigin( origin );
 }
+Entity::~Entity(){
+	this->Entity::Delete();
+
+	if( this->str_classname != NULL ){
+		delete this->str_classname;
+		this->str_classname = NULL;
+	}
+
+	if( this->texture != NULL ){
+		delete this->texture;
+		this->texture = NULL;
+	}
+}
+
+void Entity::Delete(){
+	if( !this->IsGarbage() ){
+		// Se il mondo è ancora significativo, la rimuove daL suo mondo
+		// altrimenti se il mondo è eliminato prima di questa entità, allora sarà già stata rimossa dalla lista tramite Level::Delete()
+		if( IsDefined( this->GetWorld() ) ){
+			this->GetWorld()->RemoveEntity( this );
+		}
+		this->SetWorld( NULL );
+		this->garbage = true;
+		// TODO: Aggiungere entità al garbage collector
+
+	}
+}
 
 Level *Entity::GetWorld(){
 	return this->world;
@@ -77,15 +104,4 @@ bool Entity::IsOutOfTheWorld(){
 		return this->GetOrigin().GetY() <= 0 || this->GetOrigin().GetY() >= this->world->GetMaxHeight();
 	}
 	return true;
-}
-
-void Entity::Delete(){
-	if( this->texture != NULL ){
-		this->texture->Dispose();
-		delete this->texture;
-	}
-	if( this->str_classname != NULL ){
-		delete this->str_classname;
-	}
-	this->garbage = true;
 }

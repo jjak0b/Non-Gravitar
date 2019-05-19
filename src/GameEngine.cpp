@@ -30,6 +30,7 @@ bool GameEngine::frame( double dtime ){
 	do{
 		if( last_loaded_level != NULL ){
 			if( last_loaded_level->IsGarbage() && this->GetCurrentLevel() == NULL ){ // caso in cui abbandonia totalmente il livello e non ci interressa ritornarci
+				printf("Unload ... %S\n", last_loaded_level->GetClassname() );
 				player = last_loaded_level->GetOutPlayer();
 				this->UnloadLevel( last_loaded_level );
 				last_loaded_level = NULL;
@@ -54,13 +55,19 @@ bool GameEngine::frame( double dtime ){
 		}
 
 		last_loaded_level = this->GetCurrentLevel();
+		
+		printf("Trying to Update...\n" );
 		// Le entità del livello si aggiornano
-		update_result = EntityUpdateSelector( this, last_loaded_level );
+		update_result = IsDefined( last_loaded_level ) && last_loaded_level->Update( this );// update_result = EntityUpdateSelector( this, last_loaded_level );
 		// a questo punto il livello attuale potrebbe essere diverso
+		printf("Update result: %d\n", update_result );
+		printf("CurrentPlayer: %d\n", IsDefined( this->GetCurrentLevel()->GetPlayer() ) );
+		printf("OldLevelPlayer: %d\n", IsDefined( last_loaded_level->GetPlayer() ) );
+		Player *player_temp = this->GetCurrentLevel()->GetPlayer();
+		if( IsDefined( player_temp ) ){
+			player = player_temp;
+		} // altrimenti rimane il riferimento salvato del livello precedente
 
-		if( this->GetCurrentLevel() != NULL ){
-			player = this->GetCurrentLevel()->GetPlayer();
-		}
 		keepPlaying = IsDefined( player );
 	// nel caso questa condizione si verifichi, in questo frame viene generato un nuovo livello quando ricomicomincia il ciclo
 	}while( keepPlaying && this->GetCurrentLevel() == NULL );
@@ -68,15 +75,22 @@ bool GameEngine::frame( double dtime ){
     // TEMP finchè i test non sono ultimati
     this->view->SetWorldOrigin( Point2D( 0, 0 ) );
     // this->view->SetWorldOrigin( Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2), 0 ) );
+
 	this->view->Clear();
-    EntityDrawSelector( this->view, last_loaded_level );
+	if( IsDefined( last_loaded_level ) ){
+		last_loaded_level->Draw( this->view ); // EntityDrawSelector( this->view, last_loaded_level );
+	}
     this->view->Refresh();
+
 #ifdef DEBUG
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
 	if( player != NULL ){
 		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" <<std::endl;
+	}
+	else{
+		std::cout << "Player UNDEFINED !!!!" <<std::endl;
 	}
 #endif
 
@@ -86,16 +100,17 @@ bool GameEngine::frame( double dtime ){
 		
 		if( player != NULL ){
 			player->Delete();
-			delete player;
 			player = NULL;
 		}
 
 		if( this->view != NULL ){
-			this->view->Dispose();
 			delete this->view;
 			this->view = NULL;
 		}
 	}
+
+	this->ClearGarbageCollector();
+
     return keepPlaying;
 }
 
@@ -120,15 +135,22 @@ void GameEngine::UnloadLevel( Level *last_loaded_level ){
 		this->SetCurrentLevel( NULL ); // poichè è lo stesso livello, dealloco l'ultimo livello specificato
 	}
 	else if( this->GetCurrentLevel() != NULL ){
-		this->GetCurrentLevel()->Delete( false );
-		delete this->GetCurrentLevel();
+		this->GetCurrentLevel()->Delete();
 		this->SetCurrentLevel( NULL );
 	}
 
 	if( last_loaded_level != NULL ){
-		last_loaded_level->Delete( false );
-		delete last_loaded_level;
+		last_loaded_level->Delete();
 		last_loaded_level = NULL;
+	}
+}
+
+void GameEngine::ClearGarbageCollector(){
+	list<Entity*>::iterator entity_iterator = this->garbage_collector.begin();
+	while( !this->garbage_collector.empty() && entity_iterator != this->garbage_collector.end() ){
+		delete *entity_iterator;
+		this->garbage_collector.erase( entity_iterator );
+		entity_iterator++;
 	}
 }
 

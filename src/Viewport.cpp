@@ -14,6 +14,10 @@ ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->UpdateSize( _width, _height );
 }
 
+ViewPort::~ViewPort(){
+	this->Dispose();
+}
+
 void ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
 	if( _width != this->width || _height * 2 != this->height ){
 		this->width = _width;
@@ -144,8 +148,8 @@ Point2D ViewPort::WorldPointToViewPoint( Level *world, Point2D world_point ){
 
 void ViewPort::Dispose(){
 	if( this->data != NULL ){
-		this->data->Dispose();
 		delete this->data;
+		this->data = NULL;
 	}
 }
 

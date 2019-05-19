@@ -27,6 +27,15 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
     this->moveOverride = NULL;
 }
 
+Player::~Player(){
+    this->Delete();
+}
+
+void Player::Delete(){
+    this->SetMoveOverride( NULL );
+    DamageableEntity::Delete();
+}
+
 bool Player::Update( GameEngine *game ){
     bool update_result = this->Entity::Update( game );
 
@@ -156,9 +165,4 @@ void Player::SetMoveOverride( Vector *direction ){
             delete this->moveOverride;
         }
         this->moveOverride = direction;
-}
-
-void Player::Delete(){
-    this->SetMoveOverride( NULL );
-    Entity::Delete();
 }

@@ -12,7 +12,7 @@ class Bitmap{
 
 	public:
 	Bitmap(unsigned int _rows = 0, unsigned int _columns = 0 );
-	void Dispose(); // libera le risorse allocate su data
+	virtual ~Bitmap();
 	void Clear();
 	bool Load( const BITMAP_DATA_TYPE **texture, unsigned int rows, unsigned int columns );
 	unsigned int GetRows();

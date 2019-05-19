@@ -15,16 +15,29 @@ class Player : public DamageableEntity{
 	Vector *moveOverride; // spostamento obbligato dal gioco
 	public:
 	Player( Level *world, Point2D origin, double health );
-	bool Update( GameEngine *game );
-	void Draw( ViewPort *view );
-	void Delete();
+
+	virtual ~Player();
+
+	virtual void Delete();
+
+	virtual bool Update( GameEngine *game );
+
+	virtual void Draw( ViewPort *view );
+
 	bool ShouldFire(INPUT_TYPE input);
+
 	bool ShouldBeam(INPUT_TYPE input);
+
 	Projectile *Fire( Vector direction );
+
 	Vector GetDirectionFromInput( INPUT_TYPE input );
+
 	void SetLastInput( INPUT_TYPE input );
+
 	INPUT_TYPE GetLastInput();
+
 	Vector GetLastMove();
+
 	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
 	/**
 	 * @brief il giocatore abbandona il mondo corrente, viene aggiunto al livello specificato, e lo assegna come suo mondo in cui risiede

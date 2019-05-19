@@ -16,6 +16,7 @@ protected:
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
 public:
 	Entity( Level *world, Point2D origin, ColoredBitmap *texture = NULL, const char classname[] = "" );
+	virtual ~Entity();
 
 	/**
 	 * @brief Restituisce il riferimento del livello in cui "risiede" l'entità
@@ -61,7 +62,7 @@ public:
 	 * se la texture associata è NULL, viene disegnato solo un pixel
 	 * @param view : gestore che si occupa di gestire i frame degli oggetti visibili all'interno del gioco
 	 */
-	void Draw( ViewPort *view );
+	virtual void Draw( ViewPort *view );
 
 	/**
 	 * @brief Aggiorna lo stato di questa entità quale la posizione, funzionalità e logica che deve avere nel gioco
@@ -70,7 +71,7 @@ public:
 	 * @return true la questa entità esisterà anche il prossimo frame.
 	 * @return false questa entità dovrà essere eliminata 
 	 */
-	bool Update( GameEngine *game );
+	virtual bool Update( GameEngine *game );
 
 	/**
 	 * @brief Indica se questa entità è significativa in gioco ( false ) o dovrebbe essere cancellata ( true )
@@ -83,7 +84,7 @@ public:
 	 * @brief prepara questa entità per essere eliminata,
 	 * PostCondition: dopo essere chiamata deve effettuare il delete comunque per essere deallocata
 	 */
-	void Delete();
+	virtual void Delete();
 
 	/**
 	 * @brief Verifica se questa entità sta collidendo con quella specificata,
