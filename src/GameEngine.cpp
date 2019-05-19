@@ -7,37 +7,29 @@
 #include "Projectile.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
-    this->time = 0.0;
-    this->currentLevel = NULL;
-    this->view = new ViewPort( screen_width, screen_height, Point2D(0,0) );
+	this->time = 0.0;
+	this->currentLevel = NULL;
+	this->view = new ViewPort( screen_width, screen_height, Point2D(0,0) );
 }
 
 bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned height ){
-    this->time += time;
-    this->input_key = key_pressed;
-    this->view->UpdateSize( width, height );
+	this->time += time;
+	this->input_key = key_pressed;
+	this->view->UpdateSize( width, height );
 	return false;
 }
 
 bool GameEngine::frame( double dtime ){
 
 	bool keepPlaying = true;
-    bool update_result = false;
+	bool update_result = false;
 
-    Level *last_loaded_level = this->GetCurrentLevel();
-    Player *player = NULL;
+	Level *last_loaded_level = this->GetCurrentLevel();
+	Player *player = NULL;
 	
 	do{
-		if( last_loaded_level != NULL ){
-			if( last_loaded_level->IsGarbage() && this->GetCurrentLevel() == NULL ){ // caso in cui abbandonia totalmente il livello e non ci interressa ritornarci
-				printf("Unload ... %S\n", last_loaded_level->GetClassname() );
-				player = last_loaded_level->GetOutPlayer();
-				this->UnloadLevel( last_loaded_level );
-				last_loaded_level = NULL;
-			}
-			else{
-				player = last_loaded_level->GetPlayer();
-			}
+		if( IsDefined( last_loaded_level ) ){
+			player = last_loaded_level->GetPlayer();
 		}
 		// se la partita è appena iniziata oppure se il player ha cambiato sistema solare viene istanziato un nuovo sistema solare come livello
 		if( this->GetCurrentLevel() == NULL){
@@ -54,33 +46,24 @@ bool GameEngine::frame( double dtime ){
 			}
 		}
 
-		last_loaded_level = this->GetCurrentLevel();
+		last_loaded_level = this->GetCurrentLevel(); // aggiorno il livello attuale
 		
-		printf("Trying to Update...\n" );
 		// Le entità del livello si aggiornano
 		update_result = IsDefined( last_loaded_level ) && last_loaded_level->Update( this );// update_result = EntityUpdateSelector( this, last_loaded_level );
 		// a questo punto il livello attuale potrebbe essere diverso
-		printf("Update result: %d\n", update_result );
-		printf("CurrentPlayer: %d\n", IsDefined( this->GetCurrentLevel()->GetPlayer() ) );
-		printf("OldLevelPlayer: %d\n", IsDefined( last_loaded_level->GetPlayer() ) );
-		Player *player_temp = this->GetCurrentLevel()->GetPlayer();
-		if( IsDefined( player_temp ) ){
-			player = player_temp;
-		} // altrimenti rimane il riferimento salvato del livello precedente
 
 		keepPlaying = IsDefined( player );
 	// nel caso questa condizione si verifichi, in questo frame viene generato un nuovo livello quando ricomicomincia il ciclo
 	}while( keepPlaying && this->GetCurrentLevel() == NULL );
 	
-    // TEMP finchè i test non sono ultimati
-    this->view->SetWorldOrigin( Point2D( 0, 0 ) );
-    // this->view->SetWorldOrigin( Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2), 0 ) );
+	// TEMP finchè i test non sono ultimati
+	this->SetCameraWorldOrigin( Point2D( 0, 0 ) );
 
 	this->view->Clear();
 	if( IsDefined( last_loaded_level ) ){
 		last_loaded_level->Draw( this->view ); // EntityDrawSelector( this->view, last_loaded_level );
 	}
-    this->view->Refresh();
+	this->view->Refresh();
 
 #ifdef DEBUG
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
@@ -111,23 +94,30 @@ bool GameEngine::frame( double dtime ){
 
 	this->ClearGarbageCollector();
 
-    return keepPlaying;
+	return keepPlaying;
+}
+
+void GameEngine::SetCameraWorldOrigin( Point2D origin ){
+	if( this->view != NULL ){
+		this->view->SetWorldOrigin( Point2D( 0, 0 ) );
+		// this->view->SetWorldOrigin( Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2), 0 ) );
+	}
 }
 
 char GameEngine::GetkeyPressed(){
-    return this->input_key;
+	return this->input_key;
 }
 
 double GameEngine::GetTime(){
-    return this->time;
+	return this->time;
 }
 
 Level *GameEngine::GetCurrentLevel(){
-    return this->currentLevel;
+	return this->currentLevel;
 }
 
 void GameEngine::SetCurrentLevel( Level *level ){
-    this->currentLevel = level;
+	this->currentLevel = level;
 }
 
 void GameEngine::UnloadLevel( Level *last_loaded_level ){

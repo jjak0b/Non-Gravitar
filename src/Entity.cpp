@@ -11,7 +11,7 @@ Entity::Entity( Level *_world, Point2D origin, ColoredBitmap *texture, const cha
 	if( IsDefined( _world ) ){
 		_world->AddEntity( this );
 	}
-    this->SetOrigin( origin );
+	this->SetOrigin( origin );
 }
 Entity::~Entity(){
 	this->Entity::Delete();
@@ -29,15 +29,10 @@ Entity::~Entity(){
 
 void Entity::Delete(){
 	if( !this->IsGarbage() ){
-		// Se il mondo è ancora significativo, la rimuove daL suo mondo
-		// altrimenti se il mondo è eliminato prima di questa entità, allora sarà già stata rimossa dalla lista tramite Level::Delete()
-		if( IsDefined( this->GetWorld() ) ){
-			this->GetWorld()->RemoveEntity( this );
-		}
 		this->SetWorld( NULL );
 		this->garbage = true;
 		// TODO: Aggiungere entità al garbage collector
-
+		
 	}
 }
 
@@ -63,7 +58,7 @@ Point2D Entity::SetOrigin( Point2D _origin ){
 }
 
 Point2D Entity::GetOrigin(){
-    return this->origin;
+	return this->origin;
 }
 
 char* Entity::GetClassname(){

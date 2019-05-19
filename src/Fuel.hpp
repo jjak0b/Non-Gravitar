@@ -3,13 +3,13 @@
 #include "Entity.hpp"
 
 class Fuel : public Entity{
-    protected:
-    double size;
+	protected:
+	double size;
 
-    public:
-    Fuel( Level *world, Point2D origin, double size );
+	public:
+	Fuel( Level *world, Point2D origin, double size );
 
-    void setSize(int size);
-    int getSize();
+	void setSize(int size);
+	int getSize();
 
 };

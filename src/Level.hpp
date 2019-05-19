@@ -73,17 +73,11 @@ public:
 
 	/**
 	 * @brief Aggiunge l'entità alla lista delle entità nel mondo, e assegna questo livello come suo mondo in cui risiede.
-	 * PostCondition: Se prima risiedeva in un altro livello, esso viene prima rimosso con RemoveEntity(...)
+	 * PostCondition: Se prima risiedeva in un altro livello, esso viene prima rimosso da esso
+	 * Nota: Per rimuovere un entità, essa deve essere eliminata oppure spostata in altro livello richiamanto comunque questo metodo
 	 * @param entity 
 	 */
 	void AddEntity( Entity *entity );
-
-	/**
-	 * @brief Rimuove l'entità dalla lista delle entità, senza deallocare l'entità stessa
-	 * Inoltre il suo mondo in cui risiede è = NULL
-	 * @param entity 
-	 */
-	void RemoveEntity( Entity *entity );
 
 	/**
 	 * @brief Verifica se l'entità specificata collide con il mondo di gioco
@@ -139,6 +133,4 @@ public:
 	 * @brief Non fa niente, ma viene nascosta la visibilità esterna tramite overriding
 	 */
 	void SetOrigin();
-
-	void RemoveEntityFromLevel( Level *world, Entity *entity );
 };

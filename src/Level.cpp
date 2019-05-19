@@ -13,7 +13,7 @@ Level::Level( unsigned int MaxWidth, unsigned int MaxHeight, const char _classNa
 		this->width = 1;
 	}
 
-    this->height = MaxHeight;
+	this->height = MaxHeight;
 	if( this->height <= 0 ){
 		this->height = 1;
 	}
@@ -46,44 +46,44 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 }
 
 bool Level::Update( GameEngine *game ){
-	printf("LEVEL UPDATE START\n");
 	if( !this->Entity::Update( game ) ){
-		printf("Defined check true\n");
 		return false;
 	}
 	else if( !this->IsGenerated() ){
 		this->Generate( game );
-		printf("Generating\n");
 	}
 
 	bool shouldUpdateNextFrame = false;
 	if( IsDefined( this->GetPlayer() ) ){
 		shouldUpdateNextFrame = this->GetPlayer()->Update( game );
-		printf("Update Player = %d\n", shouldUpdateNextFrame );
 	}
 
 	if( shouldUpdateNextFrame ){
 		bool update_result = false;
 
-		list<Entity*>::iterator
-			entity_it, // iteratore che tiene traccia dell'entità corrente
-			entity_it_next; // iteratore che tiene traccia dell'entità successiva
-		// entity_it_next è necessario perchè se per qualche motivo l'entità puntata da entity_it viene rimossa da Update(), ho l'iteratore successivo
+		list<Entity*>::iterator entity_it; // iteratore che tiene traccia dell'entità corrente
 		entity_it = this->entities.begin();
-		entity_it_next = entity_it;
 
 		// NOTA: Soluzione temporanea ma non 100% affidabile;
 		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
 		while( !this->entities.empty() && entity_it != this->entities.end() ){
-			entity_it_next++;
 			if( IsDefined( *entity_it ) ){
 				update_result = (*entity_it)->Update( game ); // EntityUpdateSelector(game, *entity_it );
-				printf("Update Entity '%s' = %d\n",(*entity_it)->GetClassname() ,shouldUpdateNextFrame );
 			}
-			entity_it = entity_it_next;
+			
+			// Nota: Questo deve essere l'unico punto in cui rimuovo l'entità dalla lista altrimenti l'iteratore attuale
+			// potrebbe essere collegato ad un nodo della lista che non mi aspetto se la sua entità associata è rimossa durante l' entity->Update(...)
+			// es prima di update *entity_it = entità A
+			// dopo update: *entity_it = entità B oppure entity_it = nodo che è stato rimosso dalla lista
+			if( !IsDefined( *entity_it ) ){
+				entity_it = this->entities.erase( entity_it );
+			}
+			else{
+				entity_it++;
+			}
 		}
 	}
-	printf("LEVEL UPDATE END: %d\n", shouldUpdateNextFrame);
+
 	return shouldUpdateNextFrame;
 }
 
@@ -115,63 +115,35 @@ void Level::Generate( GameEngine *game ){
 }
 
 unsigned int Level::GetMaxHeight(){
-    return this->height;
+	return this->height;
 }
 
 unsigned int Level::GetMaxWidth(){
-    return this->width;
+	return this->width;
 }
 
 Player *Level::GetPlayer(){
-    return this->player;
+	return this->player;
 }
 
 void Level::AddEntity( Entity *entity ){
 	if( IsDefined( entity ) ){
-		// printf("Trying to Add entity %s to World %s\n", entity->GetClassname(), this->GetClassname() );
 		Level *world_entity = entity->GetWorld();
-		if( IsDefined( world_entity ) ){
-			world_entity->RemoveEntity( entity );
-		}
-		entity->SetWorld( this );
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			this->player = (Player*)entity;
-		}
-		else{
-			this->entities.push_back( entity );			
-		}
-		// printf("Added Successfully\n");
-	}
-}
-
-void Level::RemoveEntityFromLevel( Level *world, Entity *entity ){
-	if( IsDefined( entity ) ){
-		if( IsDefined( world ) ){
+		if( world_entity != this ){
 			if( !strcmp( entity->GetClassname(), "Player" ) ){
-				world->player = NULL;
+				if( IsDefined( world_entity ) ){
+					world_entity->GetOutPlayer();
+				}
+				this->player = (Player*)entity;
 			}
-			else if( !world->entities.empty() ){
-				world->entities.remove( entity );
+			else{
+				if( IsDefined( world_entity ) && !world_entity->entities.empty() ){
+					world_entity->entities.remove( entity );
+				}
+				this->entities.push_back( entity );			
 			}
-			entity->SetWorld( NULL );
+			entity->SetWorld( this );
 		}
-	}
-}
-
-void Level::RemoveEntity( Entity *entity ){
-	if( IsDefined( entity ) ){
-		// printf("Trying to Remove entity %s From %s\n", entity->GetClassname(), this->GetClassname() );
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			// printf("RemoveEntity\n");
-			this->GetOutPlayer();
-		}
-		else{
-			if( !this->entities.empty() ){
-				this->entities.remove( entity );
-			}
-		}
-		entity->SetWorld( NULL );
-		// printf("Removed Succesfully\n" );
 	}
 }
 

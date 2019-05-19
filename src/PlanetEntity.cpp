@@ -38,7 +38,6 @@ void PlanetEntity::SetPlanetLevel( PlanetLevel *planet_world ){
 }
 
 bool PlanetEntity::Update( GameEngine *game ){
-	printf("PlanetEntity UPDATE START\n");
 	bool update_result = this->Entity::Update( game ); // Update Fondamentale
 
 	// il giocatore ha liberato il pianeta, quindi possiamo considerare questo livello come garbage, quindi non sarà più accessibile da questo frame
@@ -55,7 +54,6 @@ bool PlanetEntity::Update( GameEngine *game ){
 		}
 	}
 
-	printf("PlanetEntity UPDATE END %d\n", update_result );
 	return update_result;
 }
 

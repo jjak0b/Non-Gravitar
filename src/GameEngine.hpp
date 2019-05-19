@@ -7,34 +7,36 @@
 
 class GameEngine{
 private:
-    INPUT_TYPE input_key;
-    double time;
-    Level *currentLevel; // livello in esecuzione
-    ViewPort *view;
-    /**
-     * @brief lista di entità contenente i puntatori delle entità considerate da deallocare alla fine del frame
-     * 
-     */
-    list<Entity*> garbage_collector;
+	INPUT_TYPE input_key;
+	double time;
+	Level *currentLevel; // livello in esecuzione
+	ViewPort *view;
+	/**
+	 * @brief lista di entità contenente i puntatori delle entità considerate da deallocare alla fine del frame
+	 * 
+	 */
+	list<Entity*> garbage_collector;
 public:
 
-    GameEngine( unsigned int screen_width = DEFAULT_WINDOW_WIDTH, unsigned int screen_height = DEFAULT_WINDOW_HEIGHT );
+	GameEngine( unsigned int screen_width = DEFAULT_WINDOW_WIDTH, unsigned int screen_height = DEFAULT_WINDOW_HEIGHT );
 
-    bool update( double time, INPUT_TYPE key_pressed, unsigned int width, unsigned int height );
+	bool update( double time, INPUT_TYPE key_pressed, unsigned int width, unsigned int height );
 
-    bool frame( double dtime );
+	bool frame( double dtime );
 
-    INPUT_TYPE GetkeyPressed();
+	void SetCameraWorldOrigin( Point2D origin );
 
-    double GetTime();
+	INPUT_TYPE GetkeyPressed();
 
-    Level *GetCurrentLevel();
+	double GetTime();
 
-    void SetCurrentLevel( Level *level );
-    
-    void UnloadLevel( Level *last_loaded_level );
+	Level *GetCurrentLevel();
 
-    void ClearGarbageCollector();
+	void SetCurrentLevel( Level *level );
+	
+	void UnloadLevel( Level *last_loaded_level );
+
+	void ClearGarbageCollector();
 };
 
 
