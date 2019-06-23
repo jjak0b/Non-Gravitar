@@ -1,11 +1,12 @@
 #include "DamageableEntity.hpp"
 #include "Entity.hpp"
-#include "Projectile.hpp"
 #include <cstring>
+#include "Projectile.hpp"
 
 DamageableEntity::DamageableEntity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[], double healthmax) : Entity( world, origin, texture, classname ){
 	this->SetMaxHealth( healthmax );
 	this->SetHealth( healthmax );
+	
 }
 
 double DamageableEntity::SetMaxHealth( double amount ){
@@ -66,3 +67,4 @@ void DamageableEntity::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigi
 	}
 }
  
+

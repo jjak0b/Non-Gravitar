@@ -2,6 +2,7 @@
 
 #include "Entity.hpp"
 
+
 class DamageableEntity : public Entity{
 	protected:
 	double MaxHealth;
@@ -60,4 +61,6 @@ class DamageableEntity : public Entity{
 	 * @return double 
 	 */
 	double SetHealth( double amount );
+
+	
 };

@@ -5,6 +5,7 @@
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
 #include "Projectile.hpp"
+#include "Bunker.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 	this->time = 0.0;

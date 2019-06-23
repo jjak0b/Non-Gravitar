@@ -2,9 +2,11 @@
 #include "PlanetEntity.hpp"
 #include "GameEngine.hpp"
 #include "Player.hpp"
+#include "Bunker.hpp"
 
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, unsigned int max_longitude, unsigned int max_altitude ) : Level( max_longitude, max_altitude, "PlanetLevel"){
 	this->planet_entity = planet_entity;
+	
 }
 
 PlanetLevel::~PlanetLevel(){
@@ -68,4 +70,13 @@ void PlanetLevel::Generate( GameEngine *game ){
 	end.Add( Point2D( 10, 0 ) );
 	this->surface.push_front( start );
 	this->surface.push_front( end );
+
+	
+	
+	Bunker *e = new Bunker(this,Point2D(80,25),2);
+	this->AddEntity(e);
+	Bunker *e2 = new Bunker(this,Point2D(60,25),1);
+	this->AddEntity(e2);
+
+
 }
