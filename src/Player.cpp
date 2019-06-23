@@ -96,6 +96,7 @@ void Player::Draw( ViewPort *view ){
 	}
 #endif*/
 	Entity::Draw( view );
+	view->Print( "Hello\nWorld\nSon Of\nShit", view->WorldPointToViewPoint( this->world, this->GetOrigin() ) );
 }
 
 Projectile *Player::Fire( Vector direction ){

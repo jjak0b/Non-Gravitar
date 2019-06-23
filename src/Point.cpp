@@ -27,7 +27,7 @@ double Point::Distance( Point p ){
 Vector BuildDirection( Point start, Point end ){
 	Vector direction = Vector( end.GetSize() );
 	for( int i = 0; i < direction.GetSize(); i++ ){
-		VECTOR_TYPE valueEnd, valueStart;
+		VECTOR_VALUE_TYPE valueEnd, valueStart;
 		if( end.Get( i, &valueEnd) && start.Get( i, &valueStart) ){
 			direction.Set( i, valueEnd - valueStart );
 		}

@@ -22,7 +22,7 @@ unsigned int Vector::GetSize(){
 	return this->size;
 }
 
-bool Vector::Get( unsigned int i, VECTOR_TYPE *return_value ){
+bool Vector::Get( unsigned int i, VECTOR_VALUE_TYPE *return_value ){
 	if( i < this->size && return_value != NULL ){
 		*return_value = this->data[ i ];
 		return true;
@@ -30,7 +30,7 @@ bool Vector::Get( unsigned int i, VECTOR_TYPE *return_value ){
 	return false;
 }
 
-bool Vector::Set( unsigned int i, VECTOR_TYPE value ){
+bool Vector::Set( unsigned int i, VECTOR_VALUE_TYPE value ){
 	if( i < this->size ){
 		this->data[ i ] = value;
 		return true;
@@ -54,12 +54,12 @@ bool Vector::Add( Vector v ){
 	return false;
 }
 
-VECTOR_TYPE Vector::ScalarProduct( Vector v ){
-	VECTOR_TYPE result = 0.0;
+VECTOR_VALUE_TYPE Vector::ScalarProduct( Vector v ){
+	VECTOR_VALUE_TYPE result = 0.0;
 	if( v.size == this->size ){
 		for( unsigned int i = 0; i < this->size; i++ ){
 #if (VECTOR_VALUE_TYPE == int)
-			result += round(this->data[ i ] * v.data[ i ]);
+			result += std::round(this->data[ i ] * v.data[ i ]);
 #else
 			result += (this->data[ i ] * v.data[ i ]);
 #endif
@@ -71,7 +71,7 @@ VECTOR_TYPE Vector::ScalarProduct( Vector v ){
 void Vector::Scale( double r ){
 	for( unsigned int i = 0; i < this->size; i++ ){
 #if (VECTOR_VALUE_TYPE == int)
-		this->data[ i ] = round( (double)this->data[ i ] * r );
+		this->data[ i ] = std::round( (double)this->data[ i ] * r );
 #else
 		this->data[ i ] = this->data[ i ] * r;
 #endif
@@ -114,4 +114,10 @@ bool Vector::IsNull(){
 		i++;
 	}
 	return isNull;
+}
+
+void Vector::round(){
+	for( unsigned int i = 0; i < this->size; i++){
+		this->data[ i ] = std::round( this->data[ i ] );
+	}
 }

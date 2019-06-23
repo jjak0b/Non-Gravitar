@@ -32,7 +32,8 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 		_origin.SetX( this->GetMaxWidth() + _origin.GetX() );
 	}
 	else{
-		_origin.SetX( _origin.GetX() % this->GetMaxWidth() );
+				int point_int_value = _origin.GetX();
+		_origin.SetX( point_int_value % this->GetMaxWidth() + ( _origin.GetX() - point_int_value ) );
 	}
 
 	if( _origin.GetY() < 0 ){
