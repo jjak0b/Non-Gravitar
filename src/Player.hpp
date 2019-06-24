@@ -1,7 +1,6 @@
 #pragma once
 
 #include "DamageableEntity.hpp"
-#include "Point2D.hpp"
 #include "GameConfig.h"
 
 class GameEngine;

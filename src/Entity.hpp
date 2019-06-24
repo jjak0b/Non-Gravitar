@@ -2,10 +2,11 @@
 
 #include "Point2D.hpp"
 #include "ColoredBitmap.hpp"
-#include "Viewport.hpp"
 #include <stddef.h> // usato per definizione di NULL
+
 class Level;
 class GameEngine;
+class ViewPort;
 
 class Entity{
 protected:

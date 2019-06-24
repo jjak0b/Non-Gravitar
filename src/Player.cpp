@@ -15,13 +15,6 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
 	const BITMAP_DATA_TYPE raw_texturer2[] = "/   \\";
-	/*for( unsigned int j = 0; j < 5; j++ ){
-		this->texture->SetValue( raw_texturer0[j], 0, j );
-		this->texture->SetValue( raw_texturer1[j], 1, j );
-		this->texture->SetValue( raw_texturer2[j], 2, j );
-		this->texture->SetValue( raw_texturer3[j], 3, j );
-		this->texture->SetValue( raw_texturer4[j], 4, j );
-	}*/
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
 	this->texture->Load( rawtexture, 3, 5 );
 	this->moveOverride = NULL;
@@ -82,21 +75,22 @@ bool Player::Update( GameEngine *game ){
 }
 
 void Player::Draw( ViewPort *view ){
-/*#ifdef DEBUG
-	if( this->GetWorld() != NULL ){
-		Point2D start = this->GetOrigin();
-		Vector _direction = GetDirectionFromInput( INPUT_MOVE_RIGHT );
-
-		start.Add( _direction );
-		Point2D end = start;
-
-		_direction.Scale( 5.0 );
-		end.Add( _direction );
-		// DrawLine( view, this->GetWorld(), start, end );
-	}
-#endif*/
 	Entity::Draw( view );
-	view->Print( "Hello\nWorld\nSon Of\nShit", view->WorldPointToViewPoint( this->world, this->GetOrigin() ) );
+
+	const int size_str_buffer = 30;
+	char str_print_buffer[ size_str_buffer ] = "";
+
+	Point2D point_top_left_hud = Point2D( 0, view->GetHeight() - 2 );
+	snprintf( str_print_buffer, size_str_buffer, "Score: [value]"); // TODO: aggiungere valore dopo implementazione
+	view->Print( str_print_buffer, point_top_left_hud );
+
+	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
+	snprintf( str_print_buffer, size_str_buffer, "Fuel: [value]"); // TODO: aggiungere valore dopo implementazione
+	view->Print( str_print_buffer, point_top_left_hud );
+
+	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
+	snprintf( str_print_buffer, size_str_buffer, "Health: %.2f / %.2f", this->GetHealth(), this->GetMaxHealth() );
+	view->Print( str_print_buffer, point_top_left_hud );
 }
 
 Projectile *Player::Fire( Vector direction ){

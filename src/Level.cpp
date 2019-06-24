@@ -89,16 +89,32 @@ bool Level::Update( GameEngine *game ){
 }
 
 void Level::Draw( ViewPort *view ){
-	/*std::list<Point2D>::iterator surface_it, surface_next_it;
+	std::list<Point2D>::iterator surface_it, surface_next_it;
 	surface_it = this->surface.begin();
-	surface_next_it = surface_it;
-	
+
+	Point2D start, end;
 	// TODO: ricontrollare
-	while( surface_next_it != this->surface.end() ){
-		surface_next_it++;
-		DrawLine( view, this, *surface_it, *surface_next_it );
+	while( surface_it != this->surface.end() ){
+		start = *surface_it;
 		surface_it++;
-	}*/
+		end = *surface_it;
+		DrawLine( view, this, start, end );
+#ifdef DEBUG
+		const int size_str_buffer = 30;
+		char str_print_buffer[size_str_buffer] = "";
+		Point2D temp;
+
+		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
+		temp = start;
+		temp.SetY( temp.GetY() + 3 );
+		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ) );
+
+		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
+		temp = end;
+		temp.SetY( temp.GetY() + 3 );
+		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ) );
+#endif
+	}
 
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
 		if( IsDefined( *it ) ){

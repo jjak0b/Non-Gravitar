@@ -57,9 +57,15 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 
 void ViewPort::Print( const char str_text[], Point2D view_point ){
 
+	view_point.round();
 	// se il punto è fuori dal range della viewport termina la funzione
 	if( view_point.GetX() < 0 || view_point.GetX() >= this->GetWidth() || view_point.GetY() < 0 || view_point.GetY() >= this->GetHeight() ){
 		return;
+	}
+
+	// se la coordinata dell'ordinata è dispari, il carattere non può essere stampato nel pixel superiore, quindi sarà stampato nel pixel inferiore
+	if( (int)view_point.GetY() % 2 == 1 ){
+		view_point.SetY( view_point.GetY() - 1 );
 	}
 
 	int length = strlen( str_text );
@@ -229,12 +235,6 @@ void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
 }
 
 void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
-	start = world->GetNormalizedPoint( start );
-	end = world->GetNormalizedPoint( end );
-	Vector direction = BuildDirection( start, end );
-	direction.Normalize();
-
-	Point2D temp_point = start;
 	bool isVertical = false; // la retta è verticale
 	double angular_coeffcient = 0.0; // coeff. angolare della retta
 	if( end.GetX() - start.GetX() != 0){
@@ -244,38 +244,52 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
 		isVertical = true;
 	}
 
-	view->Draw( NULL, world, start );
-	while( ( !isVertical && temp_point.GetX() < end.GetX() ) || ( isVertical && temp_point.GetY() < end.GetY() ) ) {
-		temp_point.Add( direction );
-		temp_point = world->GetNormalizedPoint( temp_point );
-		view->Draw( NULL, world, temp_point );
+	Point2D temp_point = Point2D();
+	VECTOR_VALUE_TYPE
+		x, y,
+		inc_value = 1.0f, // rateo di campionatura
+		distance = 0.0f,
+		distance_x = abs( end.GetX() - start.GetX()),
+		distance_y = abs( end.GetY() - start.GetY());
+
+	if( isVertical ){
+		distance = distance_y;
 	}
-	view->Draw( NULL, world, end );
-/*
-	Point2D temp_point = start;
-	bool isVertical = false; // la retta è verticale
-	double angular_coeffcient = 0.0; // coeff. angolare della retta
-	if( end.GetX() - start.GetX() != 0){
-		angular_coeffcient = (end.GetY() - start.GetY()) / ( end.GetX() - start.GetX() );
-	}
-	else{ // il coeff angolare non è definito per tan( 90° )
-		isVertical = true;
+	else{
+		distance = distance_x;
+
+		// se si trova nella stessa ordinata, la campionatura basta di 1 unità
+		// altrimenti la risoluzione di campionamento delle ascisse diventa sempre più precisa quando la retta tende ad essere verticale
+		if( distance_y != 0 ){
+			inc_value = min( 1.0f, distance_x / distance_y );
+		}
 	}
 
-	view->Draw( NULL, world, start );
-	while( ( !isVertical && temp_point.GetX() < end.GetX() ) || ( isVertical && temp_point.GetY() < end.GetY() ) ) {
-		if( !isVertical ){
-			temp_point.SetX( temp_point.GetX() + 1 );
-			temp_point.SetY( (temp_point.GetX()*angular_coeffcient) + start.GetY() ); // y = m*x + q
+	for( VECTOR_VALUE_TYPE i = 0.0; i < distance; i += inc_value ){
+		if( isVertical ){
+			x = 0.0;
+			if( end.GetY() >= start.GetY() ){
+				y = i;
+			}
+			else{
+				y = -i;
+			}
 		}
 		else{
-			temp_point.SetY( temp_point.GetY() + 1 ); // x = q
+			if( end.GetX() >= start.GetX() ){
+				x = i;
+			}
+			else{
+				x = -i;
+			}
+			y = x * angular_coeffcient;
 		}
-		temp_point = world->GetNormalizedPoint( temp_point );
-		view->Draw( NULL, world, temp_point );
+		temp_point.SetX( x );
+		temp_point.SetY( y );
+		temp_point.Add( start );
+		view->SetPixel( view->WorldPointToViewPoint( world, temp_point ) );
 	}
-	view->Draw( NULL, world, end );
-*/
+	view->SetPixel( view->WorldPointToViewPoint( world, end ) );
 }
 
 void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius ){
