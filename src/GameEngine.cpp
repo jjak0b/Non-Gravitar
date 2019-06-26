@@ -58,7 +58,8 @@ bool GameEngine::frame( double dtime ){
 	}while( keepPlaying && this->GetCurrentLevel() == NULL );
 	
 	// TEMP finchè i test non sono ultimati
-	this->SetCameraWorldOrigin( Point2D( 0, 0 ) );
+	Point2D world_point_relative_to_bottom_left = Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2.0), 0 );
+	this->SetCameraWorldOrigin( world_point_relative_to_bottom_left );
 
 	this->view->Clear();
 	if( IsDefined( last_loaded_level ) ){
@@ -100,8 +101,7 @@ bool GameEngine::frame( double dtime ){
 
 void GameEngine::SetCameraWorldOrigin( Point2D origin ){
 	if( this->view != NULL ){
-		this->view->SetWorldOrigin( Point2D( 0, 0 ) );
-		// this->view->SetWorldOrigin( Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2), 0 ) );
+		this->view->SetWorldOrigin( origin );
 	}
 }
 

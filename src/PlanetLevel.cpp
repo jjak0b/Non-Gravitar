@@ -3,6 +3,7 @@
 #include "GameEngine.hpp"
 #include "Player.hpp"
 #include "Bunker.hpp"
+#include <cmath>
 
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, unsigned int max_longitude, unsigned int max_altitude ) : Level( max_longitude, max_altitude, "PlanetLevel"){
 	this->planet_entity = planet_entity;
@@ -64,11 +65,42 @@ bool PlanetLevel::IsFree(){
 }
 
 void PlanetLevel::Generate( GameEngine *game ){
-	// temp per linea di testing
-	Point2D start = Point2D( this->GetMaxWidth()/2.0, this->GetMaxHeight() / 2.0 );
+	VECTOR_VALUE_TYPE
+		min_point_distance_x = 4,
+		max_point_distance_x = 15,
+		min_point_distance_y = 3,
+		max_point_distance_y = 8,
+		max_point_height = (6.0/10.0)*this->GetMaxHeight(),
+		min_point_height = 3;
+
+	VECTOR_VALUE_TYPE 
+		offset_x,
+		offset_y;
+
+	Point2D start = Point2D();
 	Point2D end = start;
-	end.Add( Point2D( 10, 0 ) );
-	this->surface.push_front( start );
+	end.SetX( this->GetMaxWidth() - 1 );
+	Vector direction = Vector( start.GetSize() );
+
+	// temp è il punto che viene generato ed aggiunto alla lista
+	Point2D temp = start;
+	while( temp.GetX() < end.GetX() ){
+		this->surface.push_front( temp );
+		offset_x = min_point_distance_x + (rand() % (int)(max_point_distance_x - min_point_distance_x));
+		offset_y = min_point_distance_y + (rand() % (int)(max_point_distance_y - min_point_distance_y));
+		if( rand() % 100 < 50 ){ // scelgo se variare l'offset del punto in positivo o in negativo
+			offset_y *= -1;
+		}
+		direction.Set( 1, offset_y );
+		direction.Set( 0, offset_x );
+		temp.Add( direction );
+		// temp.SetY( min_point_height + (temp.GetY() % (int)(max_point_height - min_point_distance_y) ) );
+		// l'ordinata deve essere compresa tra min_point_height e max_point_height
+		temp.SetY(
+				max(
+					min( temp.GetY(), max_point_height ),
+					min_point_height ) );
+	}
 	this->surface.push_front( end );
 
 	

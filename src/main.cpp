@@ -10,9 +10,13 @@
 #include <stdio.h>
 #endif
 
-#include "GameEngine.hpp"
-#include "GameConfig.h"
+#include "GameConfig.h" // costanti e configurazioni del gioco
+
 #include <math.h> // così definisco le costanti per tutto il resto del programma con _USE_MATH_DEFINES
+#include "Vector.hpp" // così definisco tipo e dimensione vettori per tutto il resto del programma
+
+#include "GameEngine.hpp"
+
 
 char getInput(){
 			char c = '\0';

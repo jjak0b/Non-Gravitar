@@ -1,6 +1,8 @@
 #pragma once
 
-#define VECTOR_VALUE_TYPE int // tipo delle singole componenti di un vettore
+#ifndef VECTOR_VALUE_TYPE
+#define VECTOR_VALUE_TYPE float // tipo delle singole componenti di un vettore
+#endif
 typedef VECTOR_VALUE_TYPE VECTOR_TYPE; // ora impostato come tipo di dato
 // NOTA: definire VECTOR_DIMENSION prima di includere questo header per sovrascrivere
 #ifndef VECTOR_DIMENSIONS
@@ -9,7 +11,7 @@ typedef VECTOR_VALUE_TYPE VECTOR_TYPE; // ora impostato come tipo di dato
 
 class Vector{
 protected:
-	VECTOR_TYPE data[ VECTOR_DIMENSIONS ]; // array contenente le componenti del vettore
+	VECTOR_VALUE_TYPE data[ VECTOR_DIMENSIONS ]; // array contenente le componenti del vettore
 	unsigned int size; // dimensione vettore
 public:
 	/**
@@ -40,7 +42,7 @@ public:
 	 * @param return_value : indirizzo in cui verrà memorizzato il valore da restituire
 	 * @return bool 
 	 */
-	bool Get( unsigned int i, VECTOR_TYPE *return_value );
+	bool Get( unsigned int i, VECTOR_VALUE_TYPE *return_value );
 
 	/**
 	 * @brief Assegna il valore indicato alla i-esima componente del vettore
@@ -49,7 +51,7 @@ public:
 	 * @param value 
 	 * @return bool
 	 */
-	bool Set( unsigned int i, VECTOR_TYPE value );
+	bool Set( unsigned int i, VECTOR_VALUE_TYPE value );
 	
 	/**
 	 * @brief Assegna a tutte le componenti il valore 0
@@ -71,7 +73,7 @@ public:
 	 * @param v 
 	 * @return int 
 	 */
-	VECTOR_TYPE ScalarProduct( Vector v );
+	VECTOR_VALUE_TYPE ScalarProduct( Vector v );
 
 	/**
 	 * @brief Effettua il prodotto per uno scalare r su questo vettore,
@@ -106,4 +108,10 @@ public:
 	 * @return false altrimenti 
 	 */
 	bool IsNull();
+
+	/**
+	 * @brief Approssima per eccesso o per difetto i valori delle componenti di questo oggetto
+	 * 
+	 */
+	void round();
 };
