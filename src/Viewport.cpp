@@ -1,5 +1,4 @@
 #include "Viewport.hpp"
-// #include "Point2D.hpp"
 #include "Entity.hpp"
 #include "ColoredBitmap.hpp"
 #include "Level.hpp"
@@ -51,7 +50,6 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 		else{
 			this->SetPixel( point_relative_to_bottom_left_view );
 		}
-		
 	}
 }
 
@@ -128,7 +126,7 @@ bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Point2D view_point ){
 
 bool ViewPort::SetPixel( Point2D view_point ){
 	view_point.round();
-	BITMAP_DATA_TYPE value;
+	BITMAP_DATA_TYPE value = BITMAP_DATA_NULL;
 	BITMAP_DATA_TYPE current_pixel = this->GetBitmapData( view_point );
 	bool b_isPixelDown = false;
 
@@ -140,19 +138,13 @@ bool ViewPort::SetPixel( Point2D view_point ){
 		if( b_isPixelDown ){
 			value = CHAR_PIXEL_UP_DOWN;
 		}
-		else{
-			value = CHAR_PIXEL_UP;
-		}
 	}
 	else if( current_pixel == CHAR_PIXEL_DOWN ){
-		if( b_isPixelDown ){
-			value = CHAR_PIXEL_DOWN;
-		}
-		else{
+		if( !b_isPixelDown ){
 			value = CHAR_PIXEL_UP_DOWN;
 		}
 	}
-	else{
+	else if( current_pixel == CHAR_PIXEL_EMPTY ){
 		if( b_isPixelDown ){
 			value = CHAR_PIXEL_DOWN;
 		}
@@ -161,18 +153,14 @@ bool ViewPort::SetPixel( Point2D view_point ){
 		}
 	}
 
-	Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
-	bitmap_point.round();
+	if( value != BITMAP_DATA_NULL ){
+		Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
+		bitmap_point.round();
 
-	return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
-}
-/*
-void ViewPort::CopyRaw( Bitmap* texture, Point2D viewPoint ){
-	if( texture != NULL && this->data != NULL ){
-		Point2D point_on_bitmap = ViewPointToBitMapPoint( viewPoint, this->data );
-		this->data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
+		return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
 	}
-}*/
+	return false;
+}
 
 void ViewPort::Clear(){
 	this->data->Clear();
@@ -297,11 +285,11 @@ void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radi
 	double tmp_x = 0, tmp_y = 0;
 	const double DEGREESTEP = 5;
 	const double DEGREES = 360.0;
+	const double DEG_TO_RAD_COEF = (M_PI / 180.0);
 	double rad = 0.0;
 	
-	for (double deg = 0.0; deg < DEGREES; deg += DEGREESTEP )
-	{
-		rad = deg * M_PI / 180.0;
+	for (double deg = 0.0; deg < DEGREES; deg += DEGREESTEP ){
+		rad = deg * DEG_TO_RAD_COEF;
 		tmp_y = radius * sin( rad );
 		tmp_x = radius * cos( rad );
 		
