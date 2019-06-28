@@ -37,6 +37,8 @@ public:
 	void UnloadLevel( Level *last_loaded_level );
 
 	void ClearGarbageCollector();
+
+	void AddGarbage(Entity *entity);
 };
 
 
@@ -65,3 +67,4 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity );
  * @param entity 
  */
 void EntityDrawSelector( ViewPort *view, Entity *entity );
+

@@ -114,4 +114,5 @@ public:
 	 * @return false 
 	 */
 	bool IsOutOfTheWorld();
+
 };

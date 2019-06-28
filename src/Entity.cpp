@@ -3,6 +3,7 @@
 #include "Level.hpp"
 #include <cstring>
 #include <iostream>
+#include "GameEngine.hpp"
 
 Entity::Entity( Level *_world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
 	this->garbage = false;
@@ -31,6 +32,7 @@ void Entity::Delete(){
 	if( !this->IsGarbage() ){
 		this->SetWorld( NULL );
 		this->garbage = true;
+		//game->AddGarbage(this);
 		// TODO: Aggiungere entità al garbage collector
 		
 	}
@@ -80,7 +82,9 @@ bool Entity::IsColliding( Entity *entity, Point2D *collisionOrigin ){
 		this->world->IsColliding( entity, collisionOrigin );
 	}
 	else{
-		// TODO
+		if( IsDefined(this) && IsDefined(entity) ){
+			return entity->GetOrigin().Equals(this->GetOrigin());
+		};
 	}
 
 	if( collisionOrigin != NULL ){

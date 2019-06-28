@@ -72,8 +72,9 @@ bool GameEngine::frame( double dtime ){
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
 	if( player != NULL ){
-		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" <<std::endl;
+		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" << "  -coll: " << std::endl;
 	}
+
 	else{
 		std::cout << "Player UNDEFINED !!!!" <<std::endl;
 	}
@@ -144,6 +145,10 @@ void GameEngine::ClearGarbageCollector(){
 		entity_iterator++;
 	}
 }
+
+void GameEngine::AddGarbage(Entity *entity){
+	this->garbage_collector.push_front(entity);
+};
 
 bool IsDefined( Entity *entity ){
 	return entity != NULL && !entity->IsGarbage();
@@ -217,3 +222,5 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 		}
 	}
 }
+
+

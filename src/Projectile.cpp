@@ -2,7 +2,7 @@
 #include "Level.hpp"
 #include <stddef.h>
 
-Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage ) : Entity( world, origin, NULL , "Projectile" ){
+Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, int type ) : Entity( world, origin, NULL , "Projectile" ){
 	this->fireOrigin = origin;
 	this->direction = direction;
 	this->damage = damage;
@@ -41,3 +41,7 @@ void Projectile::Draw( ViewPort *view ){
 void Projectile::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 	this->garbage = true;
 }
+
+int Projectile::GetType(){
+	return this->type;
+};

@@ -32,7 +32,7 @@ class DamageableEntity : public Entity{
 	 * @param attacker 
 	 * @param damageOrigin 
 	 */
-	void DoDamage( double amount, Point2D damageOrigin, Entity *attacker );
+	void DoDamage( double amount );
 
 	/**
 	 * @brief recupera una quantità di vita a questa entità

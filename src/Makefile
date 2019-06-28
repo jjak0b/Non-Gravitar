@@ -1,5 +1,5 @@
-NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o Player.o Projectile.o
-	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o Player.o Projectile.o
+NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o BunkerA.o BunkerB.o Player.o Projectile.o
+	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o BunkerA.o BunkerB.o Player.o Projectile.o
 
 main.o: main.cpp GameConfig.h GameEngine.hpp
 	g++ -c main.cpp
@@ -48,6 +48,12 @@ DamageableEntity.o: DamageableEntity.cpp DamageableEntity.hpp
 
 Bunker.o: Bunker.cpp Bunker.hpp
 	g++ -c Bunker.cpp
+
+BunkerB.o: BunkerB.cpp BunkerB.hpp
+	g++ -c BunkerB.cpp
+
+BunkerA.o: BunkerA.cpp BunkerA.hpp
+	g++ -c BunkerA.cpp
 
 Player.o : Player.cpp Player.hpp
 	g++ -c Player.cpp

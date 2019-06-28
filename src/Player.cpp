@@ -10,6 +10,11 @@
 #include <iterator>
 #include <cstring>
 
+#include "Bunker.hpp"
+#include "BunkerA.hpp"
+#include "BunkerB.hpp"
+#include "Point2D.hpp"
+
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
 	this->texture = new ColoredBitmap( 3, 5, 0 );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
@@ -61,9 +66,9 @@ bool Player::Update( GameEngine *game ){
 
 		std::list<Entity*> ents = this->world->GetEntities( "Player", true, false );
 		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-			Point2D *collisionOrigin = NULL;
-			if( this->IsColliding( *it, collisionOrigin ) ){
-				this->Callback_OnCollide( *it, *collisionOrigin );
+			Point2D collisionOrigin = this->GetOrigin();
+			if( this->IsColliding( *it, NULL ) ){
+				this->Callback_OnCollide( *it, this->GetOrigin() );
 				update_result = this->GetHealth() > 0;
 			}
 		}
@@ -96,7 +101,7 @@ void Player::Draw( ViewPort *view ){
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 150 );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 150, 0 );
 	return p;
 }
 
@@ -142,11 +147,11 @@ void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
-			this->DoDamage( proj->GetDamage(), hitOrigin, proj );
+			this->DoDamage( proj->GetDamage());
 			proj->Callback_OnCollide( collide_ent, hitOrigin );
 		}
 		else{ // la collisione contro qualsiasi altra entità, danneggia totalmente il giocatore
-			this->DoDamage( this->GetHealth(), hitOrigin, collide_ent );
+			this->DoDamage( this->GetHealth());
 		}
 	}
 }
@@ -161,3 +166,4 @@ void Player::SetMoveOverride( Vector *direction ){
 		}
 		this->moveOverride = direction;
 }
+

@@ -32,7 +32,7 @@ double DamageableEntity::GetMaxHealth() {
 }
 
 
-void DamageableEntity::DoDamage( double amount, Point2D damageOrigin, Entity *attacker ) {
+void DamageableEntity::DoDamage( double amount ) {
 	this->health -= amount;
 	// if (this-> health -= amount < 0) ???
 	//this->Callback_OnHit(damageOrigin, attacker, amount);
@@ -62,7 +62,10 @@ void DamageableEntity::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigi
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *e = (Projectile*)collide_ent;
-			this->DoDamage( e->GetDamage(), hitOrigin, collide_ent );
+			if((e->GetType() == 0 && ( !strcmp( this->GetClassname(), "Bunker" )))){
+				
+				this->DoDamage( e->GetDamage());
+			}
 		}
 	}
 }

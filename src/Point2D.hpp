@@ -32,4 +32,5 @@ public:
 	// override per non essere accessibile dall'esterno
 	bool Get( unsigned int i, VECTOR_VALUE_TYPE *return_value );
 	bool Set( unsigned int i, VECTOR_VALUE_TYPE value );
+	
 };

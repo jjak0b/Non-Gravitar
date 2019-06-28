@@ -2,6 +2,14 @@
 
 #include "Level.hpp"
 #include "GameEngine.hpp"
+#include "Bunker.hpp"
+#include "BunkerA.hpp"
+#include "BunkerB.hpp"
+#include "Projectile.hpp"
+#include "DamageableEntity.hpp"
+#include <ctime>    
+#include <cstdlib>  
+
 
 class PlanetEntity;
 
@@ -71,4 +79,6 @@ class PlanetLevel : public Level{
 	 * @return false altrimenti
 	 */
 	bool IsFree();
+
+	
 };

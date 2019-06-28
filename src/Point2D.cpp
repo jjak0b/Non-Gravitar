@@ -31,3 +31,4 @@ bool Point2D::Get( unsigned int i, VECTOR_VALUE_TYPE *return_value ){
 bool Point2D::Set( unsigned int i, VECTOR_VALUE_TYPE value ){
 	return Vector::Set( i, value );
 }
+

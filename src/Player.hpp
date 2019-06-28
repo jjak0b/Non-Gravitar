@@ -53,4 +53,6 @@ class Player : public DamageableEntity{
 	 * @param direction 
 	 */
 	void SetMoveOverride( Vector *direction );
+
+	
 };

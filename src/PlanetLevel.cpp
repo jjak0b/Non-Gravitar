@@ -2,8 +2,16 @@
 #include "PlanetEntity.hpp"
 #include "GameEngine.hpp"
 #include "Player.hpp"
+#include "BunkerA.hpp"
+#include "BunkerB.hpp"
 #include "Bunker.hpp"
+#include "Projectile.hpp"
+#include "DamageableEntity.hpp"
 #include <cmath>
+#include "Level.hpp"
+#include <ctime>    
+#include <cstdlib>  
+#include "Entity.hpp"
 
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, unsigned int max_longitude, unsigned int max_altitude ) : Level( max_longitude, max_altitude, "PlanetLevel"){
 	this->planet_entity = planet_entity;
@@ -45,7 +53,8 @@ bool PlanetLevel::Update( GameEngine *game ){
 				Point2D spawn_point = this->GetPlanetEntity()->escape_point;
 				_player->SetOrigin( spawn_point );
 			}
-
+			
+			
 			// Carica il sistema solare come prossimo livello del successivo frame
 			// Nota facoltativa: solar_system dovrebbe essere sempre definito per come è stata impostata la logica di cambio di livello,
 			// comunque nel caso esso non sia definito per un qualche motivo quale ad esempio un livello speciale o futuri cambiamenti
@@ -105,10 +114,11 @@ void PlanetLevel::Generate( GameEngine *game ){
 
 	
 	
-	Bunker *e = new Bunker(this,Point2D(80,25),2);
+	BunkerA *e = new BunkerA(this,Point2D(40,25));
 	this->AddEntity(e);
-	Bunker *e2 = new Bunker(this,Point2D(60,25),1);
+	BunkerB *e2 = new BunkerB(this,Point2D(60,26));
 	this->AddEntity(e2);
-
+	
 
 }
+
