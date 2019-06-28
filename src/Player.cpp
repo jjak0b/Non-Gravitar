@@ -101,7 +101,7 @@ void Player::Draw( ViewPort *view ){
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 150, 0 );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, 0 );
 	return p;
 }
 

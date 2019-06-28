@@ -18,5 +18,6 @@ class Bunker : public DamageableEntity{
 		Projectile *shoot( Vector direction );
 
 		int random(int range);
+
 	
 };

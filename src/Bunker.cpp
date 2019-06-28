@@ -2,20 +2,20 @@
 #include "DamageableEntity.hpp"
 #include "Projectile.hpp"
 #include "GameEngine.hpp"
+#include "Entity.hpp"
 #include <ctime>    
 #include <cstdlib>  
-
+#include <iostream>
+#include <list>
+#include <iterator>
+#include <cstring>
 Bunker::Bunker( Level *world, Point2D origin, double health) : DamageableEntity( world, origin, NULL, "Bunker", health){}
 
 bool Bunker::Update(GameEngine* game) {
-	
-    
 	bool update_result = this->Entity::Update( game );
     int t = game->GetTime()*100;
     this->counter++;
-    
     return update_result;
-
 }
 
 Projectile *Bunker::shoot( Vector direction ){
@@ -24,7 +24,6 @@ Projectile *Bunker::shoot( Vector direction ){
 	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, 1 );
 	return p;
 }
-
 
 int Bunker::random(int range){
     
@@ -35,4 +34,6 @@ int Bunker::random(int range){
     if (r3 == 0) return r1;
     else return r2;
 }
+
+
 

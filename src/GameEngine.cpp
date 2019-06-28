@@ -72,7 +72,7 @@ bool GameEngine::frame( double dtime ){
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
 	if( player != NULL ){
-		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" << "  -coll: " << std::endl;
+		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" << std::endl;
 	}
 
 	else{
@@ -178,6 +178,10 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
 			update_result = ent->Update( game );
 		}
 		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
+			Projectile *ent = (Projectile*)entity;
+			update_result = ent->Update( game );
+		}
+		else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
 		}

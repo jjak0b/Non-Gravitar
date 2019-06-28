@@ -118,6 +118,8 @@ void PlanetLevel::Generate( GameEngine *game ){
 	this->AddEntity(e);
 	BunkerB *e2 = new BunkerB(this,Point2D(60,26));
 	this->AddEntity(e2);
+
+	
 	
 
 }

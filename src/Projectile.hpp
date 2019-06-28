@@ -12,6 +12,7 @@ class Projectile : public Entity{
 	double damage; // danno che infligge a qualsiasi entità che colpisce
 	Point2D fireOrigin; // punto di partenza da cui è stato generato il proiettile
 	Vector direction; // vettore che indica la direzione dell'entità
+	double lifetime ;
 
 	public:
 	Projectile( Level *world, Point2D origin, Vector direction, double damage, int type );

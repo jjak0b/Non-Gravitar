@@ -5,11 +5,10 @@
 #include "Bunker.hpp"
 
 class BunkerA : public Bunker{
-	protected:
-        double health = 30;
-	
 	
 	public:
 		BunkerA( Level *world, Point2D origin);
 	    bool Update(GameEngine* game);
+		void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+		
 };
