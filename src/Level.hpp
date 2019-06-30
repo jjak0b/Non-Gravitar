@@ -128,9 +128,13 @@ public:
 	 */
 	virtual bool IsGenerated();
 
+	list<Point2D> getSurface();
+
 	private:
 	/**
 	 * @brief Non fa niente, ma viene nascosta la visibilità esterna tramite overriding
 	 */
 	void SetOrigin();
+
+	
 };

@@ -29,6 +29,8 @@ class Player : public DamageableEntity{
 
 	Projectile *Fire( Vector direction );
 
+	Projectile *Beam( Vector direction );
+
 	Vector GetDirectionFromInput( INPUT_TYPE input );
 
 	void SetLastInput( INPUT_TYPE input );

@@ -21,7 +21,7 @@ bool Bunker::Update(GameEngine* game) {
 Projectile *Bunker::shoot( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction ); 
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, 1 );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, "Projectile" );
 	return p;
 }
 

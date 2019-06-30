@@ -12,6 +12,8 @@
 #include <ctime>    
 #include <cstdlib>  
 #include "Entity.hpp"
+#include "Point2D.hpp"
+#include "Fuel.hpp"
 
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, unsigned int max_longitude, unsigned int max_altitude ) : Level( max_longitude, max_altitude, "PlanetLevel"){
 	this->planet_entity = planet_entity;
@@ -41,6 +43,7 @@ void PlanetLevel::SetPlanetEntity( PlanetEntity *entity ){
 bool PlanetLevel::Update( GameEngine *game ){
 	bool update_result = Level::Update( game );
 	if( update_result ){
+		
 		if( IsDefined( this->GetPlayer() ) && this->GetPlayer()->IsOutOfTheWorld() ){
 			SolarSystem *solar_system = NULL;
 			if( IsDefined( this->GetPlanetEntity() ) ){
@@ -54,7 +57,15 @@ bool PlanetLevel::Update( GameEngine *game ){
 				_player->SetOrigin( spawn_point );
 			}
 			
-			
+			/* std::list<Entity*> proj = this->world->GetEntities( "Projectile", false, true );
+			for (std::list<Entity*>::iterator it = proj.begin(); it != proj.end(); it++) {
+				for (std::list<Point2D>::iterator it_p = this->surface.begin(); it_p != this->surface.end(); it++) {
+					if ((*it)->GetOrigin().Equals(*it_p)) {
+						(*it)->Delete();
+					}
+				}
+			}*/
+
 			// Carica il sistema solare come prossimo livello del successivo frame
 			// Nota facoltativa: solar_system dovrebbe essere sempre definito per come è stata impostata la logica di cambio di livello,
 			// comunque nel caso esso non sia definito per un qualche motivo quale ad esempio un livello speciale o futuri cambiamenti
@@ -112,15 +123,14 @@ void PlanetLevel::Generate( GameEngine *game ){
 	}
 	this->surface.push_front( end );
 
-	
-	
 	BunkerA *e = new BunkerA(this,Point2D(40,25));
 	this->AddEntity(e);
 	BunkerB *e2 = new BunkerB(this,Point2D(60,26));
 	this->AddEntity(e2);
 
-	
-	
-
+	Fuel *f = new Fuel(this, Point2D(40, 30), 20);
+	this->AddEntity(f);
 }
+
+
 

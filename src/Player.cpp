@@ -61,12 +61,11 @@ bool Player::Update( GameEngine *game ){
 			this->Fire( this->lastMove );
 		}
 		else if( this->ShouldBeam( input ) ){
-			// TODO: logica del raggio traente
+			this->Beam(this->lastMove);
 		}
 
 		std::list<Entity*> ents = this->world->GetEntities( "Player", true, false );
 		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-			Point2D collisionOrigin = this->GetOrigin();
 			if( this->IsColliding( *it, NULL ) ){
 				this->Callback_OnCollide( *it, this->GetOrigin() );
 				update_result = this->GetHealth() > 0;
@@ -101,7 +100,14 @@ void Player::Draw( ViewPort *view ){
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, 0 );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, "Projectile" );
+	return p;
+}
+
+Projectile *Player::Beam( Vector direction ){
+	Point2D projectile_origin = this->GetOrigin();
+	projectile_origin.Add( direction ); 
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam" );
 	return p;
 }
 
@@ -148,10 +154,14 @@ void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage( proj->GetDamage());
-			proj->Callback_OnCollide( collide_ent, hitOrigin );
+			proj->Callback_OnCollide();
 		}
-		else{ // la collisione contro qualsiasi altra entità, danneggia totalmente il giocatore
-			this->DoDamage( this->GetHealth());
+		if( !strcmp( collide_ent->GetClassname(), "Beam" ) ){
+			Projectile *proj = (Projectile*)collide_ent;
+			proj->Callback_OnCollide();
+		}
+		if( !strcmp( collide_ent->GetClassname(), "Bunker" ) ){
+			this->Delete();
 		}
 	}
 }

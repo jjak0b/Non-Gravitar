@@ -3,7 +3,7 @@
 #include "GameEngine.hpp"
 #include <stddef.h>
 
-Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, int type ) : Entity( world, origin, NULL , "Projectile" ){
+Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[] ) : Entity( world, origin, NULL , classname ){
 	this->fireOrigin = origin;
 	this->direction = direction;
 	this->damage = damage;
@@ -34,9 +34,15 @@ bool Projectile::Update( GameEngine *game ) {
 
 	if( this->IsOutOfTheWorld() || (game->GetTime() > this->lifetime)){
 		shouldUpdateNextFrame = false;
-		this->garbage = true;
+		this->Delete();
 	}
-	
+
+	/* for (std::list<Point2D>::iterator it_p = this->world->getSurface().begin(); it_p != this->world->getSurface().end(); it_p++) {
+		if (this->GetOrigin().Equals(*it_p)) {
+		shouldUpdateNextFrame = false;
+		this->Delete();
+		}
+	}*/
 	return shouldUpdateNextFrame;
 }
 
@@ -44,10 +50,9 @@ void Projectile::Draw( ViewPort *view ){
 	Entity::Draw( view );
 }
 
-void Projectile::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
-	this->garbage = true;
+void Projectile::Callback_OnCollide(){
+	this->Delete();
 }
 
-int Projectile::GetType(){
-	return this->type;
-};
+
+

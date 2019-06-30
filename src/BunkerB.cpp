@@ -58,7 +58,7 @@ void BunkerB::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage( proj->GetDamage());
-			proj->Callback_OnCollide( collide_ent, hitOrigin );
+			proj->Callback_OnCollide();
 		}
 		else{ 
 			this->DoDamage( this->GetHealth());

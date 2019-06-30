@@ -5,6 +5,7 @@
 #include <list>
 #include <iterator>
 #include <cstring>
+#include "Projectile.hpp"
 using namespace std;
 
 Level::Level( unsigned int MaxWidth, unsigned int MaxHeight, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
@@ -236,4 +237,8 @@ Player *Level::GetOutPlayer(){
 
 bool Level::IsGenerated(){
 	return !this->surface.empty();
+}
+
+list<Point2D> Level::getSurface(){
+	return this->surface;
 }

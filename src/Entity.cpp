@@ -104,3 +104,7 @@ bool Entity::IsOutOfTheWorld(){
 	}
 	return true;
 }
+
+void Entity::Callback_OnCollide(){
+	this->Delete();
+}

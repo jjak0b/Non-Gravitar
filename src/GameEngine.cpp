@@ -6,6 +6,7 @@
 #include "PlanetLevel.hpp"
 #include "Projectile.hpp"
 #include "Bunker.hpp"
+#include "Projectile.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 	this->time = 0.0;
@@ -181,6 +182,10 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
 		}
+		else if( !strcmp( entity->GetClassname(), "Beam" ) ){
+			Projectile *ent = (Projectile*)entity;
+			update_result = ent->Update( game );
+		}
 		else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
@@ -220,6 +225,7 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 			Projectile *ent = (Projectile*)entity;
 			ent->Draw( view );
 		}
+		
 		// TODO: aggiungere altri tipi di Draw
 		else{
 			entity->Draw( view );

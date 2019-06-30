@@ -104,7 +104,7 @@ public:
 	 * @param collide_ent 
 	 * @param hitOrigin 
 	 */
-	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+	void Callback_OnCollide(  );
 
 	/**
 	 * @brief Indica se questa entità si trova in una posizione esterna al pianeta preso in considerazione
