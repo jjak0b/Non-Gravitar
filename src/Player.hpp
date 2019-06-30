@@ -12,6 +12,10 @@ class Player : public DamageableEntity{
 	INPUT_TYPE lastInput; // l'ultimo input ricevuto
 	Vector lastMove; // l'ultimo spostamento effettuato
 	Vector *moveOverride; // spostamento obbligato dal gioco
+	double fuel = 200;
+	double MaxFuel = 200;
+	bool first = false;
+	
 	public:
 	Player( Level *world, Point2D origin, double health );
 
@@ -56,5 +60,15 @@ class Player : public DamageableEntity{
 	 */
 	void SetMoveOverride( Vector *direction );
 
-	
+	void SetMaxFuel( double amount );
+
+	void SetFuel( double amount );
+
+	double GetFuel();
+
+	double GetMaxFuel();
+
+	void AddFuel( double amount );
+
+	void RemoveFuel( double amount );
 };

@@ -20,7 +20,7 @@ bool Fuel::Update(GameEngine *game) {
     std::list<Entity*> proj = this->world->GetEntities( "Beam", false, true );
 	for (std::list<Entity*>::iterator it = proj.begin(); it != proj.end(); it++) {
 		if( this->IsColliding( *it, NULL )){
-				this->world->GetPlayer()->DoHeal(20);
+				this->world->GetPlayer()->AddFuel(this->size);
 				this->Callback_OnCollide();
 				(*it)->Callback_OnCollide();
 				

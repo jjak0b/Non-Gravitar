@@ -1,3 +1,4 @@
+    
 #include "PlanetLevel.hpp"
 #include "PlanetEntity.hpp"
 #include "GameEngine.hpp"
@@ -131,6 +132,3 @@ void PlanetLevel::Generate( GameEngine *game ){
 	Fuel *f = new Fuel(this, Point2D(40, 30), 20);
 	this->AddEntity(f);
 }
-
-
-

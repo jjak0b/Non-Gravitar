@@ -15,7 +15,7 @@
 #include "BunkerB.hpp"
 #include "Point2D.hpp"
 
-Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
+Player::Player( Level *world, Point2D origin, double health) : DamageableEntity( world, origin, NULL, "Player", health ){
 	this->texture = new ColoredBitmap( 3, 5, 0 );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
@@ -23,6 +23,8 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
 	this->texture->Load( rawtexture, 3, 5 );
 	this->moveOverride = NULL;
+
+	
 }
 
 Player::~Player(){
@@ -38,9 +40,13 @@ bool Player::Update( GameEngine *game ){
 	bool update_result = this->Entity::Update( game );
 
 	if( update_result ){
+		
+
 		INPUT_TYPE input = game->GetkeyPressed();
 		Point2D current_origin = this->GetOrigin();	
 		Vector direction;
+
+		
 
 		if( this->moveOverride != NULL ){
 			direction = *this->moveOverride;
@@ -53,6 +59,8 @@ bool Player::Update( GameEngine *game ){
 		current_origin.Add( direction ); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
 
 		if( !direction.IsNull() ){ // aggiorno la posizione solo il vettore spostamento non è nullo
+
+			this->RemoveFuel(1);
 			this->SetOrigin( current_origin );
 			this->lastMove = direction;
 		}
@@ -89,7 +97,7 @@ void Player::Draw( ViewPort *view ){
 	view->Print( str_print_buffer, point_top_left_hud );
 
 	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
-	snprintf( str_print_buffer, size_str_buffer, "Fuel: [value]"); // TODO: aggiungere valore dopo implementazione
+	snprintf( str_print_buffer, size_str_buffer, "fuel: %.2f / %.2f", this->GetFuel(), this->GetMaxFuel() );
 	view->Print( str_print_buffer, point_top_left_hud );
 
 	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
@@ -177,3 +185,42 @@ void Player::SetMoveOverride( Vector *direction ){
 		this->moveOverride = direction;
 }
 
+
+void Player::SetMaxFuel( double amount ){
+	if (amount < this->fuel) {
+		this->fuel = amount;
+	}
+
+	this->MaxFuel = amount;
+}
+
+void Player::SetFuel( double amount ){
+	this->fuel = amount;
+}
+
+double Player::GetFuel() {
+	return this->fuel;
+}
+
+double Player::GetMaxFuel() {
+	return this->MaxFuel;
+}
+
+
+void Player::AddFuel( double amount ) {
+	if (this->fuel += amount > this->MaxHealth) {
+		this->fuel = this->MaxFuel;
+	}
+	else
+	{
+		this->fuel += amount;
+	}
+	
+}
+
+void Player::RemoveFuel( double amount ) {
+	this->fuel -= amount;
+	if (this->fuel <= 0) {
+		this->Delete();
+	}
+}
