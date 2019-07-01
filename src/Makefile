@@ -1,5 +1,5 @@
-NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o
-	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o
+NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o Color.o
+	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o Color.o
 
 main.o: main.cpp GameConfig.h GameEngine.hpp
 	g++ -c main.cpp
@@ -55,6 +55,8 @@ Projectile.o : Projectile.cpp Projectile.hpp
 Fuel.o : Fuel.cpp Fuel.hpp
 	g++ -c Fuel.cpp
 
+Color.o : Color.cpp Color.hpp
+	g++ -c Color.cpp
+
 clean:
 	del *.o NonGravitar.exe NonGravitar
-

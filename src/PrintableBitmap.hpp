@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Bitmap.hpp"
+#include "ColoredBitmap.hpp"
 
-class PrintableBitmap : public Bitmap{
+class PrintableBitmap : public ColoredBitmap{
 public:
 	PrintableBitmap( unsigned int _rows = 0, unsigned int _columns = 0);
 

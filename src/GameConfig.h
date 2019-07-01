@@ -29,3 +29,5 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define VECTOR_DIMENSIONS 2
 
 #define _USE_MATH_DEFINES
+
+// #define ENABLE_ANSI_IF_SUPPORTED

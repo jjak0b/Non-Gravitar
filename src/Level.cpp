@@ -91,14 +91,14 @@ bool Level::Update( GameEngine *game ){
 void Level::Draw( ViewPort *view ){
 	std::list<Point2D>::iterator surface_it, surface_next_it;
 	surface_it = this->surface.begin();
-
+	Color surface = COLOR_GREEN;
 	Point2D start, end;
 	// TODO: ricontrollare
 	while( surface_it != this->surface.end() ){
 		start = *surface_it;
 		surface_it++;
 		end = *surface_it;
-		DrawLine( view, this, start, end );
+		DrawLine( view, this, start, end, surface );
 #ifdef DEBUG
 		const int size_str_buffer = 30;
 		char str_print_buffer[size_str_buffer] = "";
@@ -107,12 +107,12 @@ void Level::Draw( ViewPort *view ){
 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
 		temp = start;
 		temp.SetY( temp.GetY() + 3 );
-		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ) );
+		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 
 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
 		temp = end;
 		temp.SetY( temp.GetY() + 3 );
-		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ) );
+		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 #endif
 	}
 

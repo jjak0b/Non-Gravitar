@@ -59,7 +59,7 @@ bool PlanetEntity::Update( GameEngine *game ){
 
 void PlanetEntity::Draw( ViewPort *view ){
 	if( IsDefined( this ) )
-		DrawCircle( view, this->world, this->origin, this->radius );
+		DrawCircle( view, this->world, this->origin, this->radius, COLOR_WHITE );
 }
 
 bool PlanetEntity::IsColliding( Entity *entity ){

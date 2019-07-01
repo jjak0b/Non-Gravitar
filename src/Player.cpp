@@ -11,12 +11,12 @@
 #include <cstring>
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
-	this->texture = new ColoredBitmap( 3, 5, 0 );
+	this->texture = new ColoredBitmap( 3, 5, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
 	const BITMAP_DATA_TYPE raw_texturer2[] = "/   \\";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
-	this->texture->Load( rawtexture, 3, 5 );
+	this->texture->Load( rawtexture, NULL, 3, 5 );
 	this->moveOverride = NULL;
 }
 
@@ -82,15 +82,15 @@ void Player::Draw( ViewPort *view ){
 
 	Point2D point_top_left_hud = Point2D( 0, view->GetHeight() - 2 );
 	snprintf( str_print_buffer, size_str_buffer, "Score: [value]"); // TODO: aggiungere valore dopo implementazione
-	view->Print( str_print_buffer, point_top_left_hud );
+	view->Print( str_print_buffer, point_top_left_hud, COLOR_RED );
 
 	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
 	snprintf( str_print_buffer, size_str_buffer, "Fuel: [value]"); // TODO: aggiungere valore dopo implementazione
-	view->Print( str_print_buffer, point_top_left_hud );
+	view->Print( str_print_buffer, point_top_left_hud, COLOR_BLUE );
 
 	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
 	snprintf( str_print_buffer, size_str_buffer, "Health: %.2f / %.2f", this->GetHealth(), this->GetMaxHealth() );
-	view->Print( str_print_buffer, point_top_left_hud );
+	view->Print( str_print_buffer, point_top_left_hud, COLOR_GREEN );
 }
 
 Projectile *Player::Fire( Vector direction ){

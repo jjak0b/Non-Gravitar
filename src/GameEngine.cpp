@@ -6,6 +6,11 @@
 #include "PlanetLevel.hpp"
 #include "Projectile.hpp"
 
+#ifdef __WIN32__
+#include <windows.h>
+#include <versionhelpers.h>
+#endif
+
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 	this->time = 0.0;
 	this->currentLevel = NULL;
@@ -15,8 +20,7 @@ GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned height ){
 	this->time += time;
 	this->input_key = key_pressed;
-	this->view->UpdateSize( width, height );
-	return false;
+	return this->view->UpdateSize( width, height );
 }
 
 bool GameEngine::frame( double dtime ){
@@ -57,7 +61,7 @@ bool GameEngine::frame( double dtime ){
 	}while( keepPlaying && this->GetCurrentLevel() == NULL );
 	
 	// TEMP finchè i test non sono ultimati
-	Point2D world_point_relative_to_bottom_left = Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2.0), 0 );
+	Point2D world_point_relative_to_bottom_left = Point2D( player->GetOrigin().GetX() - (this->view->GetWidth()/2.0), 0 );
 	this->SetCameraWorldOrigin( world_point_relative_to_bottom_left );
 
 	this->view->Clear();
@@ -215,4 +219,31 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 			entity->Draw( view );
 		}
 	}
+}
+
+bool OsSupportAnsiEscape(){
+	bool isSupported = false;
+	
+	#ifdef ENABLE_ANSI_IF_SUPPORTED
+		#ifdef __WIN32__
+		isSupported = IsWindows8OrGreater();
+/*
+		DWORDLONG dwlConditionMask = 0;
+		OSVERSIONINFOEX osVersionInfo;
+		osVersionInfo.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
+		osVersionInfo.dwMajorVersion = 6; // l'applicazione è priva di un manifest e quindi viene considerata dal sistema operativo come applicazione per windows 8 (6.2)
+		osVersionInfo.dwMinorVersion = 2;
+		// osVersionInfo.dwBuildNumber = 10586; // Windows 10 supporta codici Ansi escape da versione 1511 (build 10586)
+		// osVersionInfo.wProductType == VER_NT_WORKSTATION
+		int op = VER_GREATER_EQUAL;
+		VER_SET_CONDITION( dwlConditionMask, VER_MINORVERSION, op );
+		VER_SET_CONDITION( dwlConditionMask, VER_MAJORVERSION, op );
+		VER_SET_CONDITION( dwlConditionMask, VER_BUILDNUMBER, op );
+		isSupported = VerifyVersionInfo( &osVersionInfo, VER_MINORVERSION | VER_MAJORVERSION , dwlConditionMask );
+*/
+		#else
+		isSupported = true;
+		#endif
+	#endif
+	return isSupported;
 }

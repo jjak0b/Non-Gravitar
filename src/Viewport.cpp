@@ -9,8 +9,8 @@
 
 ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->data = NULL;
-	this->width = 0;
-	this->height = 0;
+	this->width = 1;
+	this->height = 1;
 	this->world_origin = origin;
 	this->UpdateSize( _width, _height );
 }
@@ -19,16 +19,20 @@ ViewPort::~ViewPort(){
 	this->Dispose();
 }
 
-void ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
+bool ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
+	_width = _width > 0 ? _width : 1;
+	_height = _height > 2 ? _height : 2;
 	if( _width != this->width || _height * 2 != this->height ){
 		this->width = _width;
 		this->height = _height * 2; // poichè usiamo il terminale, considero virtualmente il doppio dell'altezza perchè così posso lavorare sui caratteri "pixel"
 		this->Dispose();
 		this->data = new PrintableBitmap( _height, _width );
+		return true;
 	}
+	return false;
 }
 
-void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
+void ViewPort::Draw( ColoredBitmap *texture, Level *world, Point2D world_point ){
 	if( this->data != NULL){
 		Point2D point_relative_to_bottom_left_view = this->WorldPointToViewPoint( world, world_point );
 		// ovvero da x-texture->GetColumns()/2 e y+texture->GetRows()/2 )
@@ -45,15 +49,15 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 			point_on_bitmap.Add( offset_from_bitmap_point_to_texture_top_left );
 
 			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
-			this->SetPixel( point_relative_to_bottom_left_view );
+			this->SetPixel( point_relative_to_bottom_left_view, COLOR_WHITE );
 		}
 		else{
-			this->SetPixel( point_relative_to_bottom_left_view );
+			this->SetPixel( point_relative_to_bottom_left_view, COLOR_WHITE );
 		}
 	}
 }
 
-void ViewPort::Print( const char str_text[], Point2D view_point ){
+void ViewPort::Print( const char str_text[], Point2D view_point, Color color ){
 
 	view_point.round();
 	// se il punto è fuori dal range della viewport termina la funzione
@@ -93,7 +97,7 @@ void ViewPort::Print( const char str_text[], Point2D view_point ){
 			
 		}
 		else{
-			this->SetBitmapData( value, point_cursor );
+			this->SetBitmapData( value, color, point_cursor );
 			point_cursor.SetX( point_cursor.GetX() + 1 );
 		}
 		
@@ -110,12 +114,12 @@ BITMAP_DATA_TYPE ViewPort::GetBitmapData( Point2D view_point ){
 	return BITMAP_DATA_NULL;
 }
 
-bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Point2D view_point ){
+bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Color color, Point2D view_point ){
 	Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
 	bitmap_point.round();
 	if( this->data != NULL ){
 		if( IS_PIXEL_DATA( value ) ){
-			return this->SetPixel( view_point );
+			return this->SetPixel( view_point, color );
 		}
 		else{
 			return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
@@ -124,7 +128,7 @@ bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Point2D view_point ){
 	return false; 
 }
 
-bool ViewPort::SetPixel( Point2D view_point ){
+bool ViewPort::SetPixel( Point2D view_point, Color color ){
 	view_point.round();
 	BITMAP_DATA_TYPE value = BITMAP_DATA_NULL;
 	BITMAP_DATA_TYPE current_pixel = this->GetBitmapData( view_point );
@@ -156,7 +160,7 @@ bool ViewPort::SetPixel( Point2D view_point ){
 	if( value != BITMAP_DATA_NULL ){
 		Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
 		bitmap_point.round();
-
+		this->data->SetColor( color, bitmap_point.GetY(), bitmap_point.GetX() );
 		return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
 	}
 	return false;
@@ -172,7 +176,7 @@ void ViewPort::Refresh(){
 }
 
 
-Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap ){
+Point2D ViewPointToBitMapPoint( Point2D view_point, ColoredBitmap *bitmap ){
 	if( bitmap == NULL ){
 		return Point2D( 0, 0 );
 	}
@@ -222,7 +226,7 @@ void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
 	this->world_origin = WorldOrigin;
 }
 
-void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
+void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color color ){
 	bool isVertical = false; // la retta è verticale
 	double angular_coeffcient = 0.0; // coeff. angolare della retta
 	if( end.GetX() - start.GetX() != 0){
@@ -275,12 +279,12 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end ){
 		temp_point.SetX( x );
 		temp_point.SetY( y );
 		temp_point.Add( start );
-		view->SetPixel( view->WorldPointToViewPoint( world, temp_point ) );
+		view->SetPixel( view->WorldPointToViewPoint( world, temp_point ), color );
 	}
-	view->SetPixel( view->WorldPointToViewPoint( world, end ) );
+	view->SetPixel( view->WorldPointToViewPoint( world, end ), color );
 }
 
-void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius ){
+void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius, Color color ){
 	Point2D circle_point;
 	double tmp_x = 0, tmp_y = 0;
 	const double DEGREESTEP = 5;
@@ -296,6 +300,6 @@ void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radi
 		circle_point.SetX( tmp_x );
 		circle_point.SetY( tmp_y );
 		circle_point.Add( world_origin );
-		view->Draw( NULL, world, circle_point );
+		view->SetPixel( view->WorldPointToViewPoint( world, circle_point), color );
 	}
 }

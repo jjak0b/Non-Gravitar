@@ -1,9 +1,18 @@
 #include <iostream>
 #include <time.h>
 #include <conio.h>
+
 // dipendenti da SO
-#ifdef _WIN32
+#ifdef __WIN32__
 #include <Windows.h>
+// definizioni di flags per terminale windows
+// fonte: www.docs.microsoft.com
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
+#ifndef DISABLE_NEWLINE_AUTO_RETURN
+#define DISABLE_NEWLINE_AUTO_RETURN 0x0008
+#endif
 #else
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -16,7 +25,6 @@
 #include "Vector.hpp" // così definisco tipo e dimensione vettori per tutto il resto del programma
 
 #include "GameEngine.hpp"
-
 
 char getInput(){
 			char c = '\0';
@@ -44,7 +52,7 @@ char getInput(){
 }
 
 void setCursor( int x, int y ){
-	
+	#ifdef __WIN32__
 	HANDLE hOut;
 	COORD Position;
 
@@ -53,11 +61,13 @@ void setCursor( int x, int y ){
 	Position.X = x;
 	Position.Y = y;
 	SetConsoleCursorPosition(hOut, Position);
+	#else
+	cout << "\e[" << y << ";" << x << "H");
+	#endif
 }
 
 Point2D GetTerminalSize(){
-
-	#ifdef _WIN32
+	#ifdef __WIN32__
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		int columns, rows;
 		HANDLE hOut;
@@ -71,37 +81,64 @@ Point2D GetTerminalSize(){
 		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 		return Point2D( w.ws_col, w.ws_row );
 	#endif
-
 }
 
+void ClearScreen(){
+	#ifdef __WIN32__
+	system( "cls");
+	#else
+	system( "CLEAR");
+	#endif
+}
+
+#include <cstring>
+#include "Color.hpp"
+
 int main(){
+	#ifdef __WIN32__
+	if( OsSupportAnsiEscape() ){
+		HANDLE hOut= GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD mode;
+		GetConsoleMode(hOut, &mode);
+		mode = mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING; // aggiungo flag per abilitare supporto ANSI
+		SetConsoleMode(hOut, mode);
+	}
+	#endif
+
 	bool b_keep_playing = true;
 	double dtime = 0.0;
 	char key = '\0';
+	bool b_windowSizeUpdated = false;
 	clock_t current_time = clock(), last_frame_time = current_time;
-	Point2D screen_size = GetTerminalSize();
-	system( "cls");
-	screen_size.SetX( 120 );
-	screen_size.SetY( 30 );
+	Point2D screen_size = Point2D( 1, 1);
+	ClearScreen();
+
+	// screen_size.SetX( 120 );
+	// screen_size.SetY( 30 );
 	GameEngine engine = GameEngine( screen_size.GetX(), screen_size.GetY() );
 	do{
 		setCursor( 0, 0 );
 		if( _kbhit() ){
 			key = getInput();
 		}
-
+		current_time = clock();
 		dtime = double( current_time - last_frame_time ) / CLOCKS_PER_SEC;
 		if( dtime >= FRAME_TIME ){
-			// system("cls");
 			last_frame_time = clock();
-			engine.update( dtime, key, screen_size.GetX(), screen_size.GetY() );
+			screen_size = GetTerminalSize();
+			#ifdef DEBUG
+			screen_size.SetY( screen_size.GetY() - 5 );
+			#endif
+			b_windowSizeUpdated = engine.update( dtime, key, screen_size.GetX(), screen_size.GetY() );
+			if( b_windowSizeUpdated ){
+				ClearScreen();
+			}
 			b_keep_playing = engine.frame( dtime );
 			key = '\0';
 #ifdef DEBUG  // DEBUG
-			std::cout << "Window: "<<screen_size.GetX() << "x" << screen_size.GetY() << " Duration: " << dtime << "\tFPS: ~" << ceil( 1.0 / dtime ) << std::endl;
+			std::cout << "Window: "<<screen_size.GetX() << "x" << screen_size.GetY() << " Duration: " << dtime << "\tFPS: ~" << round( 1.0 / dtime ) << "\tScreen size Updated: "<< b_windowSizeUpdated << std::endl;
 #endif
 		}
-		current_time = clock();
 	}while( b_keep_playing );
 
 	system( "pause" );
