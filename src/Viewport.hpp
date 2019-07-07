@@ -47,7 +47,7 @@ class Level;
 class ViewPort{
 protected:
 	Point2D world_origin; // posizione relativa al mondo dalla quale mostra gli elementi del livello a seguire
-	unsigned int width = 0, height = 0; // dimensioni della schermata viewport
+	Vector bounds; // dimensioni della schermata viewport
 	PrintableBitmap *data; // "Memoria video" aggiornata frame dopo frame
 public:
 	ViewPort( unsigned int width, unsigned int height, Point2D origin );

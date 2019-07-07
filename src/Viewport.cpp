@@ -9,8 +9,9 @@
 
 ViewPort::ViewPort( unsigned int _width, unsigned int _height, Point2D origin ){
 	this->data = NULL;
-	this->width = 1;
-	this->height = 1;
+	this->bounds = Vector( 2 );
+	this->bounds.Set( BOUND_INDEX_WIDTH, 1 );
+	this->bounds.Set( BOUND_INDEX_HEIGHT, 1 );
 	this->world_origin = origin;
 	this->UpdateSize( _width, _height );
 }
@@ -22,9 +23,9 @@ ViewPort::~ViewPort(){
 bool ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
 	_width = _width > 0 ? _width : 1;
 	_height = _height > 2 ? _height : 2;
-	if( _width != this->width || _height * 2 != this->height ){
-		this->width = _width;
-		this->height = _height * 2; // poichè usiamo il terminale, considero virtualmente il doppio dell'altezza perchè così posso lavorare sui caratteri "pixel"
+	if( _width != this->GetWidth() || _height * 2 != this->GetHeight() ){
+		this->bounds.Set( BOUND_INDEX_WIDTH, _width );
+		this->bounds.Set( BOUND_INDEX_HEIGHT, _height * 2 ); // poichè usiamo il terminale, considero virtualmente il doppio dell'altezza perchè così posso lavorare sui caratteri "pixel"
 		this->Dispose();
 		this->data = new PrintableBitmap( _height, _width );
 		return true;
@@ -215,11 +216,15 @@ void ViewPort::Dispose(){
 }
 
 unsigned int ViewPort::GetWidth(){
-	return this->width;
+	VECTOR_VALUE_TYPE value = 1;
+	this->bounds.Get( BOUND_INDEX_WIDTH, &value );
+	return value;
 }
 
 unsigned int ViewPort::GetHeight(){
-	return this->height;
+	VECTOR_VALUE_TYPE value = 1;
+	this->bounds.Get( BOUND_INDEX_HEIGHT, &value );
+	return value;
 }
 
 void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
@@ -253,7 +258,7 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color c
 		// se si trova nella stessa ordinata, la campionatura basta di 1 unità
 		// altrimenti la risoluzione di campionamento delle ascisse diventa sempre più precisa quando la retta tende ad essere verticale
 		if( distance_y != 0 ){
-			inc_value = min( 1.0f, distance_x / distance_y );
+			inc_value = min( (VECTOR_VALUE_TYPE)1.0, distance_x / distance_y );
 		}
 	}
 

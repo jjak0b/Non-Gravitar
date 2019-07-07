@@ -21,10 +21,10 @@ class PlanetLevel : public Level{
 	 * il pianeta ha un propria longitudine e altitudine massima, rispettivamente recuperabili tramite GetWidth e GetHeight
 	 * 
 	 * @param planet_entity : riferimento dell' entità pianeta che risiede nel sistema solare, a cui è asspociato questo livello
-	 * @param max_longitude
-	 * @param max_altitude
+	 * @param bounds( max_longitude, max_altitude )
+	 * @param 
 	 */
-	PlanetLevel( PlanetEntity *planet_entity = NULL, unsigned int max_longitude = 0, unsigned int max_altitude = 0 );
+	PlanetLevel( PlanetEntity *planet_entity = NULL, Vector bounds = Vector( 2 ) );
 
 	virtual ~PlanetLevel();
 

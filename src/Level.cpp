@@ -5,19 +5,20 @@
 #include <list>
 #include <iterator>
 #include <cstring>
+#include <cmath>
+
 using namespace std;
 
-Level::Level( unsigned int MaxWidth, unsigned int MaxHeight, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
-	this->width = MaxWidth;
-	if( this->width <= 0 ){
-		this->width = 1;
+Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
+	VECTOR_VALUE_TYPE bound_value = 1;
+	for( int i = 0; i < _bounds.GetSize(); i++ ){
+		if( _bounds.Get( i, &bound_value ) ){
+			if( bound_value <= 0 ){
+				_bounds.Set( i, 1.0 );
+			}
+		}
 	}
-
-	this->height = MaxHeight;
-	if( this->height <= 0 ){
-		this->height = 1;
-	}
-
+	this->bounds = _bounds;
 	this->player = NULL;
 }
 
@@ -44,6 +45,10 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 	}
 
 	return _origin;
+}
+
+Vector Level::GetBounds(){
+	return this->bounds;
 }
 
 bool Level::Update( GameEngine *game ){
@@ -132,11 +137,15 @@ void Level::Generate( GameEngine *game ){
 }
 
 unsigned int Level::GetMaxHeight(){
-	return this->height;
+	VECTOR_VALUE_TYPE value = 1;
+	this->bounds.Get( BOUND_INDEX_HEIGHT, &value );
+	return (unsigned int)value;
 }
 
 unsigned int Level::GetMaxWidth(){
-	return this->width;
+	VECTOR_VALUE_TYPE value = 1;
+	this->bounds.Get( BOUND_INDEX_WIDTH, &value );
+	return (unsigned int)value;
 }
 
 Player *Level::GetPlayer(){

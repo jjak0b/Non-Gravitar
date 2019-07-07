@@ -1,11 +1,12 @@
+
 #include "GameEngine.hpp"
-#include <cstring>
 #include "Player.hpp"
 #include "SolarSystem.hpp"
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
 #include "Projectile.hpp"
 
+#include <cstring>
 #ifdef __WIN32__
 #include <windows.h>
 #include <versionhelpers.h>
@@ -37,7 +38,10 @@ bool GameEngine::frame( double dtime ){
 		}
 		// se la partita è appena iniziata oppure se il player ha cambiato sistema solare viene istanziato un nuovo sistema solare come livello
 		if( this->GetCurrentLevel() == NULL){
-			this->SetCurrentLevel( new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4 ) );
+			Vector _bounds = Vector( 2 );
+			_bounds.Set( BOUND_INDEX_WIDTH, this->view->GetWidth() );
+			_bounds.Set( BOUND_INDEX_HEIGHT, this->view->GetHeight() );
+			this->SetCurrentLevel( new SolarSystem( _bounds, 4 ) );
 
 			// logica di spawn o trasferimento giocatore da un sistema solare ad un altro
 			Point2D spawn_point = Point2D( this->GetCurrentLevel()->GetMaxWidth()/2.0, this->GetCurrentLevel()->GetMaxHeight()/2.0 );

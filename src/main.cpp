@@ -1,5 +1,5 @@
 #include <iostream>
-#include <time.h>
+#include <ctime>
 #include <conio.h>
 
 // dipendenti da SO
@@ -21,34 +21,38 @@
 
 #include "GameConfig.h" // costanti e configurazioni del gioco
 
-#include <math.h> // così definisco le costanti per tutto il resto del programma con _USE_MATH_DEFINES
-#include "Vector.hpp" // così definisco tipo e dimensione vettori per tutto il resto del programma
+#include <cmath> // così definisco le costanti per tutto il resto del programma con _USE_MATH_DEFINES
 
 #include "GameEngine.hpp"
 
 char getInput(){
-			char c = '\0';
-		// c = std::cin.get();
-		c = _getch();
-		if (c == '\033') { // if the first value is esc
-			_getch(); // skip the [
-			c = _getch();
-			switch (c) { // the real value
-				case 'A':
-					c = INPUT_ARROW_UP;
-					break;
-				case 'B':
-					c = INPUT_ARROW_DOWN;
-					break;
-				case 'C':
-					c = INPUT_ARROW_RIGHT;
-					break;
-				case 'D':
-					c = INPUT_ARROW_LEFT;
-					break;
-			}
+	char c = '\0';
+	c = _getch();
+	if( c == '\e' || c == INPUT_CODE_KEY_PREARROW ){  // se il carattere è il carattere di escape o di pre freccia
+		if( c == '\e' ){
+			_getch(); // salto il carattere [
 		}
-		return c;
+		c = _getch(); // memorizzo il carattere che identifica il tipo della freccia
+		switch (c) { // the real value
+			case INPUT_CODE_ESC_KEY_UP:
+			case INPUT_CODE_KEY_UP:
+				c = INPUT_MOVE_UP;
+				break;
+			case INPUT_CODE_ESC_KEY_DOWN:
+			case INPUT_CODE_KEY_DOWN:
+				c = INPUT_MOVE_DOWN;
+				break;
+			case INPUT_CODE_ESC_KEY_RIGHT:
+			case INPUT_CODE_KEY_RIGHT:
+				c = INPUT_MOVE_RIGHT;
+				break;
+			case INPUT_CODE_ESC_KEY_LEFT:
+			case INPUT_CODE_KEY_LEFT:
+				c = INPUT_MOVE_LEFT;
+				break;
+		}
+	}
+	return c;
 }
 
 void setCursor( int x, int y ){
@@ -115,6 +119,7 @@ int main(){
 
 	// screen_size.SetX( 120 );
 	// screen_size.SetY( 30 );
+	srand( time( 0 ) );// inizializzo generatori pseudocasuali
 	GameEngine engine = GameEngine( screen_size.GetX(), screen_size.GetY() );
 	do{
 		setCursor( 0, 0 );

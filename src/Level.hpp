@@ -5,12 +5,15 @@
 #include <list>
 using namespace std;
 
+#define BOUND_INDEX_WIDTH 0
+#define BOUND_INDEX_HEIGHT 1
+
 class GameEngine;
 class Player;
 
 class Level : public Entity{
 protected:
-	unsigned int width, height; // dimensioni del mondo rispettivamente per le ascisse e ordinate
+	Vector bounds; // limiti del mondo ( dimensioni del livello )
 	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
 	list<Point2D> surface; // lista dei punti che costruiscono il terreno
 	list<Entity*> entities;
@@ -19,7 +22,7 @@ public:
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le entità del livello
 	 * PostCondition: se player != NULL allora esso non viene reinstanziato
 	 */
-	Level( unsigned int MaxWidth = 0, unsigned int MaxHeight = 0, const char _className[] = "Level" );
+	Level( Vector _bounds = Vector( 2 ), const char _className[] = "Level" );
 	virtual ~Level();
 
 	/**
@@ -52,6 +55,13 @@ public:
 	 * @return Point2D 
 	 */
 	Point2D GetNormalizedPoint( Point2D origin );
+
+	/**
+	 * @brief restituisce il Vettore aventi i limiti massimi del livello, nelle sue Vector.GetSize() dimensioni
+	 * 
+	 * @return Vector 
+	 */
+	Vector GetBounds();
 
 	/**
 	 * @brief Restituisce la dimensione massima del mondo nell'asse X

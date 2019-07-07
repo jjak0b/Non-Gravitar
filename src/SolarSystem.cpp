@@ -5,14 +5,20 @@
 #include <stdlib.h>
 #include <cmath>
 
-SolarSystem::SolarSystem( unsigned int MaxWidth, unsigned int MaxHeight, unsigned int number_of_planets ) : Level( MaxWidth, MaxHeight, "SolarSystem"){
+SolarSystem::SolarSystem( Vector _bounds, unsigned int number_of_planets ) : Level( _bounds, "SolarSystem"){
 	// il primo pianeta lo genero sempre in mezzo
+	unsigned int MaxHeight = this->GetMaxHeight();
+	unsigned int MaxWidth = this->GetMaxWidth();
+	
 	Point2D planet_origin = Point2D( 0, MaxHeight/2.0 );
 	Vector offset_distance = Vector( planet_origin.GetSize() );
+	Vector planet_bounds = Vector( planet_origin.GetSize() );
 	for( unsigned int i = 0; i < number_of_planets; i++ ){
 		unsigned int circumference = MaxWidth + (rand() % MaxWidth ); // TEMP
 		unsigned int radius = 4 + circumference % 4;
-		PlanetEntity *planet = new PlanetEntity( this, planet_origin, NULL, radius, circumference, MaxHeight );
+		planet_bounds.Set( BOUND_INDEX_WIDTH, circumference );
+		planet_bounds.Set( BOUND_INDEX_HEIGHT, MaxHeight );
+		PlanetEntity *planet = new PlanetEntity( this, planet_origin, NULL, radius, planet_bounds );
 		// imposta l'offset di posizione (del prossimo pianeta) dalla posizione del pianeta generato in precedenza
 		offset_distance.Reset();
 		if( MaxHeight != 0 ){
@@ -36,7 +42,14 @@ bool SolarSystem::Update( GameEngine *game ){
 			// dirigi il giocatore verso il centro del sistema solare ( questo creerebbe una specie di animazione )
 			// quando arriva al centro: setto questo livello come garbage
 			Point2D center_off_solar_system = Point2D( this->GetMaxWidth() / 2.0, this->GetMaxHeight() / 2.0 );
-			if( this->player->GetOrigin().Equals( center_off_solar_system ) ){
+			double radius = 2;
+			Vector level_bounds = this->GetBounds();
+			if( this->player->GetOrigin().DistanceSquared( center_off_solar_system, &level_bounds ) <= (radius*radius) ){ // il giocatore di trova in un raggi di radius unità dal centro
+				// aggiustio le sue coordinate, arrotondandole (per semplicità ma potrei anche non farlo)
+				center_off_solar_system = this->player->GetOrigin();
+				center_off_solar_system.round();
+				this->player->SetOrigin( center_off_solar_system );
+				// faccio notare all'engine che deve cambiare livello
 				this->player->SetMoveOverride( NULL );
 				this->GetOutPlayer();
 				this->Delete();
@@ -44,9 +57,12 @@ bool SolarSystem::Update( GameEngine *game ){
 				update_result = false;
 			}
 			else{
+				// crea la direzione in cui muovere il giocatore
 				Vector *direction = new Vector( this->player->GetOrigin().GetSize() );
-				*direction = BuildDirection( this->player->GetOrigin(), center_off_solar_system );
-				direction->Normalize();
+				Vector _bounds = this->GetBounds();
+				*direction = BuildDirection( this->player->GetOrigin(), center_off_solar_system, &_bounds );
+				direction->Normalize(); // la normalizzo per farla diventare di lunghezza = 1
+				// forzo lo spostamento del giocatore in questa direzione
 				this->player->SetMoveOverride( direction );
 			}
 		}
