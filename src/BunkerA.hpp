@@ -5,6 +5,6 @@
 class BunkerA : public DamageableEntity{
 	
 	public:
-		BunkerA( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[], double health );
+		BunkerA( Level *world, Point2D origin, Bitmap *texture, const char classname[], double health );
 
 };

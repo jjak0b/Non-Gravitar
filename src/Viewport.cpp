@@ -1,6 +1,6 @@
 #include "Viewport.hpp"
 #include "Entity.hpp"
-#include "ColoredBitmap.hpp"
+#include "Bitmap.hpp"
 #include "Level.hpp"
 #include "GameConfig.h"
 #include <iostream>
@@ -33,7 +33,7 @@ bool ViewPort::UpdateSize( unsigned int _width, unsigned int _height ){
 	return false;
 }
 
-void ViewPort::Draw( ColoredBitmap *texture, Level *world, Point2D world_point ){
+void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 	if( this->data != NULL){
 		Point2D point_relative_to_bottom_left_view = this->WorldPointToViewPoint( world, world_point );
 		// ovvero da x-texture->GetColumns()/2 e y+texture->GetRows()/2 )
@@ -177,7 +177,7 @@ void ViewPort::Refresh(){
 }
 
 
-Point2D ViewPointToBitMapPoint( Point2D view_point, ColoredBitmap *bitmap ){
+Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap ){
 	if( bitmap == NULL ){
 		return Point2D( 0, 0 );
 	}

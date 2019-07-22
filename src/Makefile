@@ -1,14 +1,14 @@
-NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o Color.o
-	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o Color.o
+NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Matrix.o Bitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o Color.o
+	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Matrix.o Bitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Player.o Projectile.o Color.o
 
 main.o: main.cpp GameConfig.h GameEngine.hpp
 	g++ -c main.cpp
 
+Matrix.o: Matrix.cpp Matrix.hpp
+	g++ -c Matrix.cpp
+
 Bitmap.o: Bitmap.cpp Bitmap.hpp
 	g++ -c Bitmap.cpp
-
-ColoredBitmap.o: ColoredBitmap.cpp ColoredBitmap.hpp
-	g++ -c ColoredBitmap.cpp
 
 PrintableBitmap.o : PrintableBitmap.cpp PrintableBitmap.hpp
 	g++ -c PrintableBitmap.cpp

@@ -1,6 +1,6 @@
 #include "Player.hpp"
 #include "Level.hpp"
-#include "ColoredBitmap.hpp"
+#include "Bitmap.hpp"
 #include "GameEngine.hpp"
 #include "GameConfig.h"
 #include "Projectile.hpp"
@@ -11,7 +11,7 @@
 #include <cstring>
 
 Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
-	this->texture = new ColoredBitmap( 3, 5, COLOR_RED );
+	this->texture = new Bitmap( 3, 5, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
 	const BITMAP_DATA_TYPE raw_texturer2[] = "/   \\";

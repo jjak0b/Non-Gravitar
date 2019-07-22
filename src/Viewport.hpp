@@ -62,7 +62,7 @@ public:
 	 * @param level 
 	 * @param world_origin 
 	 */
-	void Draw( ColoredBitmap *texture, Level *level, Point2D world_origin );
+	void Draw( Bitmap *texture, Level *level, Point2D world_origin );
 
 	/**
 	 * @brief Ripristina la "memoria video" impostandola a valori = CHAR_PIXEL_EMPTY
@@ -169,7 +169,7 @@ public:
  * @param bitmap 
  * @return Point2D 
  */
-Point2D ViewPointToBitMapPoint( Point2D view_point, ColoredBitmap *bitmap );
+Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );
 
 /**
  * @brief Disegna nella ViewPort un linea a partire da start fino a end, dove start e end sono coordinate del mondo

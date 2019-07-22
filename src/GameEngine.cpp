@@ -230,8 +230,9 @@ bool OsSupportAnsiEscape(){
 	
 	#ifdef ENABLE_ANSI_IF_SUPPORTED
 		#ifdef __WIN32__
+		// per ora ci accontentiamo
 		isSupported = IsWindows8OrGreater();
-/*
+/*		// Abilitare se viene aggiunto un file manifest in modo che tale che WINDOWS API riconosca se è eseguito su windows >= 8.1
 		DWORDLONG dwlConditionMask = 0;
 		OSVERSIONINFOEX osVersionInfo;
 		osVersionInfo.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );

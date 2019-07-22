@@ -5,7 +5,7 @@
 #include "Player.hpp"
 #include <cstring>
 
-PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, ColoredBitmap *texture, unsigned int _radius, Vector _bounds ) : Entity( world, origin, texture, "PlanetEntity" ){
+PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture, unsigned int _radius, Vector _bounds ) : Entity( world, origin, texture, "PlanetEntity" ){
 	this->radius = _radius;
 	this->planet_level = new PlanetLevel( this, _bounds );
 

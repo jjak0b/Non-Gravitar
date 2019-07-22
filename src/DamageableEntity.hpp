@@ -8,7 +8,7 @@ class DamageableEntity : public Entity{
 	double health;
 
 	public:
-	DamageableEntity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[], double health );
+	DamageableEntity( Level *world, Point2D origin, Bitmap *texture, const char classname[], double health );
 
 	/**
 	 * @brief Restituisce la vita attuale dell'entità
