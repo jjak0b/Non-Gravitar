@@ -9,7 +9,10 @@
 #include <list>
 #include <iterator>
 #include <cstring>
-Bunker::Bunker( Level *world, Point2D origin, double health) : DamageableEntity( world, origin, NULL, "Bunker", health){}
+
+Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[]) : DamageableEntity( world, origin, NULL, classname, health ){
+	
+}
 
 bool Bunker::Update(GameEngine* game) {
 	bool update_result = this->Entity::Update( game );
@@ -18,8 +21,7 @@ bool Bunker::Update(GameEngine* game) {
     return update_result;
 }
 
-Projectile *Bunker::shoot( Vector direction ){
-	Point2D projectile_origin = this->GetOrigin();
+Projectile *Bunker::Shoot(Point2D projectile_origin, Vector direction ){
 	projectile_origin.Add( direction ); 
 	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, "Projectile" );
 	return p;
@@ -34,6 +36,4 @@ int Bunker::random(int range){
     if (r3 == 0) return r1;
     else return r2;
 }
-
-
 

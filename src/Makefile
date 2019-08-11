@@ -1,5 +1,5 @@
-NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o BunkerA.o BunkerB.o Fuel.o Player.o Projectile.o
-	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o BunkerA.o BunkerB.o Fuel.o Player.o Projectile.o
+NonGravitar: main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o BunkerA.o BunkerB.o BunkerC.o Fuel.o Player.o Projectile.o Shape.o PlayerShape.o SurfaceShape.o BunkerAShape.o BunkerBShape.o BunkerCShape.o Side.o SmallFuel.o BigFuel.o SmallFuelShape.o BigFuelShape.o
+	g++ -o NonGravitar main.o GameEngine.o Viewport.o Vector.o Point.o Point2D.o Bitmap.o ColoredBitmap.o PrintableBitmap.o Entity.o Level.o PlanetEntity.o PlanetLevel.o SolarSystem.o DamageableEntity.o Bunker.o BunkerA.o BunkerB.o BunkerC.o Fuel.o Player.o Projectile.o Shape.o PlayerShape.o SurfaceShape.o BunkerAShape.o BunkerBShape.o BunkerCShape.o Side.o SmallFuel.o BigFuel.o SmallFuelShape.o BigFuelShape.o
 
 main.o: main.cpp GameConfig.h GameEngine.hpp
 	g++ -c main.cpp
@@ -49,11 +49,14 @@ DamageableEntity.o: DamageableEntity.cpp DamageableEntity.hpp
 Bunker.o: Bunker.cpp Bunker.hpp
 	g++ -c Bunker.cpp
 
+BunkerA.o: BunkerA.cpp BunkerA.hpp
+	g++ -c BunkerA.cpp
+
 BunkerB.o: BunkerB.cpp BunkerB.hpp
 	g++ -c BunkerB.cpp
 
-BunkerA.o: BunkerA.cpp BunkerA.hpp
-	g++ -c BunkerA.cpp
+BunkerC.o: BunkerC.cpp BunkerC.hpp
+	g++ -c BunkerC.cpp
 
 Player.o : Player.cpp Player.hpp
 	g++ -c Player.cpp
@@ -63,6 +66,40 @@ Projectile.o : Projectile.cpp Projectile.hpp
 
 Fuel.o : Fuel.cpp Fuel.hpp
 	g++ -c Fuel.cpp
+
+Shape.o : Shape.cpp Shape.hpp
+	g++ -c Shape.cpp
+
+Side.o : Side.cpp Side.hpp
+	g++ -c Side.cpp
+
+PlayerShape.o : PlayerShape.cpp PlayerShape.hpp
+	g++ -c PlayerShape.cpp
+
+SurfaceShape.o : SurfaceShape.cpp SurfaceShape.hpp
+	g++ -c SurfaceShape.cpp
+
+BunkerAShape.o : BunkerAShape.cpp BunkerAShape.hpp
+	g++ -c BunkerAShape.cpp
+
+BunkerBShape.o : BunkerBShape.cpp BunkerBShape.hpp
+	g++ -c BunkerBShape.cpp
+
+BunkerCShape.o : BunkerCShape.cpp BunkerCShape.hpp
+	g++ -c BunkerCShape.cpp
+
+SmallFuel.o : SmallFuel.cpp SmallFuel.hpp
+	g++ -c SmallFuel.cpp
+
+BigFuel.o : BigFuel.cpp BigFuel.hpp
+	g++ -c BigFuel.cpp
+
+SmallFuelShape.o : SmallFuelShape.cpp SmallFuelShape.hpp
+	g++ -c SmallFuelShape.cpp
+
+BigFuelShape.o : BigFuelShape.cpp BigFuelShape.hpp
+	g++ -c BigFuelShape.cpp
+
 
 clean:
 	del *.o NonGravitar.exe NonGravitar

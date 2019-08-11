@@ -4,6 +4,8 @@
 #include <cstring>
 #include <iostream>
 #include "GameEngine.hpp"
+#include "Shape.hpp"
+
 
 Entity::Entity( Level *_world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
 	this->garbage = false;
@@ -68,6 +70,7 @@ char* Entity::GetClassname(){
 }
 
 bool Entity::Update( GameEngine *game ){
+	
 	return IsDefined( this );
 }
 
@@ -108,3 +111,5 @@ bool Entity::IsOutOfTheWorld(){
 void Entity::Callback_OnCollide(){
 	this->Delete();
 }
+
+

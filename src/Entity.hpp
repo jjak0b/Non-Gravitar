@@ -3,6 +3,7 @@
 #include "Point2D.hpp"
 #include "ColoredBitmap.hpp"
 #include <stddef.h> // usato per definizione di NULL
+#include "Shape.hpp"
 
 class Level;
 class GameEngine;
@@ -15,6 +16,7 @@ protected:
 	ColoredBitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
+
 public:
 	Entity( Level *world, Point2D origin, ColoredBitmap *texture = NULL, const char classname[] = "" );
 	virtual ~Entity();
@@ -114,5 +116,6 @@ public:
 	 * @return false 
 	 */
 	bool IsOutOfTheWorld();
+
 
 };

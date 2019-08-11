@@ -5,6 +5,7 @@
 #include "Player.hpp"
 #include "BunkerA.hpp"
 #include "BunkerB.hpp"
+#include "BunkerC.hpp"
 #include "Bunker.hpp"
 #include "Projectile.hpp"
 #include "DamageableEntity.hpp"
@@ -15,6 +16,12 @@
 #include "Entity.hpp"
 #include "Point2D.hpp"
 #include "Fuel.hpp"
+#include "SurfaceShape.hpp"
+#include "PlayerShape.hpp"
+#include "SmallFuel.hpp"
+#include "BigFuel.hpp"
+
+
 
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, unsigned int max_longitude, unsigned int max_altitude ) : Level( max_longitude, max_altitude, "PlanetLevel"){
 	this->planet_entity = planet_entity;
@@ -57,16 +64,8 @@ bool PlanetLevel::Update( GameEngine *game ){
 				Point2D spawn_point = this->GetPlanetEntity()->escape_point;
 				_player->SetOrigin( spawn_point );
 			}
-			
-			/* std::list<Entity*> proj = this->world->GetEntities( "Projectile", false, true );
-			for (std::list<Entity*>::iterator it = proj.begin(); it != proj.end(); it++) {
-				for (std::list<Point2D>::iterator it_p = this->surface.begin(); it_p != this->surface.end(); it++) {
-					if ((*it)->GetOrigin().Equals(*it_p)) {
-						(*it)->Delete();
-					}
-				}
-			}*/
-
+		
+					
 			// Carica il sistema solare come prossimo livello del successivo frame
 			// Nota facoltativa: solar_system dovrebbe essere sempre definito per come è stata impostata la logica di cambio di livello,
 			// comunque nel caso esso non sia definito per un qualche motivo quale ad esempio un livello speciale o futuri cambiamenti
@@ -123,12 +122,63 @@ void PlanetLevel::Generate( GameEngine *game ){
 					min_point_height ) );
 	}
 	this->surface.push_front( end );
+		
 
-	BunkerA *e = new BunkerA(this,Point2D(40,25));
-	this->AddEntity(e);
-	BunkerB *e2 = new BunkerB(this,Point2D(60,26));
-	this->AddEntity(e2);
+	srand (game->GetTime()*rand());
+	Point2D random_A = RandomPoint();
 
-	Fuel *f = new Fuel(this, Point2D(40, 30), 20);
-	this->AddEntity(f);
+	Point2D random_B = RandomPoint();
+	while (random_B.Equals(random_A)) random_B = RandomPoint();;
+	
+	Point2D random_C = RandomPoint();
+	while (random_C.Equals(random_A) || random_C.Equals(random_B)) random_C = RandomPoint();
+
+	Point2D random_Small = RandomPoint();
+	while (random_Small.Equals(random_A) || random_Small.Equals(random_B) || random_Small.Equals(random_C)) random_Small = RandomPoint();
+
+	Point2D random_Big = RandomPoint();
+	while (random_Big.Equals(random_A) || random_Big.Equals(random_B) || random_Big.Equals(random_C) || random_Big.Equals(random_Small)) random_Big = RandomPoint();
+
+	this->AddEntity(new BunkerA(this, random_A));
+	this->AddEntity(new BunkerB(this,random_B));
+	this->AddEntity(new BunkerC(this,random_C));
+
+	this->AddEntity(new SmallFuel(this, random_Small));
+	this->AddEntity(new BigFuel(this, random_Big));
+	
+}
+
+Point2D PlanetLevel::RandomPoint() {
+	std::list<Point2D>::iterator it_begin = surface.begin();
+	std::list<Point2D>::iterator it_end = surface.end();
+
+	std::list<Point2D>::iterator it_pre_random_A = this->random_element(it_begin, it_end);
+	std::list<Point2D>::iterator it_random_A = it_pre_random_A++;
+	std::list<Point2D>::iterator it_post_random_A = it_random_A++;
+
+	Point2D pre_random_A = (*(it_pre_random_A));
+	Point2D random_A = (*(it_random_A));
+	Point2D post_random_A = (*(it_post_random_A));
+
+	int random_A_height = random_A.GetY();
+	int pre_random_A_height = pre_random_A.GetY();
+	int post_random_A_height = post_random_A.GetY();
+	
+	if (random_A_height < pre_random_A_height || random_A_height < post_random_A_height ) random_A.SetY(random_A.GetY() + 3);
+	if (random_A_height < pre_random_A_height && random_A_height < post_random_A_height ) random_A.SetY(random_A.GetY() + 3);
+
+	return random_A;
+}
+
+
+std::list<Point2D>::iterator PlanetLevel::random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end) {
+   
+	const unsigned long n = std::distance(begin, end);
+    const unsigned long divisor = (RAND_MAX + 1) / n;
+
+    unsigned long k;
+    do { k = std::rand() / divisor; } while (k >= n);
+
+    std::advance(begin, k);
+    return begin;
 }

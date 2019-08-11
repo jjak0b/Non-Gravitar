@@ -119,9 +119,10 @@ void Level::Draw( ViewPort *view ){
 
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
 		if( IsDefined( *it ) ){
-			(*it)->Draw( view ); // EntityDrawSelector( view, *it );
+			EntityDrawSelector( view, *it );
 		}
 	}
+	
 	
 	if( IsDefined( this->player ) ){
 		this->player->Draw( view );

@@ -1,5 +1,5 @@
 #include "Bunker.hpp"
-#include "BunkerB.hpp"
+#include "BunkerC.hpp"
 #include "Projectile.hpp"
 #include "GameEngine.hpp"
 #include <ctime>    
@@ -9,49 +9,40 @@
 #include <iterator>
 #include <cstring>
 
-#include "BunkerBShape.hpp"
+#include "BunkerCShape.hpp"
 
     
-BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerB"){
+BunkerC::BunkerC( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerC"){
 
-   this->texture = new ColoredBitmap( 3, 8, 0 );
-	const BITMAP_DATA_TYPE raw_texturer0[] = " \xDC  \xDC  \xDC";
-	const BITMAP_DATA_TYPE raw_texturer1[] = "  \\_|_/ ";
-	const BITMAP_DATA_TYPE raw_texturer2[] = "  /\xDB\xDB\xDB\\ ";
-	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
-	this->texture->Load( rawtexture, 3, 8 );
+    this->texture = new ColoredBitmap( 2, 6, 0 );
+	const BITMAP_DATA_TYPE raw_texturer0[] = "  _\xDC_ ";
+	const BITMAP_DATA_TYPE raw_texturer1[] = " /\xDF\xDF\xDF\\";
+	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1};
+	this->texture->Load( rawtexture, 2, 6 );
 }
 
 
-bool BunkerB::Update(GameEngine* game) {
+bool BunkerC::Update(GameEngine* game) {
     
     bool update_result = this->Bunker::Update( game );
-    if (update_result) {
 
-		if (this->counter >= 60) {
+   if (update_result) {
+
+		if (this->counter >= 30) {
 
 			Vector *direction = new Vector();
-			direction->Set(0,-1);
-			direction->Set(1,1);
-			Point2D projectile_origin = Point2D(this->origin.GetX() -3, this->origin.GetY() +3 );
-			Shoot( projectile_origin, (*direction));
 			
 			direction->Set(0,0);
 			direction->Set(1,1);
-			projectile_origin = Point2D(this->origin.GetX(), this->origin.GetY() +3 );
-			Shoot(projectile_origin, (*direction));
-			
-			direction->Set(0,1);
-			direction->Set(1,1);
-			projectile_origin = Point2D(this->origin.GetX() +3, this->origin.GetY() +3 );
+			Point2D projectile_origin = Point2D(this->origin.GetX(), this->origin.GetY() +1 );
 			Shoot(projectile_origin, (*direction));
 			
 			delete direction;
 
-			counter = 0;
+			if (counter >= 31) counter = 0;
 		}
 
-		BunkerBShape bunker_shape = BunkerBShape(this->GetOrigin());
+		BunkerCShape bunker_shape = BunkerCShape(this->GetOrigin());
 		std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
 		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
 			if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
@@ -61,17 +52,17 @@ bool BunkerB::Update(GameEngine* game) {
 				update_result = this->GetHealth() > 0;
 			}
 		}
-	}
+    }
     return update_result;
 
 }
 
-void BunkerB::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
+void BunkerC::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage( proj->GetDamage());
-			proj->Callback_OnCollide();
+			proj->Delete();
 		}
 		else{ 
 			this->DoDamage( this->GetHealth());
@@ -83,14 +74,13 @@ void BunkerB::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 // DEBUG //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void BunkerB::Draw( ViewPort *view ){
+void BunkerC::Draw( ViewPort *view ){
 	Entity::Draw( view );
 
-	// BunkerBShape test  = BunkerBShape(this->GetOrigin());
+	// BunkerCShape test  = BunkerCShape(this->GetOrigin());
 	// list<Point2D> points = test.getShapePoints();
 	// for (std::list<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
 	// 	Point2D point= (*it);
 	// view->Draw(NULL, this->world, point );
 	// }
 }
-

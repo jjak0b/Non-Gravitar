@@ -80,5 +80,7 @@ class PlanetLevel : public Level{
 	 */
 	bool IsFree();
 
+	Point2D RandomPoint();
+	std::list<Point2D>::iterator random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end);
 	
 };

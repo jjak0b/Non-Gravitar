@@ -7,7 +7,7 @@ class Fuel : public Entity{
 	double size;
 
 	public:
-	Fuel( Level *world, Point2D origin, double size );
+	Fuel( Level *world, Point2D origin );
 
 	bool Update(GameEngine *game);
 

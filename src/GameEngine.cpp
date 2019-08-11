@@ -6,6 +6,9 @@
 #include "PlanetLevel.hpp"
 #include "Projectile.hpp"
 #include "Bunker.hpp"
+#include "BunkerA.hpp"
+#include "BunkerB.hpp"
+#include "BunkerC.hpp"
 #include "Projectile.hpp"
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
@@ -182,11 +185,27 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
 		}
+		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
+			Projectile *ent = (Projectile*)entity;
+			update_result = ent->Update( game );
+		}
 		else if( !strcmp( entity->GetClassname(), "Beam" ) ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
 		}
 		else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
+			Projectile *ent = (Projectile*)entity;
+			update_result = ent->Update( game );
+		}
+		else if( !strcmp( entity->GetClassname(), "BunkerA" ) ){
+			Projectile *ent = (Projectile*)entity;
+			update_result = ent->Update( game );
+		}
+		else if( !strcmp( entity->GetClassname(), "BunkerB" ) ){
+			Projectile *ent = (Projectile*)entity;
+			update_result = ent->Update( game );
+		}
+		else if( !strcmp( entity->GetClassname(), "BunkerC" ) ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
 		}
@@ -225,7 +244,24 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 			Projectile *ent = (Projectile*)entity;
 			ent->Draw( view );
 		}
+		else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
+			Bunker *ent = (Bunker*)entity;
+			ent->Draw( view );
+		}
+		else if( !strcmp( entity->GetClassname(), "BunkerA" ) ){
+			BunkerA *ent = (BunkerA*)entity;
+			ent->Draw( view );
+		}
+		else if( !strcmp( entity->GetClassname(), "BunkerB" ) ){
+			BunkerB *ent = (BunkerB*)entity;
+			ent->Draw( view );
+		}
+		else if( !strcmp( entity->GetClassname(), "BunkerC" ) ){
+			BunkerB *ent = (BunkerB*)entity;
+			ent->Draw( view );
+		}
 		
+
 		// TODO: aggiungere altri tipi di Draw
 		else{
 			entity->Draw( view );
