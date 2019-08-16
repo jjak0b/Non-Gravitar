@@ -1,30 +1,22 @@
-#include "Bunker.hpp"
 #include "BunkerA.hpp"
-#include "DamageableEntity.hpp"
 #include "Projectile.hpp"
 #include "GameEngine.hpp"
-#include <ctime>    
-#include <cstdlib>  
-#include <iostream>
-#include <list>
-#include <iterator>
+#include <ctime>
 #include <cstring>
-
-
 
 BunkerA::BunkerA( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerA"){
 
-    this->texture = new ColoredBitmap( 2, 3, 0 );
+    this->texture = new Bitmap( 2, 3, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = "q_p";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "/\xDB\\";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1};
-	this->texture->Load( rawtexture, 2, 3 );
+	this->texture->Load( rawtexture, NULL, 2, 3);
 
 }
 
 
 bool BunkerA::Update(GameEngine* game) {
-    bool update_result = this->Bunker::Update( game );
+    bool update_result = Bunker::Update( game );
 
 	if (update_result) {
 		if (this->counter >= 40) {

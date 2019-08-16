@@ -1,15 +1,6 @@
 #include "Projectile.hpp"
 #include "Level.hpp"
 #include "GameEngine.hpp"
-#include <stddef.h>
-#include <ctime>    
-#include <cstdlib>  
-#include <iostream>
-#include <list>
-#include <iterator>
-#include <cstring>
-#include "Entity.hpp"
-#include "Point2D.hpp"
 #include "SurfaceShape.hpp"
 
 Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[] ) : Entity( world, origin, NULL , classname ){
@@ -17,9 +8,6 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 	this->direction = direction;
 	this->damage = damage;
 	this->lifetime = 0;
-
-
-	
 }
 
 Vector Projectile::GetDirection(){

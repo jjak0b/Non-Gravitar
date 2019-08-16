@@ -5,9 +5,9 @@
 #include "Player.hpp"
 #include <cstring>
 
-PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, ColoredBitmap *texture, unsigned int _radius, unsigned int max_longitude, unsigned int max_altitude ) : Entity( world, origin, texture, "PlanetEntity" ){
+PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture, unsigned int _radius, Vector _bounds ) : Entity( world, origin, texture, "PlanetEntity" ){
 	this->radius = _radius;
-	this->planet_level = new PlanetLevel( this, max_longitude, max_altitude );
+	this->planet_level = new PlanetLevel( this, _bounds );
 
 	this->escape_point = this->GetOrigin(); // origine pianeta + offset di ( 0, this->radius + 1 )
 	Vector default_escape_point_offset = Vector( this->escape_point.GetSize() );
@@ -59,12 +59,14 @@ bool PlanetEntity::Update( GameEngine *game ){
 
 void PlanetEntity::Draw( ViewPort *view ){
 	if( IsDefined( this ) )
-		DrawCircle( view, this->world, this->origin, this->radius );
+		DrawCircle( view, this->world, this->origin, this->radius, COLOR_WHITE );
 }
 
 bool PlanetEntity::IsColliding( Entity *entity ){
-	if( IsDefined(this) && IsDefined(entity) && this->GetOrigin().DistanceSquared( entity->GetOrigin() ) <= ( this->radius * this->radius ) ){
-		return true;
+	if( IsDefined(this) && IsDefined(entity) ){
+		Vector bounds = this->GetWorld()->GetBounds();
+		VECTOR_VALUE_TYPE dist_sqr = this->GetOrigin().DistanceSquared( entity->GetOrigin(), &bounds );
+		return dist_sqr <= ( this->radius * this->radius );
 	}
 	return false;
 }

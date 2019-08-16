@@ -1,13 +1,10 @@
 #pragma once
 
 #include "Point2D.hpp"
-#include "Vector.hpp"
 #include "Side.hpp"
 
 #include <list>
 using namespace std;
-
-
 
 class Shape{
 

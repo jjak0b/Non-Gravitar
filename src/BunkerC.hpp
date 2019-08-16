@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Projectile.hpp"
-#include "GameEngine.hpp"
 #include "Bunker.hpp"
+#include "Projectile.hpp"
+#include "BunkerCShape.hpp"
 
 class BunkerC : public Bunker{
 

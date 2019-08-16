@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Point2D.hpp"
-#include "ColoredBitmap.hpp"
+#include "Bitmap.hpp"
 #include <stddef.h> // usato per definizione di NULL
 #include "Shape.hpp"
 
@@ -13,12 +13,12 @@ class Entity{
 protected:
 	Level *world = NULL;
 	Point2D origin; // Coordinate dell'entità nel mondo di gioco
-	ColoredBitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
+	Bitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
 
 public:
-	Entity( Level *world, Point2D origin, ColoredBitmap *texture = NULL, const char classname[] = "" );
+	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "" );
 	virtual ~Entity();
 
 	/**

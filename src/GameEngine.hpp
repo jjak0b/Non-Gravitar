@@ -68,3 +68,4 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity );
  */
 void EntityDrawSelector( ViewPort *view, Entity *entity );
 
+bool OsSupportAnsiEscape();

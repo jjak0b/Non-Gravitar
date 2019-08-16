@@ -1,9 +1,6 @@
 #pragma once
 
-#ifndef VECTOR_VALUE_TYPE
 #define VECTOR_VALUE_TYPE float // tipo delle singole componenti di un vettore
-#endif
-typedef VECTOR_VALUE_TYPE VECTOR_TYPE; // ora impostato come tipo di dato
 // NOTA: definire VECTOR_DIMENSION prima di includere questo header per sovrascrivere
 #ifndef VECTOR_DIMENSIONS
 #define VECTOR_DIMENSIONS 2 // dimensione vettore standard
@@ -115,3 +112,37 @@ public:
 	 */
 	void round();
 };
+
+/**
+ * @brief Restituisce true se è stato assegnato un valore al valore puntato da offset, false altrimenti
+ * PreCondition: start, end, offset != NULL, start.GetSize() = end.GetSize()
+ * PostCondition: Assegna il valore della differenza dell'i-esima componente di start e end al valore puntato da offset;
+ * se bound != NULL allora tale valore viene ridimensionato in base al limite nella i-esima dimensione di bounds
+ * 
+ * es:
+ * offset;
+ * f( &offset, &(1,0), &(89,0), 0, &(90, 0) )
+ * ->offset = 2
+ * offset;
+ * f( &offset, &(1,0), &(89,0), 0, NULL )
+ * ->offset = 88
+ * 
+ * @param offset 
+ * @param start 
+ * @param end 
+ * @param index_dimension 
+ * @param bounds 
+ * @return true se è stato assegnato un valore al valore puntato da offset
+ * @return false altrimenti
+ */
+bool GetOffSet( VECTOR_VALUE_TYPE* offset, Vector start, Vector end, unsigned int i, Vector* bounds );
+
+/**
+ * @brief Restituisce il vettore direzione (offset) dal punto start a end (end-start);
+ * inoltre se le direzioni sono cicliche, è possibile ottenere la direzione in base i limiti nelle dimensioni di bounds 
+ * PreCondition: start.GetSize() == end.GetSize(), altrimenti verrà restituito un vettore con componenti nulle; bounds = NULL se non vi è presente alcun limite
+ * @param start 
+ * @param end 
+ * @return Vector 
+ */
+Vector BuildDirection( Vector start, Vector end, Vector* bounds );

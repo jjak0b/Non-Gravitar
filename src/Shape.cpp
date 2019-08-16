@@ -1,9 +1,6 @@
 #include "Shape.hpp"
-#include <cstring>
-#include <iostream>
 #include "Point2D.hpp"
 #include "Vector.hpp"
-#include "GameEngine.hpp"
 #include "Side.hpp"
 
 Shape::Shape( Point2D origin) {

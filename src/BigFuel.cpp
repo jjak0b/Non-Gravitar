@@ -8,11 +8,11 @@ BigFuel::BigFuel( Level *world, Point2D origin) : Fuel( world, origin) {
     
 	this->size = 100;
 
-	this->texture = new ColoredBitmap( 2, 4, 0 );
+	this->texture = new Bitmap( 2, 4, COLOR_GREEN );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " \xC9\xDC\xBB";
 	const BITMAP_DATA_TYPE raw_texturer1[] = " \xC8\xDF\xBC";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1};
-	this->texture->Load( rawtexture, 2, 4 );
+	this->texture->Load( rawtexture, NULL, 2, 4 );
 }
 
 bool BigFuel::Update(GameEngine *game) {

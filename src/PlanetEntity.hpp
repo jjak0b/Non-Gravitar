@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity.hpp"
 #include "Point2D.hpp"
-#include "ColoredBitmap.hpp"
+#include "Bitmap.hpp"
 #include <stddef.h>
 
 class SolarSystem;
@@ -37,7 +37,7 @@ class PlanetEntity : public Entity{
 	PlanetLevel *planet_level;
 
 	public:
-	PlanetEntity( SolarSystem *_world = NULL, Point2D origin = Point2D(0,0), ColoredBitmap *texture = NULL, unsigned int _radius = 4, unsigned int max_longitude = 100, unsigned int max_altitude = 30 );
+	PlanetEntity( SolarSystem *_world = NULL, Point2D origin = Point2D(0,0), Bitmap *texture = NULL, unsigned int _radius = 4, Vector _bounds = Vector( 2 ) );
 
 	virtual ~PlanetEntity();
 

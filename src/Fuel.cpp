@@ -1,6 +1,6 @@
 #include "Player.hpp"
 #include "Level.hpp"
-#include "ColoredBitmap.hpp"
+#include "Bitmap.hpp"
 #include "GameEngine.hpp"
 #include "GameConfig.h"
 #include "Point2D.hpp"

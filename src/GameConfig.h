@@ -3,11 +3,19 @@
 #define FPS_LIMIT 60
 #define FRAME_TIME (1.0 / FPS_LIMIT)
 
-#define INPUT_ARROW_UP ((char)193)
-#define INPUT_ARROW_DOWN ((char)194)
-#define INPUT_ARROW_LEFT ((char)180)
-#define INPUT_ARROW_RIGHT ((char)195)
+#define INPUT_CODE_ESC_KEY_UP 'A'
+#define INPUT_CODE_ESC_KEY_DOWN 'B'
+#define INPUT_CODE_ESC_KEY_RIGHT 'C'
+#define INPUT_CODE_ESC_KEY_LEFT 'D'
+
+#define INPUT_CODE_KEY_PREARROW ((char)224)
+#define INPUT_CODE_KEY_UP ((char)72)
+#define INPUT_CODE_KEY_DOWN ((char)80)
+#define INPUT_CODE_KEY_RIGHT ((char)77)
+#define INPUT_CODE_KEY_LEFT ((char)75)
+
 typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più complessa, questo equivale ad un refactor.
+// tasti relativi ai comandi di gioco
 #define INPUT_MOVE_UP 'w'
 #define INPUT_MOVE_DOWN 's'
 #define INPUT_MOVE_LEFT 'a'
@@ -25,7 +33,6 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define DEFAULT_VIEWPORT_HEIGHT (DEFAULT_WINDOW_HEIGHT*2)
 #define DEFAULT_VIEWPORT_WIDTH (DEFAULT_WINDOW_WIDTH)
 
-#define VECTOR_VALUE_TYPE float
-#define VECTOR_DIMENSIONS 2
-
 #define _USE_MATH_DEFINES
+
+#define ENABLE_ANSI_IF_SUPPORTED

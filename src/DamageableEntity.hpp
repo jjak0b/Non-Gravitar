@@ -3,7 +3,6 @@
 #include "Entity.hpp"
 #include "Shape.hpp"
 
-
 class DamageableEntity : public Entity{
 	protected:
 	double MaxHealth;
@@ -11,7 +10,7 @@ class DamageableEntity : public Entity{
 	
 
 	public:
-	DamageableEntity( Level *world, Point2D origin, ColoredBitmap *texture, const char classname[], double health );
+	DamageableEntity( Level *world, Point2D origin, Bitmap *texture, const char classname[], double health );
 
 	//bool Update(GameEngine* game);
 

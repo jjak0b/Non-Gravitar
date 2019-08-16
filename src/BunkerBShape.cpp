@@ -1,7 +1,4 @@
 #include "BunkerBShape.hpp"
-#include <cstring>
-#include <iostream>
-#include "Point2D.hpp"
 
 BunkerBShape::BunkerBShape(Point2D origin) : Shape(origin){
 

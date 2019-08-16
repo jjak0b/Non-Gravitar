@@ -7,7 +7,7 @@
 #include "Shape.hpp"
 
 
-Entity::Entity( Level *_world, Point2D origin, ColoredBitmap *texture, const char classname[] ){
+Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char classname[] ){
 	this->garbage = false;
 	this->str_classname = _strdup( classname );
 	this->texture = NULL;

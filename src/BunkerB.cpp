@@ -14,12 +14,12 @@
     
 BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerB"){
 
-   this->texture = new ColoredBitmap( 3, 8, 0 );
+   this->texture = new Bitmap( 3, 8, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " \xDC  \xDC  \xDC";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "  \\_|_/ ";
 	const BITMAP_DATA_TYPE raw_texturer2[] = "  /\xDB\xDB\xDB\\ ";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
-	this->texture->Load( rawtexture, 3, 8 );
+	this->texture->Load( rawtexture, NULL, 3, 8 );
 }
 
 

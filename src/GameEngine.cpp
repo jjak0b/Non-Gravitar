@@ -1,15 +1,16 @@
+
 #include "GameEngine.hpp"
-#include <cstring>
 #include "Player.hpp"
 #include "SolarSystem.hpp"
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
 #include "Projectile.hpp"
-#include "Bunker.hpp"
-#include "BunkerA.hpp"
-#include "BunkerB.hpp"
-#include "BunkerC.hpp"
-#include "Projectile.hpp"
+
+#include <cstring>
+#ifdef __WIN32__
+#include <windows.h>
+#include <versionhelpers.h>
+#endif
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 	this->time = 0.0;
@@ -20,8 +21,7 @@ GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned height ){
 	this->time += time;
 	this->input_key = key_pressed;
-	this->view->UpdateSize( width, height );
-	return false;
+	return this->view->UpdateSize( width, height );
 }
 
 bool GameEngine::frame( double dtime ){
@@ -38,7 +38,10 @@ bool GameEngine::frame( double dtime ){
 		}
 		// se la partita è appena iniziata oppure se il player ha cambiato sistema solare viene istanziato un nuovo sistema solare come livello
 		if( this->GetCurrentLevel() == NULL){
-			this->SetCurrentLevel( new SolarSystem( this->view->GetWidth(), this->view->GetHeight(), 4 ) );
+			Vector _bounds = Vector( 2 );
+			_bounds.Set( BOUND_INDEX_WIDTH, this->view->GetWidth() );
+			_bounds.Set( BOUND_INDEX_HEIGHT, this->view->GetHeight() );
+			this->SetCurrentLevel( new SolarSystem( _bounds, 4 ) );
 
 			// logica di spawn o trasferimento giocatore da un sistema solare ad un altro
 			Point2D spawn_point = Point2D( this->GetCurrentLevel()->GetMaxWidth()/2.0, this->GetCurrentLevel()->GetMaxHeight()/2.0 );
@@ -62,7 +65,7 @@ bool GameEngine::frame( double dtime ){
 	}while( keepPlaying && this->GetCurrentLevel() == NULL );
 	
 	// TEMP finchè i test non sono ultimati
-	Point2D world_point_relative_to_bottom_left = Point2D( this->currentLevel->GetPlayer()->GetOrigin().GetX() - (this->view->GetWidth()/2.0), 0 );
+	Point2D world_point_relative_to_bottom_left = Point2D( player->GetOrigin().GetX() - (this->view->GetWidth()/2.0), 0 );
 	this->SetCameraWorldOrigin( world_point_relative_to_bottom_left );
 
 	this->view->Clear();
@@ -76,9 +79,8 @@ bool GameEngine::frame( double dtime ){
 	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
 	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
 	if( player != NULL ){
-		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" << std::endl;
+		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" <<std::endl;
 	}
-
 	else{
 		std::cout << "Player UNDEFINED !!!!" <<std::endl;
 	}
@@ -150,10 +152,6 @@ void GameEngine::ClearGarbageCollector(){
 	}
 }
 
-void GameEngine::AddGarbage(Entity *entity){
-	this->garbage_collector.push_front(entity);
-};
-
 bool IsDefined( Entity *entity ){
 	return entity != NULL && !entity->IsGarbage();
 }
@@ -182,30 +180,6 @@ bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
 			update_result = ent->Update( game );
 		}
 		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Beam" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "BunkerA" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "BunkerB" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "BunkerC" ) ){
 			Projectile *ent = (Projectile*)entity;
 			update_result = ent->Update( game );
 		}
@@ -244,24 +218,6 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 			Projectile *ent = (Projectile*)entity;
 			ent->Draw( view );
 		}
-		else if( !strcmp( entity->GetClassname(), "Bunker" ) ){
-			Bunker *ent = (Bunker*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "BunkerA" ) ){
-			BunkerA *ent = (BunkerA*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "BunkerB" ) ){
-			BunkerB *ent = (BunkerB*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "BunkerC" ) ){
-			BunkerB *ent = (BunkerB*)entity;
-			ent->Draw( view );
-		}
-		
-
 		// TODO: aggiungere altri tipi di Draw
 		else{
 			entity->Draw( view );
@@ -269,4 +225,30 @@ void EntityDrawSelector( ViewPort *view, Entity *entity ){
 	}
 }
 
-
+bool OsSupportAnsiEscape(){
+	bool isSupported = false;
+	
+	#ifdef ENABLE_ANSI_IF_SUPPORTED
+		#ifdef __WIN32__
+		// per ora ci accontentiamo
+		isSupported = IsWindows8OrGreater();
+/*		// Abilitare se viene aggiunto un file manifest in modo che tale che WINDOWS API riconosca se è eseguito su windows >= 8.1
+		DWORDLONG dwlConditionMask = 0;
+		OSVERSIONINFOEX osVersionInfo;
+		osVersionInfo.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
+		osVersionInfo.dwMajorVersion = 6; // l'applicazione è priva di un manifest e quindi viene considerata dal sistema operativo come applicazione per windows 8 (6.2)
+		osVersionInfo.dwMinorVersion = 2;
+		// osVersionInfo.dwBuildNumber = 10586; // Windows 10 supporta codici Ansi escape da versione 1511 (build 10586)
+		// osVersionInfo.wProductType == VER_NT_WORKSTATION
+		int op = VER_GREATER_EQUAL;
+		VER_SET_CONDITION( dwlConditionMask, VER_MINORVERSION, op );
+		VER_SET_CONDITION( dwlConditionMask, VER_MAJORVERSION, op );
+		VER_SET_CONDITION( dwlConditionMask, VER_BUILDNUMBER, op );
+		isSupported = VerifyVersionInfo( &osVersionInfo, VER_MINORVERSION | VER_MAJORVERSION , dwlConditionMask );
+*/
+		#else
+		isSupported = true;
+		#endif
+	#endif
+	return isSupported;
+}

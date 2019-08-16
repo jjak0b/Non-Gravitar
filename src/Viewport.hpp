@@ -47,7 +47,7 @@ class Level;
 class ViewPort{
 protected:
 	Point2D world_origin; // posizione relativa al mondo dalla quale mostra gli elementi del livello a seguire
-	unsigned int width = 0, height = 0; // dimensioni della schermata viewport
+	Vector bounds; // dimensioni della schermata viewport
 	PrintableBitmap *data; // "Memoria video" aggiornata frame dopo frame
 public:
 	ViewPort( unsigned int width, unsigned int height, Point2D origin );
@@ -81,8 +81,10 @@ public:
 	 * PostCondition: il contenuto della memoria video non è significativo
 	 * @param width 
 	 * @param height 
+	 * @return true se la dimensione è stata aggiornata
+	 * @return false altrimenti se è rimasta invariata
 	 */
-	void UpdateSize( unsigned int width, unsigned int height );
+	bool UpdateSize( unsigned int width, unsigned int height );
 
 	/**
 	 * @brief Stampa del testo sulla Schermata di gioco ("simula una specie di HUD") in uno specifico punto,
@@ -93,8 +95,9 @@ public:
 	 * tali saranno spostate invece all'inizio della riga successiva ( come se ci fosse un '\n' ), mantenendo sempre la prima lettere di ogni riga nella medesima coordinata x di view_point
 	 * @param str_text 
 	 * @param view_point punto da dove iniziare a stampare
+	 * @param color colore del testo
 	 */
-	void Print( const char str_text[], Point2D view_point );
+	void Print( const char str_text[], Point2D view_point, Color);
 
 	/**
 	 * @brief Restituisce il valore attuale nella Viewport al punto specificato
@@ -113,7 +116,7 @@ public:
 	 * @return true 
 	 * @return false 
 	 */
-	bool SetBitmapData( BITMAP_DATA_TYPE value, Point2D view_point );
+	bool SetBitmapData( BITMAP_DATA_TYPE value, Color color, Point2D view_point );
 
 	/**
 	 * @brief Imposta il pixel al punto specificato relativo alla viewport 
@@ -122,7 +125,7 @@ public:
 	 * @return true se il pixel è stato impostato nel punto fornito
 	 * @return false altrimenti ( il punto non è interno alla viewport )
 	 */
-	bool SetPixel( Point2D view_point );
+	bool SetPixel( Point2D view_point, Color color );
 
 	/**
 	 * @brief Restituisce il punto della viewport relative al punto del livello
@@ -175,7 +178,7 @@ Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );
  * @param start 
  * @param end 
  */
-void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end );
+void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color color );
 
 /**
  * @brief Disegna nella Viewport un cerchio con centro le coordinate dell'origine, e raggio specificati
@@ -185,4 +188,4 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end );
  * @param world_origin 
  * @param radius 
  */
-void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius );
+void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius, Color color );

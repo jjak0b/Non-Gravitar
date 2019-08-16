@@ -1,6 +1,6 @@
-#include "Vector.hpp"
-#include <stddef.h>
 #include <cmath>
+#include <stddef.h>
+#include "Vector.hpp"
 
 Vector::Vector( unsigned int _size ){
 	if( _size > VECTOR_DIMENSIONS ){
@@ -58,11 +58,7 @@ VECTOR_VALUE_TYPE Vector::ScalarProduct( Vector v ){
 	VECTOR_VALUE_TYPE result = 0.0;
 	if( v.size == this->size ){
 		for( unsigned int i = 0; i < this->size; i++ ){
-#if (VECTOR_VALUE_TYPE == int)
-			result += std::round(this->data[ i ] * v.data[ i ]);
-#else
 			result += (this->data[ i ] * v.data[ i ]);
-#endif
 		}
 	}
 	return result;
@@ -70,11 +66,7 @@ VECTOR_VALUE_TYPE Vector::ScalarProduct( Vector v ){
 
 void Vector::Scale( double r ){
 	for( unsigned int i = 0; i < this->size; i++ ){
-#if (VECTOR_VALUE_TYPE == int)
-		this->data[ i ] = std::round( (double)this->data[ i ] * r );
-#else
 		this->data[ i ] = this->data[ i ] * r;
-#endif
 	}
 }
 
@@ -120,4 +112,36 @@ void Vector::round(){
 	for( unsigned int i = 0; i < this->size; i++){
 		this->data[ i ] = std::round( this->data[ i ] );
 	}
+}
+
+bool GetOffSet( VECTOR_VALUE_TYPE* offset, Vector start, Vector end, unsigned int index_dimension, Vector* bounds ){
+	VECTOR_VALUE_TYPE valueEnd = 0, valueStart = 0, bound_value = 0;
+	if( start.GetSize() == end.GetSize() && offset != NULL ){
+		if( end.Get( index_dimension, &valueEnd) && start.Get( index_dimension, &valueStart) ){
+			*offset = valueEnd - valueStart;
+			if( bounds != NULL && bounds->Get(index_dimension, &bound_value ) ){
+				if( *offset > 0 && *offset > (bound_value / 2.0 ) ){
+					*offset = bound_value - *offset;
+				}
+				else if( *offset < 0 && (-(*offset)) > (bound_value / 2.0 ) ){
+					*offset = -bound_value - *offset;
+				}
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+Vector BuildDirection( Vector start, Vector end, Vector* bounds ){
+	Vector direction = Vector( start.GetSize() );
+	VECTOR_VALUE_TYPE value = 0;
+	if( start.GetSize() == end.GetSize() ){
+		for( unsigned int i = 0; i < direction.GetSize(); i++ ){
+			if( GetOffSet( &value, start, end, i, bounds ) ){
+				direction.Set( i , value );
+			}
+		}
+	}
+	return direction;
 }

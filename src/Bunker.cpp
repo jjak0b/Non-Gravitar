@@ -1,14 +1,6 @@
 #include "Bunker.hpp"
-#include "DamageableEntity.hpp"
 #include "Projectile.hpp"
 #include "GameEngine.hpp"
-#include "Entity.hpp"
-#include <ctime>    
-#include <cstdlib>  
-#include <iostream>
-#include <list>
-#include <iterator>
-#include <cstring>
 
 Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[]) : DamageableEntity( world, origin, NULL, classname, health ){
 	

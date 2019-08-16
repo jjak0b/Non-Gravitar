@@ -5,20 +5,18 @@
 #include <list>
 #include <iterator>
 #include <cstring>
-#include "Projectile.hpp"
 using namespace std;
 
-Level::Level( unsigned int MaxWidth, unsigned int MaxHeight, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
-	this->width = MaxWidth;
-	if( this->width <= 0 ){
-		this->width = 1;
+Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
+	VECTOR_VALUE_TYPE bound_value = 1;
+	for( int i = 0; i < _bounds.GetSize(); i++ ){
+		if( _bounds.Get( i, &bound_value ) ){
+			if( bound_value <= 0 ){
+				_bounds.Set( i, 1.0 );
+			}
+		}
 	}
-
-	this->height = MaxHeight;
-	if( this->height <= 0 ){
-		this->height = 1;
-	}
-
+	this->bounds = _bounds;
 	this->player = NULL;
 }
 
@@ -45,6 +43,10 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 	}
 
 	return _origin;
+}
+
+Vector Level::GetBounds(){
+	return this->bounds;
 }
 
 bool Level::Update( GameEngine *game ){
@@ -92,14 +94,14 @@ bool Level::Update( GameEngine *game ){
 void Level::Draw( ViewPort *view ){
 	std::list<Point2D>::iterator surface_it, surface_next_it;
 	surface_it = this->surface.begin();
-
+	Color surface = COLOR_GREEN;
 	Point2D start, end;
 	// TODO: ricontrollare
 	while( surface_it != this->surface.end() ){
 		start = *surface_it;
 		surface_it++;
 		end = *surface_it;
-		DrawLine( view, this, start, end );
+		DrawLine( view, this, start, end, surface );
 #ifdef DEBUG
 		const int size_str_buffer = 30;
 		char str_print_buffer[size_str_buffer] = "";
@@ -108,21 +110,20 @@ void Level::Draw( ViewPort *view ){
 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
 		temp = start;
 		temp.SetY( temp.GetY() + 3 );
-		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ) );
+		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 
 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
 		temp = end;
 		temp.SetY( temp.GetY() + 3 );
-		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ) );
+		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 #endif
 	}
 
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
 		if( IsDefined( *it ) ){
-			EntityDrawSelector( view, *it );
+			(*it)->Draw( view ); // EntityDrawSelector( view, *it );
 		}
 	}
-	
 	
 	if( IsDefined( this->player ) ){
 		this->player->Draw( view );
@@ -134,11 +135,15 @@ void Level::Generate( GameEngine *game ){
 }
 
 unsigned int Level::GetMaxHeight(){
-	return this->height;
+	VECTOR_VALUE_TYPE value = 1;
+	this->bounds.Get( BOUND_INDEX_HEIGHT, &value );
+	return (unsigned int)value;
 }
 
 unsigned int Level::GetMaxWidth(){
-	return this->width;
+	VECTOR_VALUE_TYPE value = 1;
+	this->bounds.Get( BOUND_INDEX_WIDTH, &value );
+	return (unsigned int)value;
 }
 
 Player *Level::GetPlayer(){

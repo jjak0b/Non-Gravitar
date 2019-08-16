@@ -8,10 +8,10 @@ SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
     
     this->size = 50;
 
-	this->texture = new ColoredBitmap( 1, 4, 0 );
+	this->texture = new Bitmap( 1, 4, COLOR_GREEN );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " [\xFE]";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0 };
-	this->texture->Load( rawtexture, 1, 4 );
+	this->texture->Load( rawtexture, NULL, 1, 4 );
 }
 
 bool SmallFuel::Update(GameEngine *game) {
