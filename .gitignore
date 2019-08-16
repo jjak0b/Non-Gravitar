@@ -5,3 +5,7 @@
 [.]vs/*
 *.stackdump
 *.log
+CMakeFiles/*
+CMakeCache.txt
+build/*
+.*/*
