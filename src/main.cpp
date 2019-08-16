@@ -19,11 +19,11 @@
 #include <stdio.h>
 #endif
 
-#include "GameConfig.h" // costanti e configurazioni del gioco
+#include "engine/GameConfig.h" // costanti e configurazioni del gioco
 
 #include <cmath> // così definisco le costanti per tutto il resto del programma con _USE_MATH_DEFINES
 
-#include "GameEngine.hpp"
+#include "engine/GameEngine.hpp"
 
 char getInput(){
 	char c = '\0';
@@ -96,7 +96,7 @@ void ClearScreen(){
 }
 
 #include <cstring>
-#include "Color.hpp"
+#include "shared/Color.hpp"
 
 int main(){
 	#ifdef __WIN32__

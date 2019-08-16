@@ -1,0 +1,76 @@
+cmake_minimum_required(VERSION 3.14)
+project(NonGravitar)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(src)
+
+add_executable(NonGravitar
+        src/main.cpp
+        src/shared/Vector.cpp
+        src/shared/Vector.hpp
+        src/shared/Matrix.cpp
+        src/shared/Matrix.hpp
+        src/shared/Color.cpp
+        src/shared/Color.hpp
+        src/shared/Point.cpp
+        src/shared/Point.hpp
+        src/shared/Point2D.cpp
+        src/shared/Point2D.hpp
+        src/shared/Shape.cpp
+        src/shared/Shape.hpp
+        src/shared/Side.cpp
+        src/shared/Side.hpp
+        src/engine/Bitmap.cpp
+        src/engine/Bitmap.hpp
+        src/engine/PrintableBitmap.cpp
+        src/engine/PrintableBitmap.hpp
+        src/engine/GameConfig.h
+        src/engine/GameEngine.cpp
+        src/engine/GameEngine.hpp
+        src/engine/Viewport.cpp
+        src/engine/Viewport.hpp
+        src/entities/Bunker.cpp
+        src/entities/Bunker.hpp
+        src/entities/BunkerA.cpp
+        src/entities/BunkerA.hpp
+        src/entities/BunkerAShape.hpp
+        src/entities/BunkerAShape.cpp
+        src/entities/BunkerB.cpp
+        src/entities/BunkerB.hpp
+        src/entities/BunkerBShape.hpp
+        src/entities/BunkerBShape.cpp
+        src/entities/BunkerC.cpp
+        src/entities/BunkerC.hpp
+        src/entities/BunkerCShape.hpp
+        src/entities/BunkerCShape.cpp
+        src/entities/DamageableEntity.cpp
+        src/entities/DamageableEntity.hpp
+        src/entities/Entity.cpp
+        src/entities/Entity.hpp
+        src/entities/Fuel.cpp
+        src/entities/Fuel.hpp
+        src/entities/SmallFuel.cpp
+        src/entities/SmallFuel.hpp
+        src/entities/SmallFuelShape.cpp
+        src/entities/SmallFuelShape.hpp
+        src/entities/BigFuel.cpp
+        src/entities/BigFuel.hpp
+        src/entities/BigFuelShape.cpp
+        src/entities/BigFuelShape.hpp
+        src/entities/Level.cpp
+        src/entities/Level.hpp
+        src/entities/SurfaceShape.cpp
+        src/entities/SurfaceShape.hpp
+        src/entities/PlanetEntity.cpp
+        src/entities/PlanetEntity.hpp
+        src/entities/PlanetLevel.cpp
+        src/entities/PlanetLevel.hpp
+        src/entities/Player.cpp
+        src/entities/Player.hpp
+        src/entities/PlayerShape.cpp
+        src/entities/PlayerShape.hpp
+        src/entities/Projectile.cpp
+        src/entities/Projectile.hpp
+        src/entities/SolarSystem.cpp
+        src/entities/SolarSystem.hpp)
