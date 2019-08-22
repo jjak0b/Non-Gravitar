@@ -9,7 +9,9 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture,
 	this->radius = _radius;
 	this->planet_level = new PlanetLevel( this, _bounds );
 
+
 	this->escape_point = this->GetOrigin(); // origine pianeta + offset di ( 0, this->radius + 1 )
+	this->escape_direction = Vector( this->escape_point.GetSize() );
 	Vector default_escape_point_offset = Vector( this->escape_point.GetSize() );
 	default_escape_point_offset.Set( 1, this->radius + 1 );
 	this->escape_point.Add( default_escape_point_offset );
@@ -83,7 +85,7 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 			direction.Scale( -2.0 ); // inverto la direzione con la quale si è diretto verso il pianeta
 			this->escape_point.Add( direction );
 			this->escape_point = this->GetWorld()->GetNormalizedPoint( this->escape_point );
-
+			this->escape_direction = player->GetLastMove().Scale( -1.0 );
 			// Il giocatore entra nel Livello
 			if( IsDefined( this->GetPlanetLevel() ) ){
 				this->GetPlanetLevel()->AddEntity( player );
@@ -92,6 +94,11 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 				// quindi dovrà partire dal un'unità più in basso
 				Point2D spawn_point = Point2D( 0, player->GetWorld()->GetMaxHeight() - 1 );
 				player->SetOrigin( spawn_point );
+
+				Vector direction = Vector( spawn_point.GetSize() );
+				direction.Set( 1, -1 );
+				player->SetVelocity( direction.Scale( player->GetSpeed() ) );
+
 				game->SetCurrentLevel( this->GetPlanetLevel() );
 			}
 		}

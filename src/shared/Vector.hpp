@@ -57,12 +57,11 @@ public:
 	void Reset();
 
 	/**
-	 * @brief Somma tutte le componenti del vettore v alle componenti dell'oggetto da cui viene chiamata questa funzione
+	 * @brief Somma tutte le componenti possibili del vettore v alle componenti dell'oggetto da cui viene chiamata questa funzione
 	 * @param v : Vettore da sommare a questo oggetto
-	 * @return true se v.GetSize() == GetSize() e quindi viene effettuata la somma
-	 * @return false se v.GetSize() != GetSize()
+	 * @return Vector
 	 */
-	bool Add( Vector v );
+	Vector Add( Vector v );
 
 	/**
 	 * @brief Considerando a questo vettore, effettua il prodotto scalare tra a e v
@@ -73,12 +72,11 @@ public:
 	VECTOR_VALUE_TYPE ScalarProduct( Vector v );
 
 	/**
-	 * @brief Effettua il prodotto per uno scalare r su questo vettore,
-	 * poichè le componenti sono interi, il prodotto per scalare sarà troncato a intero
+	 * @brief Effettua il prodotto per uno scalare r su questo vettore
 	 * @param r 
 	 * @return Vector 
 	 */
-	void Scale( double r );
+	Vector Scale( double r );
 
 	/**
 	 * @brief Effettua la norma euclidea sul vettore

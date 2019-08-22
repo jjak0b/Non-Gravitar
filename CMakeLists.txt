@@ -44,8 +44,8 @@ add_executable(NonGravitar
         src/entities/BunkerC.hpp
         src/entities/BunkerCShape.hpp
         src/entities/BunkerCShape.cpp
-        src/entities/DamageableEntity.cpp
-        src/entities/DamageableEntity.hpp
+        src/entities/Damageable.cpp
+        src/entities/Damageable.hpp
         src/entities/Entity.cpp
         src/entities/Entity.hpp
         src/entities/Fuel.cpp
@@ -73,4 +73,4 @@ add_executable(NonGravitar
         src/entities/Projectile.cpp
         src/entities/Projectile.hpp
         src/entities/SolarSystem.cpp
-        src/entities/SolarSystem.hpp)
+        src/entities/SolarSystem.hpp src/entities/DynamicEntity.cpp src/entities/DynamicEntity.hpp)

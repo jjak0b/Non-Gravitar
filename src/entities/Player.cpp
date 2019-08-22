@@ -15,7 +15,7 @@
 #include "BunkerCShape.hpp"
 #include "SurfaceShape.hpp"
 
-Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity( world, origin, NULL, "Player", health ){
+Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(PLAYER_HEALTH) {
 	this->texture = new Bitmap( 3, 5, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
@@ -23,6 +23,8 @@ Player::Player( Level *world, Point2D origin, double health ) : DamageableEntity
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
 	this->texture->Load( rawtexture, NULL, 3, 5 );
 	this->moveOverride = NULL;
+	this->MaxFuel = PLAYER_MAX_FUEL;
+	this->fuel = this->MaxFuel;
 }
 
 Player::~Player(){
@@ -30,12 +32,12 @@ Player::~Player(){
 }
 
 void Player::Delete(){
+	DynamicEntity::Delete();
 	this->SetMoveOverride( NULL );
-	DamageableEntity::Delete();
 }
 
 bool Player::Update( GameEngine *game ){
-	bool update_result = Entity::Update( game );
+	bool update_result = DynamicEntity::Update( game );
 
 	if( update_result ){
 		bool b_collision_detected = false;
@@ -97,7 +99,7 @@ bool Player::Update( GameEngine *game ){
 
 		// COLLISIONE FINE
 		if( IsDefined( this ) ){
-			if( !update_result || b_collision_detected || !( this->GetHealth() > 0 && this->GetFuel() > 0 ) ){
+			if( !update_result || b_collision_detected || this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
 				this->Delete();
 			}
 		}
@@ -105,22 +107,38 @@ bool Player::Update( GameEngine *game ){
 		update_result = IsDefined( this );
 		if( update_result ) {
 			INPUT_TYPE input = game->GetkeyPressed();
-			Point2D current_origin = this->GetOrigin();
 			Vector direction;
 
 			if (this->moveOverride != NULL) {
 				direction = *this->moveOverride;
-			} else {
-				// eventualmente qui ci potrebbe stare uno Vector.Scale( accel )
-				// ed impostare la posizione come spostamento r(t) in base al moto uniformemente accelerato
+			}
+			else{
 				direction = GetDirectionFromInput(input);
 			}
-			current_origin.Add(direction); // la nuova posizione è uguale alla posizione precedente + il vettore spostamento
+			// this->AddAcceleration( direction.Scale( 5 ) );
 
-			if (!direction.IsNull()) { // aggiorno la posizione solo il vettore spostamento non è nullo
-				this->RemoveFuel(1);
-				this->SetOrigin(current_origin);
+			if ( !direction.IsNull() ) { // aggiorno la posizione solo il vettore spostamento non è nullo
+				Vector direction_inverted = direction;
+				direction_inverted.Scale( -1.0 );
+				Vector _velocity = direction;
+				if( this->lastMove.Equals( direction_inverted ) ){ // Se il giocatore vuole andare nella direzione opposta, allora lo fermo
+					_velocity.Reset();
+				}
+				else{ // altrimenti va nelal direzione di movimento
+					_velocity.Scale( PLAYER_MAX_SPEED );
+				}
+
+				this->SetVelocity( _velocity );
 				this->lastMove = direction;
+			}
+
+			Vector deceleration = this->lastMove;
+			if( GetSpeed() > 0.0 ){
+#ifndef DEBUG
+				this->RemoveFuel( 1 );
+#endif
+				// deceleration.Scale( 0 );
+				// this->AddAcceleration( deceleration );
 			}
 
 			if (this->ShouldFire(input)) {
@@ -170,7 +188,7 @@ void Player::Draw( ViewPort *view ){
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, "Player_Projectile" );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, "Player_Projectile", this->GetMaxSpeed() + 5 );
 	return p;
 }
 

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "DamageableEntity.hpp"
-#include "Projectile.hpp"
+#include "Entity.hpp"
+#include "Damageable.hpp"
 
-class Bunker : public DamageableEntity{
+class Projectile;
+
+class Bunker : public Entity, public Damageable {
 	protected:
 	int counter = 0;
 
@@ -11,6 +13,8 @@ class Bunker : public DamageableEntity{
 		Bunker( Level *world, Point2D origin, double health, const char classname[] );
 
 		virtual bool Update(GameEngine* game);
+
+		virtual void Draw(ViewPort* view);
 
 		Projectile *Shoot(Point2D projectile_origin, Vector direction );
 

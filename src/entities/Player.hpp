@@ -1,21 +1,25 @@
 #pragma once
 
-#include "DamageableEntity.hpp"
+#include "Damageable.hpp"
+#include "DynamicEntity.hpp"
 #include "engine/GameConfig.h"
 
 class GameEngine;
 class Level;
 class Projectile;
 
-class Player : public DamageableEntity{
+#define PLAYER_HEALTH 500
+#define PLAYER_MAX_FUEL 500
+#define PLAYER_MAX_SPEED 20
+#define PLAYER_MAX_ACCELERATION 90
+
+class Player : public DynamicEntity, public Damageable {
 	protected:
 	INPUT_TYPE lastInput; // l'ultimo input ricevuto
 	Vector lastMove; // l'ultimo spostamento effettuato
 	Vector *moveOverride; // spostamento obbligato dal gioco
-	double fuel = 500;
-	double MaxFuel = 500;
-	bool first = false;
-	
+	double fuel;
+	double MaxFuel;
 	
 	public:
 	Player( Level *world, Point2D origin, double health );

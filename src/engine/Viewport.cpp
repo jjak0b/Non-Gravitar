@@ -123,6 +123,7 @@ bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Color color, Point2D view_
 			return this->SetPixel( view_point, color );
 		}
 		else{
+			this->data->SetColor( color, bitmap_point.GetY(), bitmap_point.GetX() );
 			return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
 		}
 	}

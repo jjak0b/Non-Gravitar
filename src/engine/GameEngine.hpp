@@ -9,6 +9,7 @@ class GameEngine{
 private:
 	INPUT_TYPE input_key;
 	double time;
+	double deltaTime;
 	Level *currentLevel; // livello in esecuzione
 	ViewPort *view;
 	/**
@@ -20,7 +21,7 @@ public:
 
 	GameEngine( unsigned int screen_width = DEFAULT_WINDOW_WIDTH, unsigned int screen_height = DEFAULT_WINDOW_HEIGHT );
 
-	bool update( double time, INPUT_TYPE key_pressed, unsigned int width, unsigned int height );
+	bool update( double deltaTime, INPUT_TYPE key_pressed, unsigned int width, unsigned int height );
 
 	bool frame( double dtime );
 
@@ -29,6 +30,8 @@ public:
 	INPUT_TYPE GetkeyPressed();
 
 	double GetTime();
+
+	double GetDeltaTime();
 
 	Level *GetCurrentLevel();
 

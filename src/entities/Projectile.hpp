@@ -1,12 +1,9 @@
 #pragma once
 
-#include "Entity.hpp"
-#include "shared/Point2D.hpp"
+#include "DynamicEntity.hpp"
+class Damageable;
 
-class Level;
-class GameEngine;
-
-class Projectile : public Entity{
+class Projectile : public DynamicEntity{
 	protected:
 	double damage; // danno che infligge a qualsiasi entità che colpisce
 	Point2D fireOrigin; // punto di partenza da cui è stato generato il proiettile
@@ -15,7 +12,7 @@ class Projectile : public Entity{
 	
 
 	public:
-	Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[] );
+	Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed = 10 );
 
 	Point2D GetFireOrigin();
 
@@ -29,10 +26,10 @@ class Projectile : public Entity{
 
 	/**
 	 * @brief funzione risposta / callback che dovrà essere chiamata quando questo proiettile ha colpito una qualche entità
-	 * @param collide_ent 
-	 * @param hitOrigin 
+	 * @param collide_ent
 	 */
-	void Callback_OnCollide( );
+	void Callback_OnCollide();
+	void Callback_OnCollide( Damageable* entity );
 
 
 

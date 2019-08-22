@@ -8,7 +8,7 @@
 #include "BunkerC.hpp"
 #include "Bunker.hpp"
 #include "Projectile.hpp"
-#include "DamageableEntity.hpp"
+#include "Damageable.hpp"
 #include <cmath>
 #include "Level.hpp"
 #include <ctime>    
@@ -60,9 +60,14 @@ bool PlanetLevel::Update( GameEngine *game ){
 				if( IsDefined( solar_system ) ){
 					solar_system->AddEntity( _player );
 				}
-				// Il giocatore nel prossimo frame si deve trovare nel punto di fuga vicino a dove è si era diretto prima di entrare nel pianeta
+				// Il giocatore nel prossimo frame si deve trovare nel punto di fuga vicino a dove è si era diretto prima di entrare nel pianeta, e in direzione opposta
 				Point2D spawn_point = this->GetPlanetEntity()->escape_point;
 				_player->SetOrigin( spawn_point );
+
+				Vector _player_velocity = this->GetPlanetEntity()->escape_direction;
+				_player_velocity.Scale( _player->GetSpeed() );
+				_player->SetVelocity( _player_velocity );
+
 			}
 		
 					
@@ -122,9 +127,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 					min_point_height ) );
 	}
 	this->surface.push_front( end );
-		
 
-	srand (game->GetTime()*rand());
 	Point2D random_A = RandomPoint();
 
 	Point2D random_B = RandomPoint();

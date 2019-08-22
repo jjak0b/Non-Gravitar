@@ -84,7 +84,7 @@ void BunkerB::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 //////////////////////////////////////////////////////////////////
 
 void BunkerB::Draw( ViewPort *view ){
-	Entity::Draw( view );
+	Bunker::Draw( view );
 
 	// BunkerBShape test  = BunkerBShape(this->GetOrigin());
 	// list<Point2D> points = test.getShapePoints();

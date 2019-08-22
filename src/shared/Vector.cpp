@@ -44,14 +44,12 @@ void Vector::Reset(){
 	}
 }
 
-bool Vector::Add( Vector v ){
-	if( this->size == v.size ){
-		for( unsigned int i = 0; i < this->size; i += 1 ){
-			this->data[ i ] += v.data[ i ];
-		}
-		return true;
+Vector Vector::Add( Vector v ){
+	unsigned int _size = this->size < v.size ? this->size : v.size;
+	for( unsigned int i = 0; i < _size; i += 1 ){
+		this->data[ i ] += v.data[ i ];
 	}
-	return false;
+	return *this;
 }
 
 VECTOR_VALUE_TYPE Vector::ScalarProduct( Vector v ){
@@ -64,10 +62,11 @@ VECTOR_VALUE_TYPE Vector::ScalarProduct( Vector v ){
 	return result;
 }
 
-void Vector::Scale( double r ){
+Vector Vector::Scale( double r ){
 	for( unsigned int i = 0; i < this->size; i++ ){
 		this->data[ i ] = this->data[ i ] * r;
 	}
+	return *this;
 }
 
 double Vector::Lenght(){

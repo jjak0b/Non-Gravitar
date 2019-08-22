@@ -1,18 +1,12 @@
 #pragma once
 
-#include "Entity.hpp"
-#include "shared/Shape.hpp"
-
-class DamageableEntity : public Entity{
+class Damageable {
 	protected:
 	double MaxHealth;
 	double health;
-	
 
 	public:
-	DamageableEntity( Level *world, Point2D origin, Bitmap *texture, const char classname[], double health );
-
-	//bool Update(GameEngine* game);
+	Damageable( double health );
 
 	/**
 	 * @brief Restituisce la vita attuale dell'entità

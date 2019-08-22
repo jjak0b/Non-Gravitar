@@ -1,13 +1,15 @@
 #include "Projectile.hpp"
 #include "Level.hpp"
 #include "engine/GameEngine.hpp"
+#include "Damageable.hpp"
 #include "SurfaceShape.hpp"
 
-Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[] ) : Entity( world, origin, NULL , classname ){
+Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed ) : DynamicEntity( world, origin, NULL , classname, speed){
 	this->fireOrigin = origin;
 	this->direction = direction;
 	this->damage = damage;
 	this->lifetime = 0;
+	this->SetVelocity( direction.Scale( speed ) );
 }
 
 Vector Projectile::GetDirection(){
@@ -23,48 +25,52 @@ Point2D Projectile::GetFireOrigin(){
 }
 
 bool Projectile::Update( GameEngine *game ) {
+	bool update_result = DynamicEntity::Update( game );
 
-	if (this->lifetime == 0) this->lifetime = game->GetTime() + 4;
-
-	bool shouldUpdateNextFrame = true;
-
-	Point2D current_origin = this->GetOrigin();	
-	current_origin.Add( this->direction );
-	this->SetOrigin( current_origin );
-
-
-	if (IsDefined(this)) {
-		if( this->IsOutOfTheWorld() || (game->GetTime() > this->lifetime)) {
-		shouldUpdateNextFrame = false;
-		this->Delete();
-		}
+	if (this->lifetime == 0) {
+		this->lifetime = game->GetTime() + 4;
 	}
 
-		
-	if (shouldUpdateNextFrame == true) {
+	if( update_result ){
+
+		bool isCollisionDetected = false;
+
 		std::list<Point2D> surface = this->world->getSurface();
-		std::list<Point2D>::iterator surface_it = surface.begin();	
+		std::list<Point2D>::iterator surface_it = surface.begin();
 		Point2D start, end;
-		while( surface_it != surface.end() ){
+		while( !isCollisionDetected && surface_it != surface.end() ){
 			start = *surface_it;
 			surface_it++;
 			end = *surface_it;
 			SurfaceShape surface_shape = SurfaceShape(start, end);
 			if (surface_shape.SurfaceCollision(this->GetOrigin()))	{
-				shouldUpdateNextFrame = false;	
-				this->Delete();
+				isCollisionDetected = true;
 			}
-		}																																	
-	}	
-	return shouldUpdateNextFrame;
+		}
+
+		if( isCollisionDetected ){
+			this->Callback_OnCollide();
+			update_result = false;
+		}
+		else if(  this->IsOutOfTheWorld() || (game->GetTime() > this->lifetime)) {
+			this->Delete();
+			update_result = false;
+		}
+	}
+
+	return update_result;
 }
 
 void Projectile::Draw( ViewPort *view ){
-	Entity::Draw( view );
+	DynamicEntity::Draw( view );
 }
 
 void Projectile::Callback_OnCollide(){
 	this->Delete();
+}
+void Projectile::Callback_OnCollide( Damageable* entity ){
+	entity->DoDamage( this->GetDamage() );
+	this->Callback_OnCollide();
 }
 
 

@@ -24,6 +24,10 @@ class PlanetEntity : public Entity{
 	 * verrà considerato come punto "sicuro" dove riapparirà nel sistema solare dopo essere usciti dal pianeta.
 	 */
 	Point2D escape_point;
+	/**
+	 * @brief Direzione del sistema solare opposta alla quale il giocatore entra nel pianeta
+	 */
+	Vector escape_direction;
 
 	protected:
 

@@ -6,7 +6,7 @@
 #include "BunkerA.hpp"
 #include "BunkerB.hpp"
 #include "Projectile.hpp"
-#include "DamageableEntity.hpp"
+#include "Damageable.hpp"
 #include <ctime>    
 #include <cstdlib>  
 

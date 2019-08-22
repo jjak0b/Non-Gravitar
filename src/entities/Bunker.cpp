@@ -2,15 +2,34 @@
 #include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
 
-Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[]) : DamageableEntity( world, origin, NULL, classname, health ){
+Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[] ) : Entity( world, origin, NULL, classname ), Damageable( health ) {
 	
 }
 
 bool Bunker::Update(GameEngine* game) {
 	bool update_result = this->Entity::Update( game );
-    int t = game->GetTime()*100;
-    this->counter++;
+	if( update_result ) {
+		this->counter++; // TODO: Iacopo cambia questo contatore ad un timer in secondi, non a frame !
+	}
     return update_result;
+}
+
+void Bunker::Draw( ViewPort* view ){
+	Entity::Draw( view );
+
+#ifdef DEBUG
+	const int size_str_buffer = 30;
+	char str_print_buffer[ size_str_buffer ] = "";
+
+	Point2D text_point = this->GetOrigin();
+	Vector offset = Vector( text_point.GetSize() );
+	offset.Set( 1, 10 );
+	text_point.Add( offset );
+	text_point = view->WorldPointToViewPoint( this->world, text_point );
+
+	snprintf( str_print_buffer, size_str_buffer, "%.2f / %.2f", this->GetHealth(), this->GetMaxHealth() );
+	view->Print( str_print_buffer, text_point, COLOR_BLUE );
+#endif
 }
 
 Projectile *Bunker::Shoot(Point2D projectile_origin, Vector direction ){

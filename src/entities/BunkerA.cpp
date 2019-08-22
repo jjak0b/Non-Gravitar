@@ -20,7 +20,7 @@ bool BunkerA::Update(GameEngine* game) {
 
 	if (update_result) {
 		if (this->counter >= 40) {
-			srand(time(0));
+
 			int r1 = random(4);
 			int r2 = random (4);
 			while (r1 == r2) r2 = random(4);
@@ -43,11 +43,10 @@ bool BunkerA::Update(GameEngine* game) {
 
 		BunkerAShape bunker_shape = BunkerAShape(this->GetOrigin());
 		std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
-		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
+		for (std::list<Entity*>::iterator it = ents.begin(); update_result && it != ents.end(); it++) {
 			if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
 				Projectile *proj = (Projectile*)(*it);
-				this->DoDamage( proj->GetDamage());
-				(*it)->Delete();
+				proj->Callback_OnCollide( this );
 				update_result = this->GetHealth() > 0;
 			}
 		}
@@ -61,8 +60,7 @@ void BunkerA::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
-			this->DoDamage( proj->GetDamage());
-			proj->Delete();
+			proj->Callback_OnCollide( this );
 		}
 		else{ 
 			this->DoDamage( this->GetHealth());
@@ -76,7 +74,7 @@ void BunkerA::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 //////////////////////////////////////////////////////////////////
 
 void BunkerA::Draw( ViewPort *view ){
-	Entity::Draw( view );
+	Bunker::Draw( view );
 
 	// BunkerAShape test  = BunkerAShape(this->GetOrigin());
 	// list<Point2D> points = test.getShapePoints();

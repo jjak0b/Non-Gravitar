@@ -14,12 +14,14 @@
 
 GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 	this->time = 0.0;
+	this->deltaTime = 0.0;
 	this->currentLevel = NULL;
 	this->view = new ViewPort( screen_width, screen_height, Point2D(0,0) );
 }
 
-bool GameEngine::update( double time, char key_pressed, unsigned width, unsigned height ){
-	this->time += time;
+bool GameEngine::update( double deltaTime, char key_pressed, unsigned width, unsigned height ){
+	this->deltaTime = deltaTime;
+	this->time += deltaTime;
 	this->input_key = key_pressed;
 	return this->view->UpdateSize( width, height );
 }
@@ -118,6 +120,10 @@ char GameEngine::GetkeyPressed(){
 
 double GameEngine::GetTime(){
 	return this->time;
+}
+
+double GameEngine::GetDeltaTime(){
+	return this->deltaTime;
 }
 
 Level *GameEngine::GetCurrentLevel(){
