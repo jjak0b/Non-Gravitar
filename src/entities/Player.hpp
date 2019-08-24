@@ -11,7 +11,10 @@ class Projectile;
 #define PLAYER_HEALTH 500
 #define PLAYER_MAX_FUEL 500
 #define PLAYER_MAX_SPEED 20
-#define PLAYER_MAX_ACCELERATION 90
+#define PLAYER_MAX_ACCELERATION 150
+#define PLAYER_FRICTION_COEFFICIENT 1.0
+#define PLAYER_SCORE_BUNKER_DESTROYED 500
+#define PLAYER_SCORE_PLANET_DESTROYED 5000
 
 class Player : public DynamicEntity, public Damageable {
 	protected:
@@ -20,6 +23,7 @@ class Player : public DynamicEntity, public Damageable {
 	Vector *moveOverride; // spostamento obbligato dal gioco
 	double fuel;
 	double MaxFuel;
+	unsigned int score; // contatore dei punti del giocatore
 	
 	public:
 	Player( Level *world, Point2D origin, double health );
@@ -76,4 +80,8 @@ class Player : public DynamicEntity, public Damageable {
 	void AddFuel( double amount );
 
 	void RemoveFuel( double amount );
+
+	unsigned int GetScore();
+
+	void AddScore( unsigned int value );
 };

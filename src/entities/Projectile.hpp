@@ -8,11 +8,11 @@ class Projectile : public DynamicEntity{
 	double damage; // danno che infligge a qualsiasi entità che colpisce
 	Point2D fireOrigin; // punto di partenza da cui è stato generato il proiettile
 	Vector direction; // vettore che indica la direzione dell'entità
-	double lifetime ;
-	
+	double lifetime; // tempo di esistenza di questo proiettile, priam di essere eliminato
+	double deathtime; // tempo di gioco, in cui dovrà essere eliminato questa entità
 
 	public:
-	Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed = 10 );
+	Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed = 10, double lifetime = 4.0 );
 
 	Point2D GetFireOrigin();
 

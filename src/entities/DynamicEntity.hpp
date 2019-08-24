@@ -22,5 +22,11 @@ public:
 
 	Vector GetVelocity();
 
+	Vector GetAcceleration();
+
+	void SetAcceleration(Vector acceleration);
+
+	void AddAcceleration(Vector acceleration);
+
 	virtual bool Update( GameEngine *game );
 };

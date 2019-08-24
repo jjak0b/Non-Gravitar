@@ -44,6 +44,8 @@ bool PlanetEntity::Update( GameEngine *game ){
 
 	// il giocatore ha liberato il pianeta, quindi possiamo considerare questo livello come garbage, quindi non sarà più accessibile da questo frame
 	if( IsDefined( this->GetPlanetLevel() ) && this->GetPlanetLevel()->IsGenerated() && this->GetPlanetLevel()->IsFree() ){
+		Player *player = this->GetWorld()->GetPlayer();
+		player->AddScore( PLAYER_SCORE_PLANET_DESTROYED );
 		update_result = false;
 		this->Delete(); // Il Planetlevel associato e questa entità non saranno più significativi
 	}
@@ -80,12 +82,17 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 
 			// il punto di fuga è vicino al punto di collisione ma distaccato dal punto di -2(direction) unità,
 			// così che nel frame successivo alla fuga dal pianeta non sarà ancora eventualemente considerato come in collisione con esso ( anche se non può accadere )
+
+			// inverto la direzione con la quale si è diretto verso il pianeta
+			this->escape_direction = player->GetVelocity();
+			this->escape_direction.Normalize();
+			this->escape_direction.Scale( -1.0 );
+
 			this->escape_point = hitOrigin;
-			Vector direction = player->GetLastMove();
-			direction.Scale( -2.0 ); // inverto la direzione con la quale si è diretto verso il pianeta
-			this->escape_point.Add( direction );
+			Vector escape_offset = this->escape_direction;
+			escape_offset.Scale( 2.0 ); // Aggiungo un offset per esere sicuro di non tornare nuovamente nel raggio di collisioni del pianeta
+			this->escape_point.Add( escape_offset );
 			this->escape_point = this->GetWorld()->GetNormalizedPoint( this->escape_point );
-			this->escape_direction = player->GetLastMove().Scale( -1.0 );
 			// Il giocatore entra nel Livello
 			if( IsDefined( this->GetPlanetLevel() ) ){
 				this->GetPlanetLevel()->AddEntity( player );
@@ -97,7 +104,9 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 
 				Vector direction = Vector( spawn_point.GetSize() );
 				direction.Set( 1, -1 );
-				player->SetVelocity( direction.Scale( player->GetSpeed() ) );
+				VECTOR_VALUE_TYPE speed = player->GetSpeed();
+				player->SetVelocity( Vector( direction.GetSize() ) ); // Azzero la velocità attuale, così la velocità iniziale sarà 0
+				player->SetVelocity( direction.Scale( speed ) );
 
 				game->SetCurrentLevel( this->GetPlanetLevel() );
 			}

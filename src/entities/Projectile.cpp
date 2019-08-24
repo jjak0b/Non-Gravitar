@@ -4,11 +4,12 @@
 #include "Damageable.hpp"
 #include "SurfaceShape.hpp"
 
-Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed ) : DynamicEntity( world, origin, NULL , classname, speed){
+Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed, double _lifetime ) : DynamicEntity( world, origin, NULL , classname, speed){
 	this->fireOrigin = origin;
 	this->direction = direction;
 	this->damage = damage;
-	this->lifetime = 0;
+	this->lifetime = _lifetime;
+	this->deathtime = -1;
 	this->SetVelocity( direction.Scale( speed ) );
 }
 
@@ -27,8 +28,8 @@ Point2D Projectile::GetFireOrigin(){
 bool Projectile::Update( GameEngine *game ) {
 	bool update_result = DynamicEntity::Update( game );
 
-	if (this->lifetime == 0) {
-		this->lifetime = game->GetTime() + 4;
+	if (this->deathtime < 0) { // inizializza il momento in cui deve essere eliminato
+		this->deathtime = game->GetTime() + this->lifetime;
 	}
 
 	if( update_result ){
@@ -48,11 +49,11 @@ bool Projectile::Update( GameEngine *game ) {
 			}
 		}
 
-		if( isCollisionDetected ){
+		if( isCollisionDetected || this->IsOutOfTheWorld() ){
 			this->Callback_OnCollide();
 			update_result = false;
 		}
-		else if(  this->IsOutOfTheWorld() || (game->GetTime() > this->lifetime)) {
+		else if( game->GetTime() > this->deathtime ) {
 			this->Delete();
 			update_result = false;
 		}

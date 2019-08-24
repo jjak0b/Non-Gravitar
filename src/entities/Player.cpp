@@ -25,6 +25,7 @@ Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( w
 	this->moveOverride = NULL;
 	this->MaxFuel = PLAYER_MAX_FUEL;
 	this->fuel = this->MaxFuel;
+	this->score = 0;
 }
 
 Player::~Player(){
@@ -115,37 +116,44 @@ bool Player::Update( GameEngine *game ){
 			else{
 				direction = GetDirectionFromInput(input);
 			}
-			// this->AddAcceleration( direction.Scale( 5 ) );
 
+			Vector _acceleration = direction;
 			if ( !direction.IsNull() ) { // aggiorno la posizione solo il vettore spostamento non è nullo
 				Vector direction_inverted = direction;
 				direction_inverted.Scale( -1.0 );
-				Vector _velocity = direction;
-				if( this->lastMove.Equals( direction_inverted ) ){ // Se il giocatore vuole andare nella direzione opposta, allora lo fermo
-					_velocity.Reset();
+
+				if( this->lastMove.Equals( direction_inverted ) ){ // Se il giocatore vuole andare nella direzione opposta, allora lo rallento
+					_acceleration.Scale( -this->GetSpeed() );
 				}
-				else{ // altrimenti va nelal direzione di movimento
-					_velocity.Scale( PLAYER_MAX_SPEED );
+				else{ // altrimenti va nella direzione di movimento
+					_acceleration.Scale( PLAYER_MAX_SPEED );
 				}
 
-				this->SetVelocity( _velocity );
+				_acceleration = direction;
+				_acceleration.Scale( PLAYER_MAX_ACCELERATION );
+				this->AddAcceleration( _acceleration );
 				this->lastMove = direction;
 			}
+			// ricevo un rallentamento di "attrito" nella direzione opposta a quella di movimento per rallentare il giocatore, migliorando il suo controllo
+			_acceleration.Add( GetVelocity().Scale( -PLAYER_FRICTION_COEFFICIENT ) ); // a_f = - v * C
 
-			Vector deceleration = this->lastMove;
-			if( GetSpeed() > 0.0 ){
+			this->AddAcceleration( _acceleration );
+
+			if( GetSpeed() > 0.1 ){
 #ifndef DEBUG
 				this->RemoveFuel( 1 );
 #endif
-				// deceleration.Scale( 0 );
-				// this->AddAcceleration( deceleration );
 			}
 
 			if (this->ShouldFire(input)) {
-				this->Fire(this->lastMove);
+				Vector direction = this->GetVelocity();
+				direction.Normalize();
+				this->Fire( direction );
 			}
 			else if (this->ShouldBeam(input)) {
-				this->Beam(this->lastMove);
+				Vector direction = Vector( this->lastMove.GetSize() );
+				direction.Set( 1, -1 );
+				this->Beam( direction );
 			}
 
 			this->lastInput = input;
@@ -171,9 +179,9 @@ void Player::Draw( ViewPort *view ){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
+	// HUD del giocatore che mostra il suo status
 	Point2D point_top_left_hud = Point2D( 0, view->GetHeight() - 2 );
-	snprintf( str_print_buffer, size_str_buffer, "Score: [value]"); // TODO: aggiungere valore dopo implementazione
+	snprintf( str_print_buffer, size_str_buffer, "Score: %d", this->GetScore());
 	view->Print( str_print_buffer, point_top_left_hud, COLOR_RED );
 
 	point_top_left_hud.SetY( point_top_left_hud.GetY() - 2 );
@@ -195,7 +203,7 @@ Projectile *Player::Fire( Vector direction ){
 Projectile *Player::Beam( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction );
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile" );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile", this->GetMaxSpeed() + 5, 4*FRAME_TIME);
 	return p;
 }
 
@@ -255,7 +263,7 @@ void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 }
 
 void Player::SetWorld( Level *_world){
-	this->Entity::SetWorld( world );
+	this->Entity::SetWorld( _world );
 }
 
 void Player::SetMoveOverride( Vector *direction ){
@@ -303,4 +311,12 @@ void Player::RemoveFuel( double amount ) {
 	if (this->fuel < 0) {
 		this->fuel = 0;
 	}
+}
+
+unsigned int Player::GetScore(){
+	return this->score;
+}
+
+void Player::AddScore(unsigned int value) {
+	this->score += value;
 }
