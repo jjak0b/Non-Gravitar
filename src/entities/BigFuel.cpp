@@ -18,19 +18,19 @@ BigFuel::BigFuel( Level *world, Point2D origin) : Fuel( world, origin) {
 bool BigFuel::Update(GameEngine *game) {
     bool update_result = this->Fuel::Update(game);
 
-    if ( update_result) {
-		BigFuelShape fuel_shape = BigFuelShape(this->GetOrigin());
-		std::list<Entity*> ents = this->world->GetEntities( "Beam", false, true );
-		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-			if( fuel_shape.PointCollision((*it)->GetOrigin()) ){
-                game->GetCurrentLevel()->GetPlayer()->AddFuel(this->size);
-				Projectile *proj = (Projectile*)(*it);
-				this->Delete();
-				(*it)->Delete();
-				update_result = false;
-			}
-		}
-    }
+    // if ( update_result) {
+	// 	BigFuelShape fuel_shape = BigFuelShape(this->GetOrigin());
+	// 	std::list<Entity*> ents = this->world->GetEntities( "Beam", false, true );
+	// 	for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
+	// 		if( fuel_shape.PointCollision((*it)->GetOrigin()) ){
+    //             game->GetCurrentLevel()->GetPlayer()->AddFuel(this->size);
+	// 			Projectile *proj = (Projectile*)(*it);
+	// 			this->Delete();
+	// 			(*it)->Delete();
+	// 			update_result = false;
+	// 		}
+	// 	}
+    // }
 
     return update_result;
 }

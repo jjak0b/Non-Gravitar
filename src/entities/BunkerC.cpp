@@ -42,16 +42,16 @@ bool BunkerC::Update(GameEngine* game) {
 			if (counter >= 31) counter = 0;
 		}
 
-		BunkerCShape bunker_shape = BunkerCShape(this->GetOrigin());
-		std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
-		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-			if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
-				Projectile *proj = (Projectile*)(*it);
-				this->DoDamage( proj->GetDamage());
-				(*it)->Delete();
-				update_result = this->GetHealth() > 0;
-			}
-		}
+		// BunkerCShape bunker_shape = BunkerCShape(this->GetOrigin());
+		// std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
+		// for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
+		// 	if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
+		// 		Projectile *proj = (Projectile*)(*it);
+		// 		this->DoDamage( proj->GetDamage());
+		// 		(*it)->Delete();
+		// 		update_result = this->GetHealth() > 0;
+		// 	}
+		// }
     }
     return update_result;
 

@@ -17,19 +17,19 @@ SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
 bool SmallFuel::Update(GameEngine *game) {
     bool update_result = this->Fuel::Update(game);
 
-    if ( update_result) {
-		SmallFuelShape fuel_shape = SmallFuelShape(this->GetOrigin());
-		std::list<Entity*> ents = this->world->GetEntities( "Beam", false, true );
-		for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-			if( fuel_shape.PointCollision((*it)->GetOrigin()) ){
-                game->GetCurrentLevel()->GetPlayer()->AddFuel(this->size);
-				Projectile *proj = (Projectile*)(*it);
-				this->Delete();
-				(*it)->Delete();
-				update_result = false;
-			}
-		}
-    }
+    // if ( update_result) {
+	// 	SmallFuelShape fuel_shape = SmallFuelShape(this->GetOrigin());
+	// 	std::list<Entity*> ents = this->world->GetEntities( "Beam", false, true );
+	// 	for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
+	// 		if( fuel_shape.PointCollision((*it)->GetOrigin()) ){
+    //             game->GetCurrentLevel()->GetPlayer()->AddFuel(this->size);
+	// 			Projectile *proj = (Projectile*)(*it);
+	// 			this->Delete();
+	// 			(*it)->Delete();
+	// 			update_result = false;
+	// 		}
+	// 	}
+    // }
 
     return update_result;
 }

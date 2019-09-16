@@ -41,66 +41,10 @@ bool Player::Update( GameEngine *game ){
 	bool update_result = DynamicEntity::Update( game );
 
 	if( update_result ){
-		bool b_collision_detected = false;
-
-		// Jacopo: TODO: Iacopo devi spostare la gestione della collisione nel livello Update di Entity
-		// COLLISIONE BUNKER /////////////////////////////////////////////////////////////////////////////////////
-		PlayerShape player_shape = PlayerShape(this->GetOrigin());
-		std::list<Entity*> bunkers = this->world->GetEntities( "BunkerA", false, true );
-		for (std::list<Entity*>::iterator it = bunkers.begin(); !b_collision_detected && it != bunkers.end(); it++) {
-			BunkerAShape it_shape = BunkerAShape((*it)->GetOrigin());
-			if (player_shape.SideCollision((it_shape)) || it_shape.SideCollision((player_shape)))
-				b_collision_detected = true;
-		}
-		bunkers.clear();
-		bunkers = this->world->GetEntities( "BunkerB", false, true );
-		for (std::list<Entity*>::iterator it = bunkers.begin(); !b_collision_detected && it != bunkers.end(); it++) {
-			BunkerBShape it_shape = BunkerBShape((*it)->GetOrigin());
-			if (player_shape.SideCollision((it_shape)) || it_shape.SideCollision((player_shape)))
-				b_collision_detected = true;
-		}
-		bunkers.clear();
-		bunkers = this->world->GetEntities( "BunkerC", false, true );
-		for (std::list<Entity*>::iterator it = bunkers.begin(); !b_collision_detected && it != bunkers.end(); it++) {
-			BunkerCShape it_shape = BunkerCShape((*it)->GetOrigin());
-			if (player_shape.SideCollision((it_shape)) || it_shape.SideCollision((player_shape)))
-				b_collision_detected = true;
-		}
-		bunkers.clear();
-
-		// COLLISIONE PROJECTILE /////////////////////////////////////////////////////////////////////////////////////
-		PlayerShape bunker_shape = PlayerShape(this->GetOrigin());
-		std::list<Entity*> projectiles = this->world->GetEntities( "Projectile", false, false );
-		for (std::list<Entity*>::iterator it = projectiles.begin(); !b_collision_detected && update_result && it != projectiles.end(); it++) {
-			if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
-				Projectile *proj = (Projectile*)(*it);
-				this->DoDamage( proj->GetDamage());
-				(*it)->Delete();
-				update_result = this->GetHealth() > 0;
-			}
-		}
-		projectiles.clear();
-
-		// COLLISIONE SURFACE /////////////////////////////////////////////////////////////////////////////////////
-		// Jacopo: TODO: Iacopo devi rifare questa perchè non funziona
-	/*
-		std::list<Point2D> surface = this->world->getSurface();
-		std::list<Point2D>::iterator surface_it = surface.begin();
-		Point2D start, end;
-		while( update_result && !b_collision_detected && surface_it != surface.end() ){
-			start = *surface_it;
-			surface_it++;
-			end = *surface_it;
-			SurfaceShape surface_shape = SurfaceShape(start, end);
-			if (surface_shape.SideCollision(player_shape))	{
-				b_collision_detected = true;
-			}
-		}
-	*/
 
 		// COLLISIONE FINE
 		if( IsDefined( this ) ){
-			if( !update_result || b_collision_detected || this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
+			if( !update_result ||  this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
 				this->Delete();
 			}
 		}
@@ -167,17 +111,6 @@ void Player::Draw( ViewPort *view ){
 
 	const int size_str_buffer = 30;
 	char str_print_buffer[ size_str_buffer ] = "";
-
-
-//////////// DEBUG /////////////////////////////////////////////////////////////////////////////
-	// PlayerShape test  = PlayerShape(this->GetOrigin());
-	// list<Point2D> points = test.getShapePoints();
-	// for (std::list<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
-	// 	Point2D point= (*it);
-	// view->Draw(NULL, this->world, point );
-	// }
-////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 	// HUD del giocatore che mostra il suo status
 	Point2D point_top_left_hud = Point2D( 0, view->GetHeight() - 2 );

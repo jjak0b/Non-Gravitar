@@ -148,6 +148,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 
 	this->AddEntity(new SmallFuel(this, random_Small));
 	this->AddEntity(new BigFuel(this, random_Big));
+
 	
 }
 

@@ -71,7 +71,71 @@ char* Entity::GetClassname(){
 
 bool Entity::Update( GameEngine *game ){
 	
-	return IsDefined( this );
+	bool update_result = IsDefined( this );
+
+		bool b_collision_detected = false;
+
+		//collisione surface
+		
+
+
+		return update_result;
+
+		// Jacopo: TODO: Iacopo devi spostare la gestione della collisione nel livello Update di Entity
+		// COLLISIONE BUNKER /////////////////////////////////////////////////////////////////////////////////////
+		// PlayerShape player_shape = PlayerShape(this->GetOrigin());
+		// std::list<Entity*> bunkers = this->world->GetEntities( "BunkerA", false, true );
+		// for (std::list<Entity*>::iterator it = bunkers.begin(); !b_collision_detected && it != bunkers.end(); it++) {
+		// 	BunkerAShape it_shape = BunkerAShape((*it)->GetOrigin());
+		// 	if (player_shape.SideCollision((it_shape)) || it_shape.SideCollision((player_shape)))
+		// 		b_collision_detected = true;
+		// }
+		// bunkers.clear();
+		// bunkers = this->world->GetEntities( "BunkerB", false, true );
+		// for (std::list<Entity*>::iterator it = bunkers.begin(); !b_collision_detected && it != bunkers.end(); it++) {
+		// 	BunkerBShape it_shape = BunkerBShape((*it)->GetOrigin());
+		// 	if (player_shape.SideCollision((it_shape)) || it_shape.SideCollision((player_shape)))
+		// 		b_collision_detected = true;
+		// }
+		// bunkers.clear();
+		// bunkers = this->world->GetEntities( "BunkerC", false, true );
+		// for (std::list<Entity*>::iterator it = bunkers.begin(); !b_collision_detected && it != bunkers.end(); it++) {
+		// 	BunkerCShape it_shape = BunkerCShape((*it)->GetOrigin());
+		// 	if (player_shape.SideCollision((it_shape)) || it_shape.SideCollision((player_shape)))
+		// 		b_collision_detected = true;
+		// }
+		// bunkers.clear();
+
+		// COLLISIONE PROJECTILE /////////////////////////////////////////////////////////////////////////////////////
+		// PlayerShape bunker_shape = PlayerShape(this->GetOrigin());
+		// std::list<Entity*> projectiles = this->world->GetEntities( "Projectile", false, false );
+		// for (std::list<Entity*>::iterator it = projectiles.begin(); !b_collision_detected && update_result && it != projectiles.end(); it++) {
+		// 	if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
+		// 		Projectile *proj = (Projectile*)(*it);
+		// 		this->DoDamage( proj->GetDamage());
+		// 		(*it)->Delete();
+		// 		update_result = this->GetHealth() > 0;
+		// 	}
+		// }
+		// projectiles.clear();
+
+		// COLLISIONE SURFACE /////////////////////////////////////////////////////////////////////////////////////
+		// Jacopo: TODO: Iacopo devi rifare questa perchè non funziona
+	/*
+		std::list<Point2D> surface = this->world->getSurface();
+		std::list<Point2D>::iterator surface_it = surface.begin();
+		Point2D start, end;
+		while( update_result && !b_collision_detected && surface_it != surface.end() ){
+			start = *surface_it;
+			surface_it++;
+			end = *surface_it;
+			SurfaceShape surface_shape = SurfaceShape(start, end);
+			if (surface_shape.SideCollision(player_shape))	{
+				b_collision_detected = true;
+			}
+		}
+	*/
+
 }
 
 void Entity::Draw( ViewPort *view ){
