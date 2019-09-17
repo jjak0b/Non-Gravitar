@@ -8,4 +8,5 @@ class SmallFuel : public Fuel {
     public:
     SmallFuel( Level *world, Point2D origin);
     bool Update(GameEngine *game);
+    void shapeUpdate();
 };

@@ -30,7 +30,4 @@ class Projectile : public DynamicEntity{
 	 */
 	void Callback_OnCollide();
 	void Callback_OnCollide( Damageable* entity );
-
-
-
 };

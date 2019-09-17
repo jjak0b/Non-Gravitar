@@ -9,11 +9,7 @@
 #include <list>
 #include <iterator>
 #include <cstring>
-#include "PlayerShape.hpp"
-#include "BunkerAShape.hpp"
-#include "BunkerBShape.hpp"
-#include "BunkerCShape.hpp"
-#include "SurfaceShape.hpp"
+
 
 Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(PLAYER_HEALTH) {
 	this->texture = new Bitmap( 3, 5, COLOR_RED );
@@ -42,9 +38,8 @@ bool Player::Update( GameEngine *game ){
 
 	if( update_result ){
 
-		// COLLISIONE FINE
 		if( IsDefined( this ) ){
-			if( !update_result ||  this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
+			if( !update_result || hasCollided() || this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
 				this->Delete();
 			}
 		}
@@ -60,44 +55,56 @@ bool Player::Update( GameEngine *game ){
 			else{
 				direction = GetDirectionFromInput(input);
 			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			Point2D current_origin = this->GetOrigin();
+			current_origin.Add(direction);
 
-			Vector _acceleration = direction;
-			if ( !direction.IsNull() ) { // aggiorno la posizione solo il vettore spostamento non è nullo
-				Vector direction_inverted = direction;
-				direction_inverted.Scale( -1.0 );
-
-				if( this->lastMove.Equals( direction_inverted ) ){ // Se il giocatore vuole andare nella direzione opposta, allora lo rallento
-					_acceleration.Scale( -this->GetSpeed() );
-				}
-				else{ // altrimenti va nella direzione di movimento
-					_acceleration.Scale( PLAYER_MAX_SPEED );
-				}
-
-				_acceleration = direction;
-				_acceleration.Scale( PLAYER_MAX_ACCELERATION );
-				this->AddAcceleration( _acceleration );
+			if (!direction.IsNull()) { // aggiorno la posizione solo il vettore spostamento non è nullo
+				this->RemoveFuel(1);
+				this->SetOrigin(current_origin);
 				this->lastMove = direction;
 			}
-			// ricevo un rallentamento di "attrito" nella direzione opposta a quella di movimento per rallentare il giocatore, migliorando il suo controllo
-			_acceleration.Add( GetVelocity().Scale( -PLAYER_FRICTION_COEFFICIENT ) ); // a_f = - v * C
+			/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			this->AddAcceleration( _acceleration );
+// 			Vector _acceleration = direction;
+// 			if ( !direction.IsNull() ) { // aggiorno la posizione solo il vettore spostamento non è nullo
+// 				Vector direction_inverted = direction;
+// 				direction_inverted.Scale( -1.0 );
 
-			if( GetSpeed() > 0.1 ){
-#ifndef DEBUG
-				this->RemoveFuel( 1 );
-#endif
-			}
+// 				if( this->lastMove.Equals( direction_inverted ) ){ // Se il giocatore vuole andare nella direzione opposta, allora lo rallento
+// 					_acceleration.Scale( -this->GetSpeed() );
+// 				}
+// 				else{ // altrimenti va nella direzione di movimento
+// 					_acceleration.Scale( PLAYER_MAX_SPEED );
+// 				}
+
+// 				_acceleration = direction;
+// 				_acceleration.Scale( PLAYER_MAX_ACCELERATION );
+// 				this->AddAcceleration( _acceleration );
+// 				this->lastMove = direction;
+// 			}
+// 			// ricevo un rallentamento di "attrito" nella direzione opposta a quella di movimento per rallentare il giocatore, migliorando il suo controllo
+// 			_acceleration.Add( GetVelocity().Scale( -PLAYER_FRICTION_COEFFICIENT ) ); // a_f = - v * C
+
+// 			this->AddAcceleration( _acceleration );
+
+// 			if( GetSpeed() > 0.1 ){
+// #ifndef DEBUG
+// 				this->RemoveFuel( 1 );
+// #endif
+// 			}
 
 			if (this->ShouldFire(input)) {
 				Vector direction = this->GetVelocity();
 				direction.Normalize();
-				this->Fire( direction );
+				//this->Fire( direction );
+				this->Fire(lastMove);
 			}
 			else if (this->ShouldBeam(input)) {
-				Vector direction = Vector( this->lastMove.GetSize() );
-				direction.Set( 1, -1 );
-				this->Beam( direction );
+				Vector direction = this->GetVelocity();
+				direction.Normalize();
+				//this->Fire( direction );
+				this->Beam(lastMove);
 			}
 
 			this->lastInput = input;
@@ -129,14 +136,14 @@ void Player::Draw( ViewPort *view ){
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 10, "Player_Projectile", this->GetMaxSpeed() + 5 );
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 50, "Player_Projectile", this->GetMaxSpeed() + 5 );
 	return p;
 }
 
 Projectile *Player::Beam( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction );
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile", this->GetMaxSpeed() + 5, 4*FRAME_TIME);
+	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile", this->GetMaxSpeed() + 5 );
 	return p;
 }
 
@@ -252,4 +259,43 @@ unsigned int Player::GetScore(){
 
 void Player::AddScore(unsigned int value) {
 	this->score += value;
+}
+
+void Player::shapeUpdate() {
+
+	(*this->GetShape()).deletePoints();
+
+	Point2D a = Point2D(this->origin.GetX() -3, this->origin.GetY() );
+    Point2D b = Point2D(this->origin.GetX() + 3, this->origin.GetY() );
+    Point2D c = Point2D(this->origin.GetX() - 3, this->origin.GetY() + 5);
+    Point2D d = Point2D(this->origin.GetX() + 3, this->origin.GetY() + 5);
+
+    (*this->GetShape()).addPoint(a);
+	(*this->GetShape()).addPoint(b);
+	(*this->GetShape()).addPoint(c);
+	(*this->GetShape()).addPoint(d);
+}
+
+bool Player::hasCollided() {
+
+	bool b_hasCollided = false;
+	shapeUpdate();
+	std::list<Entity*> projectiles = this->world->GetEntities( "Projectile", false, false );
+	for (std::list<Entity*>::iterator it = projectiles.begin(); !b_hasCollided && it != projectiles.end(); it++) {
+		if( this->GetShape()->ray_Casting((*it)->GetOrigin()) ){
+			Projectile *proj = (Projectile*)(*it);
+			this->DoDamage( proj->GetDamage());
+			(*it)->Delete();
+			b_hasCollided = this->GetHealth() < 1;
+		}
+	}
+	std::list<Entity*> bunkers = this->world->GetEntities( "Bunker", false, true );
+	for (std::list<Entity*>::iterator it = bunkers.begin(); !b_hasCollided && it != bunkers.end(); it++) {
+		if( IsColliding(*it) ){
+			(*it)->Delete();
+			b_hasCollided = true;
+		}
+	}
+
+	return b_hasCollided;
 }

@@ -34,16 +34,10 @@ add_executable(NonGravitar
         src/entities/Bunker.hpp
         src/entities/BunkerA.cpp
         src/entities/BunkerA.hpp
-        src/entities/BunkerAShape.hpp
-        src/entities/BunkerAShape.cpp
         src/entities/BunkerB.cpp
         src/entities/BunkerB.hpp
-        src/entities/BunkerBShape.hpp
-        src/entities/BunkerBShape.cpp
         src/entities/BunkerC.cpp
         src/entities/BunkerC.hpp
-        src/entities/BunkerCShape.hpp
-        src/entities/BunkerCShape.cpp
         src/entities/Damageable.cpp
         src/entities/Damageable.hpp
         src/entities/Entity.cpp
@@ -52,24 +46,16 @@ add_executable(NonGravitar
         src/entities/Fuel.hpp
         src/entities/SmallFuel.cpp
         src/entities/SmallFuel.hpp
-        src/entities/SmallFuelShape.cpp
-        src/entities/SmallFuelShape.hpp
         src/entities/BigFuel.cpp
         src/entities/BigFuel.hpp
-        src/entities/BigFuelShape.cpp
-        src/entities/BigFuelShape.hpp
         src/entities/Level.cpp
         src/entities/Level.hpp
-        src/entities/SurfaceShape.cpp
-        src/entities/SurfaceShape.hpp
         src/entities/PlanetEntity.cpp
         src/entities/PlanetEntity.hpp
         src/entities/PlanetLevel.cpp
         src/entities/PlanetLevel.hpp
         src/entities/Player.cpp
         src/entities/Player.hpp
-        src/entities/PlayerShape.cpp
-        src/entities/PlayerShape.hpp
         src/entities/Projectile.cpp
         src/entities/Projectile.hpp
         src/entities/SolarSystem.cpp

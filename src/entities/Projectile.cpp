@@ -37,29 +37,12 @@ bool Projectile::Update( GameEngine *game ) {
 
 		bool isCollisionDetected = false;
 
-		// std::list<Point2D> surface = this->world->getSurface();
-		// std::list<Point2D>::iterator surface_it = surface.begin();
-		// Point2D start, end;
-		// while( !isCollisionDetected && surface_it != surface.end() ){
-		// 	start = *surface_it;
-		// 	surface_it++;
-		// 	end = *surface_it;
-		// 	SurfaceShape surface_shape = SurfaceShape(start, end);
-		// 	if (surface_shape.SurfaceCollision(this->GetOrigin()))	{
-		// 		isCollisionDetected = true;
-		// 	}
-		// }
-
-		std::list<Point2D> surface = this->world->getSurface();
-		// std::list<Point2D>::iterator a = surface.begin();
-		// std::list<Point2D>::iterator b;
-	
 		// controllo collisione surface
-		Point2D o = this->GetOrigin();
-		Shape surface_shape = Shape(Point2D(0,0));
+		std::list<Point2D> surface = this->world->getSurface();
+		Shape surface_shape = Shape();
 		surface_shape.addPointList(surface);
 		
-		if (surface_shape.ray_Casting(o))	{
+		if (surface_shape.ray_Casting(this->GetOrigin()))	{
 			isCollisionDetected = true;	
 		}
 
@@ -90,6 +73,7 @@ void Projectile::Callback_OnCollide( Damageable* entity ){
 	entity->DoDamage( this->GetDamage() );
 	this->Callback_OnCollide();
 }
+
 
 
 

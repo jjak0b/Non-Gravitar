@@ -8,9 +8,6 @@
 #include <list>
 #include <iterator>
 #include <cstring>
-
-#include "BunkerBShape.hpp"
-
     
 BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerB"){
 
@@ -26,41 +23,32 @@ BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 bool BunkerB::Update(GameEngine* game) {
     
     bool update_result = this->Bunker::Update( game );
+	this->shapeUpdate();
+	
     if (update_result) {
 
-		if (this->counter >= 60) {
+		if ((game->GetTime() - this->timer) >= 3) {
 
 			Vector *direction = new Vector();
 			direction->Set(0,-1);
 			direction->Set(1,1);
-			Point2D projectile_origin = Point2D(this->origin.GetX() -3, this->origin.GetY() +3 );
+			Point2D projectile_origin = Point2D(this->origin.GetX() -3, this->origin.GetY() +5 );
 			Shoot( projectile_origin, (*direction));
 			
 			direction->Set(0,0);
 			direction->Set(1,1);
-			projectile_origin = Point2D(this->origin.GetX(), this->origin.GetY() +3 );
+			projectile_origin = Point2D(this->origin.GetX(), this->origin.GetY() +5 );
 			Shoot(projectile_origin, (*direction));
 			
 			direction->Set(0,1);
 			direction->Set(1,1);
-			projectile_origin = Point2D(this->origin.GetX() +3, this->origin.GetY() +3 );
+			projectile_origin = Point2D(this->origin.GetX() +3, this->origin.GetY() +5 );
 			Shoot(projectile_origin, (*direction));
 			
 			delete direction;
 
-			counter = 0;
+			this->timer = game->GetTime();
 		}
-
-		// BunkerBShape bunker_shape = BunkerBShape(this->GetOrigin());
-		// std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
-		// for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
-		// 	if( bunker_shape.PointCollision((*it)->GetOrigin()) ){
-		// 		Projectile *proj = (Projectile*)(*it);
-		// 		this->DoDamage( proj->GetDamage());
-		// 		(*it)->Delete();
-		// 		update_result = this->GetHealth() > 0;
-		// 	}
-		// }
 	}
     return update_result;
 
@@ -79,18 +67,30 @@ void BunkerB::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
 	}
 }
 
-////////////////////////////////////////////////////////////////////
-// DEBUG //////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
 void BunkerB::Draw( ViewPort *view ){
 	Bunker::Draw( view );
-
-	// BunkerBShape test  = BunkerBShape(this->GetOrigin());
-	// list<Point2D> points = test.getShapePoints();
+	// DEBUG
+	// list<Point2D> points = this->shape->getPoints();
 	// for (std::list<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
 	// 	Point2D point= (*it);
 	// view->Draw(NULL, this->world, point );
 	// }
 }
+
+void BunkerB::shapeUpdate(){
+
+	(*this->GetShape()).deletePoints();
+
+	Point2D a = Point2D(this->origin.GetX() -2, this->origin.GetY()  );
+    Point2D b = Point2D(this->origin.GetX() +2, this->origin.GetY()  );
+    Point2D c = Point2D(this->origin.GetX() -3, this->origin.GetY() +5 );
+    Point2D d = Point2D(this->origin.GetX() +3, this->origin.GetY() +5 );
+
+	(*this->GetShape()).addPoint(c);
+	(*this->GetShape()).addPoint(a);
+	(*this->GetShape()).addPoint(b);
+	(*this->GetShape()).addPoint(d);
+}
+
+
 

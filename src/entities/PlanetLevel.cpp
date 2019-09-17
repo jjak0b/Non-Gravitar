@@ -16,8 +16,6 @@
 #include "Entity.hpp"
 #include "shared/Point2D.hpp"
 #include "Fuel.hpp"
-#include "SurfaceShape.hpp"
-#include "PlayerShape.hpp"
 #include "SmallFuel.hpp"
 #include "BigFuel.hpp"
 
@@ -142,14 +140,15 @@ void PlanetLevel::Generate( GameEngine *game ){
 	Point2D random_Big = RandomPoint();
 	while (random_Big.Equals(random_A) || random_Big.Equals(random_B) || random_Big.Equals(random_C) || random_Big.Equals(random_Small)) random_Big = RandomPoint();
 
+	random_Small.SetY(random_Small.GetY() + 1);
+	random_Big.SetY(random_Big.GetY() + 1);
+
 	this->AddEntity(new BunkerA(this, random_A));
 	this->AddEntity(new BunkerB(this,random_B));
 	this->AddEntity(new BunkerC(this,random_C));
 
 	this->AddEntity(new SmallFuel(this, random_Small));
-	this->AddEntity(new BigFuel(this, random_Big));
-
-	
+	this->AddEntity(new BigFuel(this, random_Big));	
 }
 
 Point2D PlanetLevel::RandomPoint() {

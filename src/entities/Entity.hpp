@@ -16,9 +16,10 @@ protected:
 	Bitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
+	Shape *shape = new Shape();
 
 public:
-	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "" );
+	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "", Shape *shape = new Shape() );
 	virtual ~Entity();
 
 	/**
@@ -94,17 +95,19 @@ public:
 	 * PreCondition: impostare puntatore collisionOrigin = NULL se non si vuole ottenere il punto di collisione
 	 * PostCondition: se avviene una collisione: il valore puntato da collisionOrigin contiene la posizione di collisione
 	 * @param entity : entità da controllare
-	 * @param collisionOrigin : punto di collisione
 	 * @return true se è avvenuta una collisione
 	 * @return false altrimenti
 	 */
-	bool IsColliding( Entity *entity, Point2D *collisionOrigin);
+	bool IsColliding( Entity *entity);
+
+	Shape* GetShape();
+	void SetShape( Shape *shape );
+
 
 	/**
 	 * @brief funzione di callback o risposta che deve essere richiamata nel caso questa entità collida con un altra
 	 * e ne gestirà il comportamento
 	 * @param collide_ent 
-	 * @param hitOrigin 
 	 */
 	void Callback_OnCollide(  );
 
@@ -117,5 +120,6 @@ public:
 	 */
 	bool IsOutOfTheWorld();
 
+	void shapeUpdate();
 
 };

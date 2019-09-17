@@ -1,5 +1,7 @@
+#include "Fuel.hpp"
 #include "Player.hpp"
 #include "Level.hpp"
+#include "Projectile.hpp"
 #include "engine/Bitmap.hpp"
 #include "engine/GameEngine.hpp"
 #include "engine/GameConfig.h"
@@ -8,12 +10,28 @@
 #include <list>
 #include <iterator>
 #include <cstring>
-#include "Fuel.hpp"
 
 Fuel::Fuel( Level *world, Point2D origin) : Entity( world, origin, NULL, "Fuel" ){
 }
 
 bool Fuel::Update(GameEngine *game) {
-	return this->Entity::Update( game );
+	bool update_result = this->Entity::Update( game );
+
+	if (update_result) {	
+		std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
+		for (std::list<Entity*>::iterator it = ents.begin(); update_result && it != ents.end(); it++) {
+			if( this->GetShape()->ray_Casting((*it)->GetOrigin()) ){
+				Projectile *proj = (Projectile*)(*it);
+				if( !strcmp( proj->GetClassname(), "Beam_Projectile" ) ){
+				this->GetWorld()->GetPlayer()->DoHeal(this->size);
+				update_result = false;
+				}
+				(*it)->Delete();
+			}
+		}
+	}
+
+	if (!update_result) this->Delete();
+	return update_result;
 }
 

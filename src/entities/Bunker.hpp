@@ -7,7 +7,7 @@ class Projectile;
 
 class Bunker : public Entity, public Damageable {
 	protected:
-	int counter = 0;
+	double timer = 0;
 
 	public:
 		Bunker( Level *world, Point2D origin, double health, const char classname[] );

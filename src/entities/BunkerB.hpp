@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Bunker.hpp"
-#include "BunkerBShape.hpp"
 #include "Projectile.hpp"
 
 class BunkerB : public Bunker{
@@ -11,4 +10,5 @@ class BunkerB : public Bunker{
 	    bool Update(GameEngine* game);
 		void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
 		void Draw( ViewPort *view );
+		void shapeUpdate();
 };
