@@ -85,7 +85,5 @@ class Player : public DynamicEntity, public Damageable {
 
 	void AddScore( unsigned int value );
 
-	void shapeUpdate();
-
 	bool hasCollided();
 };

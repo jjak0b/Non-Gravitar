@@ -40,7 +40,7 @@ bool Projectile::Update( GameEngine *game ) {
 		// controllo collisione surface
 		std::list<Point2D> surface = this->world->getSurface();
 		Shape surface_shape = Shape();
-		surface_shape.addPointList(surface);
+		surface_shape.addAbsoluteList(surface);
 		
 		if (surface_shape.ray_Casting(this->GetOrigin()))	{
 			isCollisionDetected = true;	

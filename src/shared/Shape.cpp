@@ -3,33 +3,53 @@
 #include "Vector.hpp"
 #include "Side.hpp"
 #include <cmath>
+#include "entities/Level.hpp"
+
 
 Shape::Shape() {
 };
 
-list<Point2D> Shape::getPoints(){
-	return this->points;
+void Shape::addAbsolute( Point2D point ) {
+  this->absolute_points.push_front(point);
 }
 
-void Shape::addPoint( Point2D point ) {
-  this->points.push_front(point);
-}
-
-void Shape::addPointList( list<Point2D> point_list ) {
+void Shape::addAbsoluteList( list<Point2D> point_list ) {
   
   std::list<Point2D>::iterator it = point_list.begin();
   for (it; it !=  point_list.end(); it++) {
-      addPoint( (*it) );
+      addAbsolute( (*it) );
   }
 }
 
-void Shape::deletePoints() {
-  this->points.clear();
+void Shape::addOffset( Point2D point ) {
+  this->offset_points.push_front(point);
+  addAbsolute(point);
 }
 
+list<Point2D> Shape::getAbsolutes() {
+  return this->absolute_points;
+}
+
+void Shape::UpdateAbsolutes( Point2D origin, Level *world ) {
+
+  Point2D point;
+  list<Point2D>::iterator it_offset, it_absolute;
+  it_offset = this->offset_points.begin();
+  it_absolute = this->absolute_points.begin();
+  
+  for (it_offset; it_offset != this->offset_points.end(); it_offset++, it_absolute++ ) {
+    
+    point = origin;
+    point.Add(*it_offset);
+    point = world->GetNormalizedPoint(point);
+    (*it_absolute) = point;
+  }
+}
+
+// Intersezioni
 bool Shape::IsShapeColliding( Shape collision_shape ) {
   
-  list<Point2D> collision_points = collision_shape.getPoints();
+  list<Point2D> collision_points = collision_shape.getAbsolutes();
   std::list<Point2D>::iterator it = collision_points.begin();
   bool is_Colliding = false;
 
@@ -48,14 +68,14 @@ bool Shape::ray_Casting(Point2D point) {
   float e = 1.0;
 
   // Imposta i valori minimi e massimi del poligono
-  float Xmin = this->points.front().GetX();
-  float Xmax = this->points.front().GetX();
-  float Ymin = this->points.front().GetY();
-  float Ymax = this->points.front().GetY(); 
+  float Xmin = this->absolute_points.front().GetX();
+  float Xmax = this->absolute_points.front().GetX();
+  float Ymin = this->absolute_points.front().GetY();
+  float Ymax = this->absolute_points.front().GetY(); 
         
-  std::list<Point2D>::iterator it = this->points.begin();
+  std::list<Point2D>::iterator it = this->absolute_points.begin();
   it++;
-  for (it; it !=  this->points.end(); it++) {
+  for (it; it !=  this->absolute_points.end(); it++) {
 
     if ( (*it).GetX() < Xmin ) Xmin = (*it).GetX();
     if ( (*it).GetX() > Xmax ) Xmax = (*it).GetX();
@@ -73,13 +93,13 @@ bool Shape::ray_Casting(Point2D point) {
   Side ray = Side(ray_A, point);
         
 
-  it =this->points.begin();
+  it =this->absolute_points.begin();
 
   std::list<Point2D>::iterator surface_it, surface_next_it;
-  surface_it = this->points.begin();
+  surface_it = this->absolute_points.begin();
       
   Point2D start, end;
-  while( surface_it != this->points.end() ){
+  while( surface_it != this->absolute_points.end() ){
     start = *surface_it;
     surface_it++;
     end = *surface_it;

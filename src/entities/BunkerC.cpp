@@ -17,13 +17,17 @@ BunkerC::BunkerC( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 	const BITMAP_DATA_TYPE raw_texturer1[] = " /\xDF\xDF\xDF\\";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1};
 	this->texture->Load( rawtexture, NULL, 2, 6 );
+
+	this->GetShape()->addOffset(Point2D( -2, -1 ));
+	this->GetShape()->addOffset(Point2D( +2, -1 ));
+	this->GetShape()->addOffset(Point2D( -2, +2 ));
+	this->GetShape()->addOffset(Point2D( +2, +2 ));
 }
 
 
 bool BunkerC::Update(GameEngine* game) {
     
     bool update_result = this->Bunker::Update( game );
-	this->shapeUpdate();
 
    if (update_result) {
 
@@ -68,19 +72,4 @@ void BunkerC::Draw( ViewPort *view ){
 // 		Point2D point= (*it);
 // 	view->Draw(NULL, this->world, point );
 // 	}
-}
-
-void BunkerC::shapeUpdate() {
-
-	(*this->GetShape()).deletePoints();
-
-	Point2D a = Point2D(this->origin.GetX() -2, this->origin.GetY() -1);
-    Point2D b = Point2D(this->origin.GetX() + 2, this->origin.GetY() -1);
-	Point2D c = Point2D(this->origin.GetX() -2, this->origin.GetY() +2);
-    Point2D d = Point2D(this->origin.GetX() + 2, this->origin.GetY() +2);
-
-	(*this->GetShape()).addPoint(d);
-	(*this->GetShape()).addPoint(a);
-	(*this->GetShape()).addPoint(b);
-	(*this->GetShape()).addPoint(c);
 }

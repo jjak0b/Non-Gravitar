@@ -72,6 +72,9 @@ char* Entity::GetClassname(){
 bool Entity::Update( GameEngine *game ){
 	
 	bool update_result = IsDefined( this );
+
+	this->GetShape()->UpdateAbsolutes( this->GetOrigin(), this->GetWorld() );
+
 	return update_result;
 }
 
@@ -107,8 +110,5 @@ void Entity::Callback_OnCollide(){
 	this->Delete();
 }
 
-void Entity::shapeUpdate(){
-
-}
 
 

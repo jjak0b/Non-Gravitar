@@ -120,6 +120,7 @@ public:
 	 */
 	bool IsOutOfTheWorld();
 
-	void shapeUpdate();
+
+
 
 };

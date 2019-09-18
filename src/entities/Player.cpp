@@ -22,6 +22,11 @@ Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( w
 	this->MaxFuel = PLAYER_MAX_FUEL;
 	this->fuel = this->MaxFuel;
 	this->score = 0;
+
+	this->GetShape()->addOffset(Point2D( -3, 0 ));
+	this->GetShape()->addOffset(Point2D( +3, 0 ));
+	this->GetShape()->addOffset(Point2D( -3, +5 ));
+	this->GetShape()->addOffset(Point2D( +3, +5 ));
 }
 
 Player::~Player(){
@@ -261,25 +266,10 @@ void Player::AddScore(unsigned int value) {
 	this->score += value;
 }
 
-void Player::shapeUpdate() {
-
-	(*this->GetShape()).deletePoints();
-
-	Point2D a = Point2D(this->origin.GetX() -3, this->origin.GetY() );
-    Point2D b = Point2D(this->origin.GetX() + 3, this->origin.GetY() );
-    Point2D c = Point2D(this->origin.GetX() - 3, this->origin.GetY() + 5);
-    Point2D d = Point2D(this->origin.GetX() + 3, this->origin.GetY() + 5);
-
-    (*this->GetShape()).addPoint(a);
-	(*this->GetShape()).addPoint(b);
-	(*this->GetShape()).addPoint(c);
-	(*this->GetShape()).addPoint(d);
-}
 
 bool Player::hasCollided() {
 
 	bool b_hasCollided = false;
-	shapeUpdate();
 	std::list<Entity*> projectiles = this->world->GetEntities( "Projectile", false, false );
 	for (std::list<Entity*>::iterator it = projectiles.begin(); !b_hasCollided && it != projectiles.end(); it++) {
 		if( this->GetShape()->ray_Casting((*it)->GetOrigin()) ){

@@ -10,5 +10,4 @@ class BunkerB : public Bunker{
 	    bool Update(GameEngine* game);
 		void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
 		void Draw( ViewPort *view );
-		void shapeUpdate();
 };
