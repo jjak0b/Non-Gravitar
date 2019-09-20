@@ -17,12 +17,13 @@ class Shape{
     public:
 
         Shape();
-
+        virtual ~Shape();
         
         void addAbsolute( Point2D point );
         void addAbsoluteList( list<Point2D> points );
-        void addOffset( Point2D point );
+        void addOffset( Point2D point, Point2D origin);
         list<Point2D> getAbsolutes();
+        void deleteAbsolutes();
 
         bool areIntersecting( Side v1, Side v2 );
         bool ray_Casting(Point2D point);

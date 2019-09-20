@@ -67,4 +67,8 @@ void DynamicEntity::SetAcceleration(Vector _acceleration) {
 	*acceleration = _acceleration;
 }
 
+void DynamicEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
+
+}
+
 

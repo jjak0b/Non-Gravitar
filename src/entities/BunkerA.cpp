@@ -13,12 +13,12 @@ BunkerA::BunkerA( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1};
 	this->texture->Load( rawtexture, NULL, 2, 3);
 
-	this->GetShape()->addOffset(Point2D( -1, 0 ));
-	this->GetShape()->addOffset(Point2D( +1, 0 ));
-	this->GetShape()->addOffset(Point2D( -1, +2 ));
-	this->GetShape()->addOffset(Point2D( +1, +2 ));
+	this->shape = new Shape();
+	this->shape->addOffset(Point2D( -1, 0 ), origin);
+	this->shape->addOffset(Point2D( +1, 0 ), origin);
+	this->shape->addOffset(Point2D( -1, +2 ), origin);
+	this->shape->addOffset(Point2D( +1, +2 ), origin);
 }
-
 
 bool BunkerA::Update(GameEngine* game) {
     bool update_result = Bunker::Update( game );
@@ -51,19 +51,6 @@ bool BunkerA::Update(GameEngine* game) {
 	return update_result;
 	
 	
-}
-
-
-void BunkerA::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
-	if( collide_ent != NULL ){
-		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
-			Projectile *proj = (Projectile*)collide_ent;
-			proj->Callback_OnCollide( this );
-		}
-		else{ 
-			this->DoDamage( this->GetHealth());
-		}
-	}
 }
 
 

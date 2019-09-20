@@ -18,12 +18,13 @@
 #include "Fuel.hpp"
 #include "SmallFuel.hpp"
 #include "BigFuel.hpp"
+#include <cstring>
 
 
 
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level( _bounds, "PlanetLevel"){
 	this->planet_entity = planet_entity;
-	
+	this->shape = new Shape();
 }
 
 PlanetLevel::~PlanetLevel(){
@@ -48,6 +49,8 @@ void PlanetLevel::SetPlanetEntity( PlanetEntity *entity ){
 
 bool PlanetLevel::Update( GameEngine *game ){
 	bool update_result = Level::Update( game );
+
+
 	if( update_result ){
 		
 		if( IsDefined( this->GetPlayer() ) && this->GetPlayer()->IsOutOfTheWorld() ){
@@ -106,9 +109,11 @@ void PlanetLevel::Generate( GameEngine *game ){
 	Vector direction = Vector( start.GetSize() );
 
 	// temp è il punto che viene generato ed aggiunto alla lista
+	list<Point2D> surface;
 	Point2D temp = start;
 	while( temp.GetX() < end.GetX() ){
-		this->surface.push_front( temp );
+		//this->shape->addOffset( temp, origin );
+		surface.push_front(temp);
 		offset_x = min_point_distance_x + (rand() % (int)(max_point_distance_x - min_point_distance_x));
 		offset_y = min_point_distance_y + (rand() % (int)(max_point_distance_y - min_point_distance_y));
 		if( rand() % 100 < 50 ){ // scelgo se variare l'offset del punto in positivo o in negativo
@@ -124,7 +129,9 @@ void PlanetLevel::Generate( GameEngine *game ){
 					min( temp.GetY(), max_point_height ),
 					min_point_height ) );
 	}
-	this->surface.push_front( end );
+	//this->shape->addOffset( end, origin );
+	surface.push_front(end);
+	this->shape->addAbsoluteList(surface);
 
 	Point2D random_A = RandomPoint();
 
@@ -149,11 +156,14 @@ void PlanetLevel::Generate( GameEngine *game ){
 
 	this->AddEntity(new SmallFuel(this, random_Small));
 	this->AddEntity(new BigFuel(this, random_Big));	
+	
 }
 
 Point2D PlanetLevel::RandomPoint() {
-	std::list<Point2D>::iterator it_begin = surface.begin();
-	std::list<Point2D>::iterator it_end = surface.end();
+
+	list<Point2D> surface_points = this->shape->getAbsolutes();
+	std::list<Point2D>::iterator it_begin = surface_points.begin();
+	std::list<Point2D>::iterator it_end = surface_points.end();
 
 	std::list<Point2D>::iterator it_pre_random_A = this->random_element(it_begin, it_end);
 	std::list<Point2D>::iterator it_random_A = it_pre_random_A++;
@@ -184,4 +194,8 @@ std::list<Point2D>::iterator PlanetLevel::random_element(std::list<Point2D>::ite
 
     std::advance(begin, k);
     return begin;
+}
+
+void PlanetLevel::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
+	
 }

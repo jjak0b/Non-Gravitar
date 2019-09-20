@@ -23,10 +23,13 @@ Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( w
 	this->fuel = this->MaxFuel;
 	this->score = 0;
 
-	this->GetShape()->addOffset(Point2D( -3, 0 ));
-	this->GetShape()->addOffset(Point2D( +3, 0 ));
-	this->GetShape()->addOffset(Point2D( -3, +5 ));
-	this->GetShape()->addOffset(Point2D( +3, +5 ));
+	this->shape = new Shape();
+	this->shape->addOffset(Point2D( -2, 5 ), origin);
+	this->shape->addOffset(Point2D( -2, 0 ), origin);
+	this->shape->addOffset(Point2D( -2, 0 ), origin);
+	this->shape->addOffset(Point2D( +2, +5 ), origin);
+
+	
 }
 
 Player::~Player(){
@@ -40,11 +43,20 @@ void Player::Delete(){
 
 bool Player::Update( GameEngine *game ){
 	bool update_result = DynamicEntity::Update( game );
-
+	
 	if( update_result ){
 
+		// std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, false );
+		// for (std::list<Entity*>::iterator it = ents.begin(); update_result && it != ents.end(); it++) {
+
+		// 	if( this->IsColliding(*it) ){
+		// 		(*it)->Callback_OnCollide(game, this);
+		// 		}
+		// 	}
+		
+
 		if( IsDefined( this ) ){
-			if( !update_result || hasCollided() || this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
+			if( !update_result || this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
 				this->Delete();
 			}
 		}
@@ -190,22 +202,21 @@ Vector Player::GetLastMove(){
 	return this->lastMove;
 }
 
-void Player::Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin ){
+void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage( proj->GetDamage());
-			proj->Delete();
+			proj->Callback_OnCollide(game, this);
 		}
-		if( !strcmp( collide_ent->GetClassname(), "Beam" ) ){
+		if( !strcmp( collide_ent->GetClassname(), "Beam_Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
-			proj->Delete();
+			proj->Callback_OnCollide(game,this);
 		}
-		if( !strcmp( collide_ent->GetClassname(), "Bunker" ) ){
-			this->Delete();
-		}
+		
+
 	}
-}
+}	
 
 void Player::SetWorld( Level *_world){
 	this->Entity::SetWorld( _world );
@@ -266,26 +277,3 @@ void Player::AddScore(unsigned int value) {
 	this->score += value;
 }
 
-
-bool Player::hasCollided() {
-
-	bool b_hasCollided = false;
-	std::list<Entity*> projectiles = this->world->GetEntities( "Projectile", false, false );
-	for (std::list<Entity*>::iterator it = projectiles.begin(); !b_hasCollided && it != projectiles.end(); it++) {
-		if( this->GetShape()->ray_Casting((*it)->GetOrigin()) ){
-			Projectile *proj = (Projectile*)(*it);
-			this->DoDamage( proj->GetDamage());
-			(*it)->Delete();
-			b_hasCollided = this->GetHealth() < 1;
-		}
-	}
-	std::list<Entity*> bunkers = this->world->GetEntities( "Bunker", false, true );
-	for (std::list<Entity*>::iterator it = bunkers.begin(); !b_hasCollided && it != bunkers.end(); it++) {
-		if( IsColliding(*it) ){
-			(*it)->Delete();
-			b_hasCollided = true;
-		}
-	}
-
-	return b_hasCollided;
-}

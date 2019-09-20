@@ -12,14 +12,14 @@ class ViewPort;
 class Entity{
 protected:
 	Level *world = NULL;
-	Point2D origin; // Coordinate dell'entità nel mondo di gioco
+	Point2D origin ; // Coordinate dell'entità nel mondo di gioco
 	Bitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
-	Shape *shape = new Shape();
+	Shape *shape = NULL;
 
 public:
-	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "", Shape *shape = new Shape() );
+	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "", Shape *shape = NULL );
 	virtual ~Entity();
 
 	/**
@@ -109,7 +109,7 @@ public:
 	 * e ne gestirà il comportamento
 	 * @param collide_ent 
 	 */
-	void Callback_OnCollide(  );
+	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 
 	/**
 	 * @brief Indica se questa entità si trova in una posizione esterna al pianeta preso in considerazione

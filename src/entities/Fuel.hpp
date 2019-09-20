@@ -11,5 +11,7 @@ class Fuel : public Entity{
 
 	bool Update(GameEngine *game);
 
+	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
+
 
 };

@@ -15,7 +15,6 @@ class Level : public Entity{
 protected:
 	Vector bounds; // limiti del mondo ( dimensioni del livello )
 	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
-	list<Point2D> surface; // lista dei punti che costruiscono il terreno
 	list<Entity*> entities;
 public:
 	/**
@@ -97,7 +96,7 @@ public:
 	 * @return true 
 	 * @return false 
 	 */
-	bool IsColliding( Entity *entity, Point2D *collisionOrigin );
+	//bool IsColliding( Entity *entity, Point2D *collisionOrigin );
 
 	/**
 	 * @brief Elimina le entità nel mondo, deallocando le risorse occupate
@@ -137,8 +136,6 @@ public:
 	 * @return false altrimenti
 	 */
 	virtual bool IsGenerated();
-
-	list<Point2D> getSurface();
 
 	private:
 	/**
