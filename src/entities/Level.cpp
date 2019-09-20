@@ -5,6 +5,7 @@
 #include <list>
 #include <iterator>
 #include <cstring>
+#include "shared/Utility.h"
 using namespace std;
 
 Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
@@ -208,26 +209,34 @@ void Level::Delete(){
 
 list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_search_className_as_subString){
 	list<Entity*> ents;
-	string *s_ent_classname = NULL;
-	bool isClassNameMatching = false;
-	for (list<Entity*>::iterator it=this->entities.begin(); it != this->entities.end(); it++ ) {
-		s_ent_classname = new string( (*it)->GetClassname() );
-		
-		if( className != NULL ){
-			if( !b_search_className_as_subString ){
-				isClassNameMatching = !s_ent_classname->compare( className ); // !strcmp( (*it)->GetClassname(), className );
+
+	if( className != NULL ){
+		ents = list<Entity*>();
+		bool isClassNameMatching;
+		list<Entity*>::iterator it = this->entities.begin();
+		bool keep_checking = !this->entities.empty();
+		Entity* ent = NULL;
+		while( keep_checking ) {
+			keep_checking  = it != this->entities.end();
+			if( keep_checking ){
+				ent = *it;
+				it++; // l'iteratore punta all'entità successiva  per il ciclo successivo
 			}
 			else{
-				isClassNameMatching = s_ent_classname->rfind( className ) != s_ent_classname->npos;
+				ent = this->player;
+			}
+
+			isClassNameMatching = Utility::CheckEqualsOrSubstring( ent->GetClassname(), className, b_search_className_as_subString );
+
+			if( className == NULL || (isClassNameMatching && !b_exclude) || (!isClassNameMatching && b_exclude) ){
+				ents.push_front( *it );
 			}
 		}
-
-		if( className == NULL || (isClassNameMatching && !b_exclude) || (!isClassNameMatching && b_exclude) ){
-			ents.push_front( *it );
-		}
-		
-		s_ent_classname->clear();
-		delete s_ent_classname;
+	}
+	else{
+		ents = this->entities;// stdlist implementa l'operatore '=' com metodo per copiare completamente una lista con i suoi elementi.
+		if( this->player != NULL )
+			ents.push_back( this->player );
 	}
 	return ents;
 }

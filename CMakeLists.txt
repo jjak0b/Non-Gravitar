@@ -21,6 +21,8 @@ add_executable(NonGravitar
         src/shared/Shape.hpp
         src/shared/Side.cpp
         src/shared/Side.hpp
+        src/shared/Utility.cpp
+        src/shared/Utility.h
         src/engine/Bitmap.cpp
         src/engine/Bitmap.hpp
         src/engine/PrintableBitmap.cpp
@@ -59,4 +61,7 @@ add_executable(NonGravitar
         src/entities/Projectile.cpp
         src/entities/Projectile.hpp
         src/entities/SolarSystem.cpp
-        src/entities/SolarSystem.hpp src/entities/DynamicEntity.cpp src/entities/DynamicEntity.hpp)
+        src/entities/SolarSystem.hpp
+        src/entities/DynamicEntity.cpp
+        src/entities/DynamicEntity.hpp
+        )

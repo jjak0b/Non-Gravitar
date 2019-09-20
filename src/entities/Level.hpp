@@ -106,7 +106,7 @@ public:
 	virtual void Delete();
 
 	/**
-	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo, in base alle seguenti condizioni
+	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo (incluso il giocatore in essa ), in base alle seguenti condizioni
 	 * ( Nota: Sia '€' simbolo di appartenza )
 	 * se str_className != NULL
 	 * 		se b_exclude == true list = { e € entities | e.GetClassname() != str_className }
