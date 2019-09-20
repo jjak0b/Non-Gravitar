@@ -15,6 +15,8 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture,
 	Vector default_escape_point_offset = Vector( this->escape_point.GetSize() );
 	default_escape_point_offset.Set( 1, this->radius + 1 );
 	this->escape_point.Add( default_escape_point_offset );
+
+	this->shape = new Shape();
 }
 
 PlanetEntity::~PlanetEntity(){
@@ -53,7 +55,7 @@ bool PlanetEntity::Update( GameEngine *game ){
 		// Mi interessa verificare solo la collisione con l'entità giocatore per verificare se vuole entrare nel pianeta
 		Player *player = this->GetWorld()->GetPlayer();
 		if( this->IsColliding( player ) ){
-			this->Callback_OnCollide( game, player, player->GetOrigin() );
+			this->Callback_OnCollide( game, player );
 			update_result = false;
 		}
 	}
@@ -75,7 +77,7 @@ bool PlanetEntity::IsColliding( Entity *entity ){
 	return false;
 }
 
-void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Point2D hitOrigin ){
+void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( IsDefined( this ) && IsDefined( collide_ent ) ){
 		if( !strcmp( collide_ent->GetClassname(), "Player" ) ){
 			Player *player = (Player*)collide_ent;
@@ -88,7 +90,7 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent, Po
 			this->escape_direction.Normalize();
 			this->escape_direction.Scale( -1.0 );
 
-			this->escape_point = hitOrigin;
+			this->escape_point = collide_ent->GetOrigin();
 			Vector escape_offset = this->escape_direction;
 			escape_offset.Scale( 2.0 ); // Aggiungo un offset per esere sicuro di non tornare nuovamente nel raggio di collisioni del pianeta
 			this->escape_point.Add( escape_offset );

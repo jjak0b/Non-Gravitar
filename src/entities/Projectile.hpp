@@ -28,6 +28,5 @@ class Projectile : public DynamicEntity{
 	 * @brief funzione risposta / callback che dovrà essere chiamata quando questo proiettile ha colpito una qualche entità
 	 * @param collide_ent
 	 */
-	void Callback_OnCollide();
-	void Callback_OnCollide( Damageable* entity );
+	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 };

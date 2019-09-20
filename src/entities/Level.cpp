@@ -19,6 +19,7 @@ Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(
 	}
 	this->bounds = _bounds;
 	this->player = NULL;
+
 }
 
 Level::~Level(){
@@ -66,11 +67,41 @@ bool Level::Update( GameEngine *game ){
 	if( shouldUpdateNextFrame ){
 		bool update_result = false;
 
-		list<Entity*>::iterator entity_it; // iteratore che tiene traccia dell'entità corrente
-		entity_it = this->entities.begin();
+
+		std::list<Entity*>::iterator entity_it, entity_it_2; 
+		list<Entity*> ents = GetEntities(NULL, true, true);
+		entity_it = ents.begin();
+		Entity *ent_1 = new Entity( world, Point2D(0,0) );
+
+
+		// while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
+		// 	if (IsDefined(*entity_it) && (*entity_it)->GetShape() != NULL) {
+		// 		if (this->IsColliding(*entity_it)) {
+		// 			(*entity_it)->Callback_OnCollide(game, this);
+		// 			if (IsDefined(*entity_it)) this->Callback_OnCollide(game, *entity_it);
+		// 			}
+		// 	}
+		// 	entity_it++;
+		// }
+
+		// entity_it = ents.begin();
+		// while(  !ents.empty() && entity_it != ents.end() ) {
+		// 	ent_1 = *entity_it;
+    	// 	entity_it++;
+		// 	entity_it_2 = entity_it;
+
+		// 	while(  IsDefined(ent_1)  && !ents.empty() && entity_it_2 != ents.end() ) {
+		// 		if (IsDefined(*entity_it_2) && ent_1->IsColliding(*entity_it_2) ) {
+		// 			(*entity_it_2)->Callback_OnCollide(game, ent_1);
+		// 			(ent_1)->Callback_OnCollide(game, *entity_it_2);
+		// 		}
+		// 		entity_it_2++;
+		// 	}
+		// }
 
 		// NOTA: Soluzione temporanea ma non 100% affidabile;
 		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
+		entity_it = this->entities.begin();
 		while( !this->entities.empty() && entity_it != this->entities.end() ){
 			if( IsDefined( *entity_it ) ){
 				update_result = (*entity_it)->Update( game ); // EntityUpdateSelector(game, *entity_it );
@@ -93,31 +124,35 @@ bool Level::Update( GameEngine *game ){
 }
 
 void Level::Draw( ViewPort *view ){
-	std::list<Point2D>::iterator surface_it, surface_next_it;
-	surface_it = this->surface.begin();
-	Color surface = COLOR_GREEN;
-	Point2D start, end;
-	// TODO: ricontrollare
-	while( surface_it != this->surface.end() ){
-		start = *surface_it;
-		surface_it++;
-		end = *surface_it;
-		DrawLine( view, this, start, end, surface );
-#ifdef DEBUG
-		const int size_str_buffer = 30;
-		char str_print_buffer[size_str_buffer] = "";
-		Point2D temp;
+	if (this->shape != NULL) {
+			list<Point2D> surface_points = this->shape->getAbsolutes();
+		std::list<Point2D>::iterator surface_it, surface_next_it;
+		surface_it = surface_points.begin();
+		Color surface = COLOR_GREEN;
+		Point2D start, end;
 
-		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
-		temp = start;
-		temp.SetY( temp.GetY() + 3 );
-		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+		// TODO: ricontrollare
+		while( surface_it != surface_points.end() ){
+			start = *surface_it;
+			surface_it++;
+			end = *surface_it;
+			DrawLine( view, this, start, end, surface );
+		// #ifdef DEBUG
+		// 		const int size_str_buffer = 30;
+		// 		char str_print_buffer[size_str_buffer] = "";
+		// 		Point2D temp;
 
-		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
-		temp = end;
-		temp.SetY( temp.GetY() + 3 );
-		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
-#endif
+		// 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
+		// 		temp = start;
+		// 		temp.SetY( temp.GetY() + 3 );
+		// 		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+
+		// 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
+		// 		temp = end;
+		// 		temp.SetY( temp.GetY() + 3 );
+		// 		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+		// #endif}
+		}
 	}
 
 	for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); it++) {
@@ -172,19 +207,19 @@ void Level::AddEntity( Entity *entity ){
 	}
 }
 
-bool Level::IsColliding( Entity *entity, Point2D *collisionOrigin ){
-	if( entity->GetOrigin().GetY() <= 0
-	 || entity->GetOrigin().GetY() >= this->GetMaxHeight() ){
-		 if( collisionOrigin != NULL ){
-			 *collisionOrigin = entity->GetOrigin();
-		 }
-		 return true;
-	}
-	else{
-		 // TODO: Controllo il segmento/i di terrreno più vicini all'entità
-	}
-	return false;
-}
+// bool Level::IsColliding( Entity *entity, Point2D *collisionOrigin ){
+// 	if( entity->GetOrigin().GetY() <= 0
+// 	 || entity->GetOrigin().GetY() >= this->GetMaxHeight() ){
+// 		 if( collisionOrigin != NULL ){
+// 			 *collisionOrigin = entity->GetOrigin();
+// 		 }
+// 		 return true;
+// 	}
+// 	else{
+// 		 // TODO: Controllo il segmento/i di terrreno più vicini all'entità
+// 	}
+// 	return false;
+// }
 
 void Level::Delete(){
 	this->Entity::Delete();
@@ -192,7 +227,7 @@ void Level::Delete(){
 	this->GetOutPlayer();
 
 	// pulisce i dati riigardanti la superficie
-	this->surface.clear();
+	this->shape->deleteAbsolutes();
 
 	// pulisco i dati riguardanti le entità in questo livello, e le elimina
 	list<Entity*>::iterator entity_iterator = this->entities.begin();
@@ -251,9 +286,7 @@ Player *Level::GetOutPlayer(){
 }
 
 bool Level::IsGenerated(){
-	return !this->surface.empty();
+	return !this->shape->getAbsolutes().empty();
 }
 
-list<Point2D> Level::getSurface(){
-	return this->surface;
-}
+

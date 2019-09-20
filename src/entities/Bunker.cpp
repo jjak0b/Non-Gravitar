@@ -1,23 +1,14 @@
 #include "Bunker.hpp"
 #include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
+#include <cstring>
 
 Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[] ) : Entity( world, origin, NULL, classname ), Damageable( health ) {
 }
 
 bool Bunker::Update(GameEngine* game) {
 	bool update_result = this->Entity::Update( game );
-	if( update_result ) {
-		std::list<Entity*> ents = this->world->GetEntities( "Projectile", false, true );
-		for (std::list<Entity*>::iterator it = ents.begin(); update_result && it != ents.end(); it++) {
-			if( this->GetShape()->ray_Casting((*it)->GetOrigin()) ){
-				Projectile *proj = (Projectile*)(*it);
-				this->DoDamage( proj->GetDamage());
-				(*it)->Delete();
-				update_result = this->GetHealth() > 0;
-			}
-		}
-	}
+	if (health <= 0) update_result = false;
 	if (!update_result) this->Delete();
     return update_result;
 }
@@ -56,3 +47,16 @@ int Bunker::random(int range){
     else return r2;
 }
 
+
+void Bunker::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
+	if( collide_ent != NULL ){
+		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
+			Projectile *proj = (Projectile*)collide_ent;
+			this->DoDamage(proj->GetDamage());
+			proj->Delete();
+		}
+		else if ( !strcmp( collide_ent->GetClassname(), "Player" ) ) { 
+			this->DoDamage( this->GetHealth());
+		}
+	}
+}

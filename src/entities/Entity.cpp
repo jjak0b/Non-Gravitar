@@ -17,6 +17,10 @@ Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char class
 	this->SetOrigin( origin );
 }
 Entity::~Entity(){
+	if (shape != NULL) {
+		delete this->shape;
+		this->shape = NULL;
+	}
 	this->Entity::Delete();
 
 	if( this->str_classname != NULL ){
@@ -70,12 +74,9 @@ char* Entity::GetClassname(){
 }
 
 bool Entity::Update( GameEngine *game ){
-	
-	bool update_result = IsDefined( this );
 
-	this->GetShape()->UpdateAbsolutes( this->GetOrigin(), this->GetWorld() );
-
-	return update_result;
+	if ( IsDefined(this) && this->shape != NULL  ) this->shape->UpdateAbsolutes( this->GetOrigin(), this->GetWorld() );
+	return IsDefined(this);
 }
 
 void Entity::Draw( ViewPort *view ){
@@ -91,7 +92,8 @@ void Entity::SetShape( Shape *shape ) {
 }
 
 bool Entity::IsColliding( Entity *entity ){
-	return (*this->GetShape()).IsShapeColliding( (*(*entity).GetShape()) );
+	if ( this->shape == NULL || entity->shape == NULL ) return false;
+	else return (*this->GetShape()).IsShapeColliding( (*(*entity).GetShape()) );
 }
 
 
@@ -106,9 +108,12 @@ bool Entity::IsOutOfTheWorld(){
 	return true;
 }
 
-void Entity::Callback_OnCollide(){
-	this->Delete();
+void Entity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ){
+	
+
 }
+	
+
 
 
 

@@ -9,10 +9,11 @@ SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0 };
 	this->texture->Load( rawtexture, NULL, 1, 4 );
 
-	this->GetShape()->addOffset(Point2D( -1, 0 ));
-	this->GetShape()->addOffset(Point2D( +1, 0 ));
-	this->GetShape()->addOffset(Point2D( -1, +2 ));
-	this->GetShape()->addOffset(Point2D( +1, +2 ));
+	this->shape = new Shape();
+	this->shape->addOffset(Point2D( -1, 0 ), origin);
+	this->shape->addOffset(Point2D( +1, 0 ), origin);
+	this->shape->addOffset(Point2D( -1, +2 ), origin);
+	this->shape->addOffset(Point2D( +1, +2 ), origin);
 }
 
 bool SmallFuel::Update(GameEngine *game) {

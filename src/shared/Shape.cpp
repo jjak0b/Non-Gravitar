@@ -9,6 +9,12 @@
 Shape::Shape() {
 };
 
+Shape::~Shape() {
+  this->absolute_points.clear();
+  this->offset_points.clear();
+};
+
+
 void Shape::addAbsolute( Point2D point ) {
   this->absolute_points.push_front(point);
 }
@@ -21,23 +27,29 @@ void Shape::addAbsoluteList( list<Point2D> point_list ) {
   }
 }
 
-void Shape::addOffset( Point2D point ) {
+void Shape::addOffset( Point2D point, Point2D origin ) {
   this->offset_points.push_front(point);
-  addAbsolute(point);
+  origin.Add(point);
+  addAbsolute(origin);
 }
 
 list<Point2D> Shape::getAbsolutes() {
   return this->absolute_points;
 }
 
+void Shape::deleteAbsolutes() {
+  this->absolute_points.clear();
+}
+
 void Shape::UpdateAbsolutes( Point2D origin, Level *world ) {
 
+  
   Point2D point;
   list<Point2D>::iterator it_offset, it_absolute;
   it_offset = this->offset_points.begin();
   it_absolute = this->absolute_points.begin();
   
-  for (it_offset; it_offset != this->offset_points.end(); it_offset++, it_absolute++ ) {
+  for (; it_offset != this->offset_points.end(); it_offset++, it_absolute++ ) {
     
     point = origin;
     point.Add(*it_offset);
@@ -94,15 +106,12 @@ bool Shape::ray_Casting(Point2D point) {
         
 
   it =this->absolute_points.begin();
-
-  std::list<Point2D>::iterator surface_it, surface_next_it;
-  surface_it = this->absolute_points.begin();
       
   Point2D start, end;
-  while( surface_it != this->absolute_points.end() ){
-    start = *surface_it;
-    surface_it++;
-    end = *surface_it;
+  while( it != this->absolute_points.end() ){
+    start = *it;
+    it++;
+    end = *it;
     Side side = Side( start, end );
     if (areIntersecting ( side, ray ) ) intersections ++;   }
 

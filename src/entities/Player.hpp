@@ -52,7 +52,7 @@ class Player : public DynamicEntity, public Damageable {
 
 	Vector GetLastMove();
 
-	void Callback_OnCollide( Entity *collide_ent, Point2D hitOrigin );
+	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 	/**
 	 * @brief il giocatore abbandona il mondo corrente, viene aggiunto al livello specificato, e lo assegna come suo mondo in cui risiede
 	 * 
@@ -84,6 +84,4 @@ class Player : public DynamicEntity, public Damageable {
 	unsigned int GetScore();
 
 	void AddScore( unsigned int value );
-
-	bool hasCollided();
 };

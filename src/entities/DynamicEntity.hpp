@@ -29,4 +29,5 @@ public:
 	void AddAcceleration(Vector acceleration);
 
 	virtual bool Update( GameEngine *game );
+	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 };

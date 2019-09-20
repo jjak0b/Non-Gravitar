@@ -61,5 +61,5 @@ class PlanetEntity : public Entity{
 
 	virtual bool IsColliding( Entity *entity );
 
-	void Callback_OnCollide( GameEngine *game, Entity *collide_ent, Point2D hitOrigin );
+	void Callback_OnCollide( GameEngine *game, Entity *collide_ent );;
 };

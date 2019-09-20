@@ -20,6 +20,7 @@ class Bunker : public Entity, public Damageable {
 
 		int random(int range);
 
+		virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 
 	
 };
