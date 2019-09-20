@@ -213,7 +213,9 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 			Projectile *proj = (Projectile*)collide_ent;
 			proj->Callback_OnCollide(game,this);
 		}
-		
+		if( !strcmp( collide_ent->GetClassname(), "Bunker" ) ){
+			this->Delete();
+		}
 
 	}
 }	

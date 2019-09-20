@@ -84,7 +84,7 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 
 			// il punto di fuga è vicino al punto di collisione ma distaccato dal punto di -2(direction) unità,
 			// così che nel frame successivo alla fuga dal pianeta non sarà ancora eventualemente considerato come in collisione con esso ( anche se non può accadere )
-
+	
 			// inverto la direzione con la quale si è diretto verso il pianeta
 			this->escape_direction = player->GetVelocity();
 			this->escape_direction.Normalize();

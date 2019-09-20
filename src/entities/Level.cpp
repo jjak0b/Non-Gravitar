@@ -68,35 +68,36 @@ bool Level::Update( GameEngine *game ){
 
 
 		std::list<Entity*>::iterator entity_it, entity_it_2; 
-		list<Entity*> ents = GetEntities(NULL, true, true);
+		list<Entity*> ents = this->entities;
+		ents.push_front(this->player);
 		entity_it = ents.begin();
 		Entity *ent_1 = new Entity( world, Point2D(0,0) );
 
 
-		// while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
-		// 	if (IsDefined(*entity_it) && (*entity_it)->GetShape() != NULL) {
-		// 		if (this->IsColliding(*entity_it)) {
-		// 			(*entity_it)->Callback_OnCollide(game, this);
-		// 			if (IsDefined(*entity_it)) this->Callback_OnCollide(game, *entity_it);
-		// 			}
-		// 	}
-		// 	entity_it++;
-		// }
+		while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
+			if (IsDefined(*entity_it) && (*entity_it)->GetShape() != NULL) {
+				if (this->IsColliding(*entity_it)) {
+					(*entity_it)->Callback_OnCollide(game, this);
+					if (IsDefined(*entity_it)) this->Callback_OnCollide(game, *entity_it);
+					}
+			}
+			entity_it++;
+		}
 
-		// entity_it = ents.begin();
-		// while(  !ents.empty() && entity_it != ents.end() ) {
-		// 	ent_1 = *entity_it;
-    	// 	entity_it++;
-		// 	entity_it_2 = entity_it;
+		entity_it = ents.begin();
+		while(  !ents.empty() && entity_it != ents.end() ) {
+			ent_1 = *entity_it;
+    		entity_it++;
+			entity_it_2 = entity_it;
 
-		// 	while(  IsDefined(ent_1)  && !ents.empty() && entity_it_2 != ents.end() ) {
-		// 		if (IsDefined(*entity_it_2) && ent_1->IsColliding(*entity_it_2) ) {
-		// 			(*entity_it_2)->Callback_OnCollide(game, ent_1);
-		// 			(ent_1)->Callback_OnCollide(game, *entity_it_2);
-		// 		}
-		// 		entity_it_2++;
-		// 	}
-		// }
+			while(  IsDefined(ent_1)  && !ents.empty() && entity_it_2 != ents.end() ) {
+				if (IsDefined(*entity_it_2) && ent_1->IsColliding(*entity_it_2) ) {
+					(*entity_it_2)->Callback_OnCollide(game, ent_1);
+					(ent_1)->Callback_OnCollide(game, *entity_it_2);
+				}
+				entity_it_2++;
+			}
+		}
 
 		// NOTA: Soluzione temporanea ma non 100% affidabile;
 		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
