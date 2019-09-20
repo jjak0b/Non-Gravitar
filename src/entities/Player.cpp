@@ -207,18 +207,23 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage( proj->GetDamage());
-			proj->Callback_OnCollide(game, this);
 		}
-		if( !strcmp( collide_ent->GetClassname(), "Beam_Projectile" ) ){
-			Projectile *proj = (Projectile*)collide_ent;
-			proj->Callback_OnCollide(game,this);
+		if( !strcmp( collide_ent->GetClassname(), "BunkerA" ) ){
+			this->Delete();
 		}
-		if( !strcmp( collide_ent->GetClassname(), "Bunker" ) ){
+		if( !strcmp( collide_ent->GetClassname(), "BunkerB" ) ){
+			this->Delete();
+		}
+		if( !strcmp( collide_ent->GetClassname(), "BunkerC" ) ){
+			this->Delete();
+		}
+		if( !strcmp( collide_ent->GetClassname(), "BunkerC" ) ){
 			this->Delete();
 		}
 
 	}
-}	
+}
+		
 
 void Player::SetWorld( Level *_world){
 	this->Entity::SetWorld( _world );

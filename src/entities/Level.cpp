@@ -69,7 +69,7 @@ bool Level::Update( GameEngine *game ){
 
 
 		std::list<Entity*>::iterator entity_it, entity_it_2; 
-		list<Entity*> ents = this->entities;
+		list<Entity*> ents = GetEntities(NULL, false, false);
 		ents.push_front(this->player);
 		entity_it = ents.begin();
 		Entity *ent_1 = new Entity( world, Point2D(0,0) );
@@ -258,14 +258,15 @@ list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_
 				ent = *it;
 				it++; // l'iteratore punta all'entità successiva  per il ciclo successivo
 			}
-			else{
+			else{	
 				ent = this->player;
 			}
 
-			isClassNameMatching = Utility::CheckEqualsOrSubstring( ent->GetClassname(), className, b_search_className_as_subString );
-
-			if( className == NULL || (isClassNameMatching && !b_exclude) || (!isClassNameMatching && b_exclude) ){
-				ents.push_front( *it );
+			if ( ent != NULL) {
+					isClassNameMatching = Utility::CheckEqualsOrSubstring( ent->GetClassname(), className, b_search_className_as_subString );
+				if ( ( isClassNameMatching && !b_exclude ) || ( !isClassNameMatching && b_exclude ) ) {
+					ents.push_front(ent);
+				}
 			}
 		}
 	}

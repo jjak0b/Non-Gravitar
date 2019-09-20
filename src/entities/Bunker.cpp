@@ -53,7 +53,6 @@ void Bunker::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage(proj->GetDamage());
-			proj->Delete();
 		}
 		else if ( !strcmp( collide_ent->GetClassname(), "Player" ) ) { 
 			this->DoDamage( this->GetHealth());

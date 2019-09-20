@@ -1,7 +1,7 @@
 #include "Utility.h"
 #include <string>
 
-namespace utility {
+namespace Utility {
 	bool CheckEqualsOrSubstring(const char *str, const char *str_or_substr, bool check_as_subString) {
 		bool isMatching = false;
 		std::string o_str = std::string(str);

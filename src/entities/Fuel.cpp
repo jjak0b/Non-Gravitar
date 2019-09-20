@@ -37,13 +37,8 @@ bool Fuel::Update(GameEngine *game) {
 
 void Fuel::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		if( collide_ent != NULL ){
-		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
-			Projectile *proj = (Projectile*)collide_ent;
-			proj->Delete();
-		}
 		if( !strcmp( collide_ent->GetClassname(), "Beam_Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
-			proj->Callback_OnCollide( game, this );
 			this->world->GetPlayer()->DoHeal(size);
 			this->Delete();
 			}
