@@ -74,9 +74,7 @@ void Projectile::Draw( ViewPort *view ){
 }
 
 void Projectile::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
-	
-	this->Delete();
-	
+	this->shouldDeleteOnUpdate = true;
 }
 
 

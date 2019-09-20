@@ -16,6 +16,7 @@ protected:
 	Bitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
+	bool shouldDeleteOnUpdate = false; // che che indica se l'entità deve essere eliminata in Entity::Update
 	Shape *shape = NULL;
 
 public:
@@ -98,7 +99,7 @@ public:
 	 * @return true se è avvenuta una collisione
 	 * @return false altrimenti
 	 */
-	bool IsColliding( Entity *entity);
+	virtual bool IsColliding( Entity *entity);
 
 	Shape* GetShape();
 	void SetShape( Shape *shape );

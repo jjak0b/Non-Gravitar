@@ -70,11 +70,11 @@ bool GameEngine::frame( double dtime ){
 	Point2D world_point_relative_to_bottom_left = Point2D( player->GetOrigin().GetX() - (this->view->GetWidth()/2.0), 0 );
 	this->SetCameraWorldOrigin( world_point_relative_to_bottom_left );
 
-	this->view->Clear();
 	if( IsDefined( last_loaded_level ) ){
 		last_loaded_level->Draw( this->view ); // EntityDrawSelector( this->view, last_loaded_level );
 	}
 	this->view->Refresh();
+	this->view->Clear();
 
 #ifdef DEBUG
 	std::cout << "View Width: " << this->view->GetWidth() << std::endl;

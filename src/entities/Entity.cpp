@@ -75,8 +75,16 @@ char* Entity::GetClassname(){
 
 bool Entity::Update( GameEngine *game ){
 
-	if ( IsDefined(this) && this->shape != NULL  ) this->shape->UpdateAbsolutes( this->GetOrigin(), this->GetWorld() );
-	return IsDefined(this);
+	if( this->shouldDeleteOnUpdate ){
+		this->Delete();
+	}
+
+	bool update_result = IsDefined(this);
+
+	if ( IsDefined(this) && this->shape != NULL  ) {
+		this->shape->UpdateAbsolutes(this->GetOrigin(), this->GetWorld());
+	}
+	return update_result;
 }
 
 void Entity::Draw( ViewPort *view ){
@@ -92,8 +100,20 @@ void Entity::SetShape( Shape *shape ) {
 }
 
 bool Entity::IsColliding( Entity *entity ){
-	if ( this->shape == NULL || entity->shape == NULL ) return false;
-	else return (*this->GetShape()).IsShapeColliding( (*(*entity).GetShape()) );
+	bool isColliding = false;
+	Vector* ptr_bounds = NULL;
+	Vector bounds;
+	if( this->GetWorld() != NULL ) {
+		bounds = this->GetWorld()->GetBounds();
+		ptr_bounds = &bounds;
+	}
+	if( this->shape != NULL && entity->shape != NULL){
+		isColliding = this->GetShape()->IsShapeColliding( entity->GetShape(), ptr_bounds );
+		if( !isColliding ){
+			isColliding = entity->GetShape()->IsShapeColliding( this->GetShape(), ptr_bounds );
+		}
+	}
+	return isColliding;
 }
 
 

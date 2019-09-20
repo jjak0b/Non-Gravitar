@@ -6,12 +6,14 @@
 #include "entities/SolarSystem.hpp"
 
 class GameEngine{
+public:
+	ViewPort *view;
 private:
 	INPUT_TYPE input_key;
 	double time;
 	double deltaTime;
 	Level *currentLevel; // livello in esecuzione
-	ViewPort *view;
+
 	/**
 	 * @brief lista di entità contenente i puntatori delle entità considerate da deallocare alla fine del frame
 	 * 

@@ -4,12 +4,17 @@
 #include "engine/GameEngine.hpp"
 #include "engine/GameConfig.h"
 #include "Projectile.hpp"
+#include "PlanetEntity.hpp"
+#include "PlanetLevel.hpp"
 #include "shared/Point2D.hpp"
 #include <iostream>
 #include <list>
 #include <iterator>
 #include <cstring>
-
+#include "shared/Utility.h"
+#ifdef __WIN32__ // TODO: Rimuovere dopo test
+#include <windows.h>
+#endif
 
 Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(PLAYER_HEALTH) {
 	this->texture = new Bitmap( 3, 5, COLOR_RED );
@@ -77,7 +82,7 @@ bool Player::Update( GameEngine *game ){
 			current_origin.Add(direction);
 
 			if (!direction.IsNull()) { // aggiorno la posizione solo il vettore spostamento non è nullo
-				this->RemoveFuel(1);
+				// this->RemoveFuel(1);
 				this->SetOrigin(current_origin);
 				this->lastMove = direction;
 			}
@@ -204,23 +209,62 @@ Vector Player::GetLastMove(){
 
 void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( collide_ent != NULL ){
-		if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
+#ifdef DEBUG
+		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
+		Sleep(1000);
+
+#endif
+		// Collisione contro il terreno
+		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
+			this->DoDamage( this->GetHealth() );
+		}
+		// Collisione contro un proiettile
+		else if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
 			this->DoDamage( proj->GetDamage());
+#ifdef DEBUG
+			DrawLine( game->view, this->world, proj->GetFireOrigin(), collide_ent->GetOrigin(), COLOR_RED );
+#endif
 		}
-		if( !strcmp( collide_ent->GetClassname(), "BunkerA" ) ){
-			this->Delete();
+		// Collisione contro un Bunker
+		else if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Bunker", true ) ){
+			this->DoDamage( this->GetHealth() );
 		}
-		if( !strcmp( collide_ent->GetClassname(), "BunkerB" ) ){
-			this->Delete();
-		}
-		if( !strcmp( collide_ent->GetClassname(), "BunkerC" ) ){
-			this->Delete();
-		}
-		if( !strcmp( collide_ent->GetClassname(), "BunkerC" ) ){
-			this->Delete();
-		}
+		else if( !strcmp( collide_ent->GetClassname(), "PlanetEntity" ) ) {
+			PlanetEntity* planet = (PlanetEntity*)collide_ent;
 
+			// il punto di fuga è vicino al punto di collisione ma distaccato dal punto di -2(direction) unità,
+			// così che nel frame successivo alla fuga dal pianeta non sarà ancora eventualemente considerato come in collisione con esso ( anche se non può accadere )
+
+			// inverto la direzione con la quale si è diretto verso il pianeta
+			planet->escape_direction = this->GetVelocity();
+			planet->escape_direction.Normalize();
+			planet->escape_direction.Scale( -1.0 );
+
+			planet->escape_point = this->GetOrigin();
+			Vector escape_offset = planet->escape_direction;
+			escape_offset.Scale( 2.0 ); // Aggiungo un offset per esere sicuro di non tornare nuovamente nel raggio di collisioni del pianeta
+			planet->escape_point.Add( escape_offset );
+			planet->escape_point = planet->GetWorld()->GetNormalizedPoint( planet->escape_point );
+			// Il giocatore entra nel Livello
+
+			if( IsDefined( planet->GetPlanetLevel() ) ){
+				planet->GetPlanetLevel()->AddEntity( this );
+				// Creo il punto di atterraggio nel pianeta
+				// GetMaxHeight() è il valore dell'altezza secondo cui si è considerati fuori dal pianeta,
+				// quindi dovrà partire dal un'unità più in basso
+				Point2D spawn_point = Point2D( 0, this->GetWorld()->GetMaxHeight() - 1 );
+				this->SetOrigin( spawn_point );
+
+				Vector direction = Vector( spawn_point.GetSize() );
+				direction.Set( 1, -1 );
+				VECTOR_VALUE_TYPE speed = this->GetSpeed();
+				this->SetVelocity( Vector( direction.GetSize() ) ); // Azzero la velocità attuale, così la velocità iniziale sarà 0
+				this->SetVelocity( direction.Scale( speed ) );
+
+				game->SetCurrentLevel( planet->GetPlanetLevel() );
+			}
+		}
 	}
 }
 		
@@ -230,10 +274,10 @@ void Player::SetWorld( Level *_world){
 }
 
 void Player::SetMoveOverride( Vector *direction ){
-		if( this->moveOverride != NULL ){
-			delete this->moveOverride;
-		}
-		this->moveOverride = direction;
+	if( this->moveOverride != NULL ){
+		delete this->moveOverride;
+	}
+	this->moveOverride = direction;
 }
 
 

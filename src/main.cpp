@@ -146,6 +146,9 @@ int main(){
 		}
 	}while( b_keep_playing );
 
-	system( "pause" );
+	const unsigned int closing_seconds = 5;
+	std::cout<< "Game Over" << std::endl << "The Game will close in " << closing_seconds << " seconds ..." << std::endl;
+	Sleep( closing_seconds * 1000 );
+
 	return 0;
 }

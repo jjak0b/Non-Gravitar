@@ -51,14 +51,14 @@ bool PlanetEntity::Update( GameEngine *game ){
 		update_result = false;
 		this->Delete(); // Il Planetlevel associato e questa entità non saranno più significativi
 	}
-	else if( update_result ){
+	/*else if( update_result ){
 		// Mi interessa verificare solo la collisione con l'entità giocatore per verificare se vuole entrare nel pianeta
 		Player *player = this->GetWorld()->GetPlayer();
 		if( this->IsColliding( player ) ){
 			this->Callback_OnCollide( game, player );
 			update_result = false;
 		}
-	}
+	}*/
 
 	return update_result;
 }
@@ -79,7 +79,7 @@ bool PlanetEntity::IsColliding( Entity *entity ){
 
 void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( IsDefined( this ) && IsDefined( collide_ent ) ){
-		if( !strcmp( collide_ent->GetClassname(), "Player" ) ){
+		/*if( !strcmp( collide_ent->GetClassname(), "Player" ) ){
 			Player *player = (Player*)collide_ent;
 
 			// il punto di fuga è vicino al punto di collisione ma distaccato dal punto di -2(direction) unità,
@@ -112,6 +112,6 @@ void PlanetEntity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 
 				game->SetCurrentLevel( this->GetPlanetLevel() );
 			}
-		}
+		}*/
 	}
 }

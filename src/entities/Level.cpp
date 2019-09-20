@@ -70,49 +70,49 @@ bool Level::Update( GameEngine *game ){
 
 		std::list<Entity*>::iterator entity_it, entity_it_2; 
 		list<Entity*> ents = GetEntities(NULL, false, false);
-		ents.push_front(this->player);
 		entity_it = ents.begin();
-		Entity *ent_1 = new Entity( world, Point2D(0,0) );
-
+		Entity *entity = NULL;
 
 		while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
-			if (IsDefined(*entity_it) && (*entity_it)->GetShape() != NULL) {
-				if (this->IsColliding(*entity_it)) {
-					(*entity_it)->Callback_OnCollide(game, this);
-					if (IsDefined(*entity_it)) this->Callback_OnCollide(game, *entity_it);
-					}
+			entity = *entity_it;
+			if ( IsDefined( entity ) ) {
+				if ( this->IsColliding( entity ) ) {
+					entity->Callback_OnCollide(game, this);
+				}
 			}
 			entity_it++;
 		}
 
+		Entity *entity2 = NULL;
 		entity_it = ents.begin();
-		while(  !ents.empty() && entity_it != ents.end() ) {
-			ent_1 = *entity_it;
-    		entity_it++;
-			entity_it_2 = entity_it;
+		while( !ents.empty() && entity_it != ents.end() ) {
+			entity = *entity_it;
+			entity_it_2 = ents.begin();
+			while( IsDefined( entity ) && !ents.empty() && entity_it_2 != ents.end() ) {
+				entity2 = *entity_it_2;
+				if ( entity != entity2 && IsDefined( entity2 ) && entity->IsColliding( entity2 ) ) {
+					entity2->Callback_OnCollide(game, entity );
 
-			while(  IsDefined(ent_1)  && !ents.empty() && entity_it_2 != ents.end() ) {
-				if (IsDefined(*entity_it_2) && ent_1->IsColliding(*entity_it_2) ) {
-					(*entity_it_2)->Callback_OnCollide(game, ent_1);
-					(ent_1)->Callback_OnCollide(game, *entity_it_2);
 				}
 				entity_it_2++;
 			}
+			entity_it++;
 		}
 
 		// NOTA: Soluzione temporanea ma non 100% affidabile;
 		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
 		entity_it = this->entities.begin();
 		while( !this->entities.empty() && entity_it != this->entities.end() ){
-			if( IsDefined( *entity_it ) ){
-				update_result = (*entity_it)->Update( game ); // EntityUpdateSelector(game, *entity_it );
+			entity = *entity_it;
+			if( IsDefined( entity ) ){
+				update_result = entity->Update( game ); // EntityUpdateSelector(game, *entity_it );
 			}
 			
 			// Nota: Questo deve essere l'unico punto in cui rimuovo l'entità dalla lista altrimenti l'iteratore attuale
 			// potrebbe essere collegato ad un nodo della lista che non mi aspetto se la sua entità associata è rimossa durante l' entity->Update(...)
 			// es prima di update *entity_it = entità A
 			// dopo update: *entity_it = entità B oppure entity_it = nodo che è stato rimosso dalla lista
-			if( !IsDefined( *entity_it ) ){
+			if( !IsDefined( entity ) ){
 				entity_it = this->entities.erase( entity_it );
 			}
 			else{
@@ -263,7 +263,9 @@ list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_
 			}
 
 			if ( ent != NULL) {
-					isClassNameMatching = Utility::CheckEqualsOrSubstring( ent->GetClassname(), className, b_search_className_as_subString );
+
+				isClassNameMatching = Utility::CheckEqualsOrSubstring( ent->GetClassname(), className, b_search_className_as_subString );
+
 				if ( ( isClassNameMatching && !b_exclude ) || ( !isClassNameMatching && b_exclude ) ) {
 					ents.push_front(ent);
 				}
@@ -273,7 +275,7 @@ list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_
 	else{
 		ents = this->entities;// stdlist implementa l'operatore '=' com metodo per copiare completamente una lista con i suoi elementi.
 		if( this->player != NULL )
-			ents.push_back( this->player );
+			ents.push_front( this->player );
 	}
 	return ents;
 }

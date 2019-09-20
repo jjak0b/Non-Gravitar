@@ -59,14 +59,14 @@ void Shape::UpdateAbsolutes( Point2D origin, Level *world ) {
 }
 
 // Intersezioni
-bool Shape::IsShapeColliding( Shape collision_shape ) {
+bool Shape::IsShapeColliding( Shape* collision_shape, Vector* bounds ) {
   
-  list<Point2D> collision_points = collision_shape.getAbsolutes();
+  list<Point2D> collision_points = collision_shape->getAbsolutes();
   std::list<Point2D>::iterator it = collision_points.begin();
   bool is_Colliding = false;
 
   while( !is_Colliding && it != collision_points.end() ){
-    if (ray_Casting(*it)) is_Colliding = true;
+    if ( this->ray_Casting(*it, bounds ) ) is_Colliding = true;
     it++;
   }
   if (is_Colliding) return true;
@@ -74,7 +74,7 @@ bool Shape::IsShapeColliding( Shape collision_shape ) {
 }
 
 
-bool Shape::ray_Casting(Point2D point) {
+bool Shape::ray_Casting(Point2D point, Vector* bounds ) {
 
   int intersections = 0;
   float e = 1.0;
@@ -96,10 +96,23 @@ bool Shape::ray_Casting(Point2D point) {
 
   }
 
-  if (point.GetX() < Xmin || point.GetX() > Xmax || point.GetY() < Ymin || point.GetY() > Ymax) {
-    return false;
-  }
-        
+  Point2D point_min = Point2D( Xmin, Ymin );
+  Point2D point_max = Point2D( Xmax, Ymax );
+
+  VECTOR_VALUE_TYPE
+  	distance_X_point_to_X_min,
+  	distance_X_point_to_X_max,
+	distance_Y_point_to_Y_min,
+	distance_Y_point_to_Y_max;
+
+	GetOffSet(&distance_X_point_to_X_min, point_min, point, BOUND_INDEX_WIDTH, bounds ); // point.GetX() < Xmin -> point.GetX() - Xmin < 0
+	GetOffSet(&distance_X_point_to_X_max, point_max, point, BOUND_INDEX_WIDTH, bounds ); // point.GetX() > Xmax -> point.GetX() - Xmax > 0
+	GetOffSet(&distance_Y_point_to_Y_min, point_min, point, BOUND_INDEX_HEIGHT, bounds ); // point.GetY() < Ymin -> point.GetY() - Ymin < 0
+	GetOffSet(&distance_Y_point_to_Y_max, point_max, point, BOUND_INDEX_HEIGHT, bounds ); // point.GetY() > Ymax -> point.GetY() - Ymax > 0
+	if (distance_X_point_to_X_min < 0 || distance_X_point_to_X_max > 0 || distance_Y_point_to_Y_min < 0 || distance_Y_point_to_Y_max > 0) {
+		return false;
+	}
+
   // conta le intersezioni del ray con i lati del poligono
   Point2D ray_A = Point2D( ( Xmin - e/point.GetY() ) , point.GetY());
   Side ray = Side(ray_A, point);
