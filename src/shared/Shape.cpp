@@ -187,7 +187,27 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 
 	// rette coincidenti o parallele verticali
 	if ( ( m1 == NULL ) && ( m2 == NULL ) ) {
-		
+		if (a_x1 == b_x1) {
+
+			xm = a_x1;
+			ym = a_y1 + a_y2;
+			point_m.SetY(ym);
+			world->GetNormalizedPoint(point_m);
+			point_m.SetY(point_m.GetY()/2);
+			point_m.SetX(xm);
+			world->GetNormalizedPoint(point_m);
+
+			if ((point_m.DistanceSquared(b.getB(), ptr_bounds) <= point_m.DistanceSquared(a.getA(), ptr_bounds)) ||
+				(point_m.DistanceSquared(b.getA(), ptr_bounds) <= point_m.DistanceSquared(a.getA(), ptr_bounds))  ) {
+					return true;
+				}
+			else {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
 	}
 	// retta A verticale
 	else if ( m1 == NULL ) {
