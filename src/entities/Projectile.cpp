@@ -18,6 +18,13 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D(0,0), origin);
 
+		if  ( !strcmp( this->GetClassname(), "Beam_Projectile" ))   {	
+		this->texture = new Bitmap( 1, 1, COLOR_BLUE );
+		const BITMAP_DATA_TYPE raw_texturer0[] = "\xB1";
+		const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0};
+		this->texture->Load( rawtexture, NULL, 1, 1);
+	}
+
 }
 
 Vector Projectile::GetDirection(){

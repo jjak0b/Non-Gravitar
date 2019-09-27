@@ -25,8 +25,8 @@ class Shape{
         list<Point2D> getAbsolutes();
         void deleteAbsolutes();
 
-        bool areIntersecting( Side v1, Side v2 );
-        bool ray_Casting(Point2D point, Vector* bounds );
-        bool IsShapeColliding( Shape* collision_shape, Vector* bounds );
+        bool areIntersecting( Side a, Side b, Level *world );
+        bool ray_Casting(Point2D point, Level* world );
+        bool IsShapeColliding( Shape* collision_shape, Level *world );
         void UpdateAbsolutes( Point2D origin, Level *world );
 };

@@ -112,8 +112,8 @@ void PlanetLevel::Generate( GameEngine *game ){
 	list<Point2D> surface;
 	Point2D temp = start;
 	while( temp.GetX() < end.GetX() ){
-		//this->shape->addOffset( temp, origin );
-		surface.push_front(temp);
+		this->shape->addOffset( temp, origin );
+		//surface.push_front(temp);
 		offset_x = min_point_distance_x + (rand() % (int)(max_point_distance_x - min_point_distance_x));
 		offset_y = min_point_distance_y + (rand() % (int)(max_point_distance_y - min_point_distance_y));
 		if( rand() % 100 < 50 ){ // scelgo se variare l'offset del punto in positivo o in negativo
@@ -129,9 +129,9 @@ void PlanetLevel::Generate( GameEngine *game ){
 					min( temp.GetY(), max_point_height ),
 					min_point_height ) );
 	}
-	//this->shape->addOffset( end, origin );
-	surface.push_front(end);
-	this->shape->addAbsoluteList(surface);
+	this->shape->addOffset( end, origin );
+	//surface.push_front(end);
+	//this->shape->addAbsoluteList(surface);
 
 	Point2D random_A = RandomPoint();
 
@@ -150,12 +150,13 @@ void PlanetLevel::Generate( GameEngine *game ){
 	random_Small.SetY(random_Small.GetY() + 1);
 	random_Big.SetY(random_Big.GetY() + 1);
 
-	this->AddEntity(new BunkerA(this, random_A));
-	this->AddEntity(new BunkerB(this,random_B));
-	this->AddEntity(new BunkerC(this,random_C));
+	// this->AddEntity(new BunkerA(this, random_A));
+	// this->AddEntity(new BunkerB(this,random_B));
+	// this->AddEntity(new BunkerC(this,random_C));
 
-	this->AddEntity(new SmallFuel(this, random_Small));
-	this->AddEntity(new BigFuel(this, random_Big));	
+	// this->AddEntity(new SmallFuel(this, random_Small));
+	// this->AddEntity(new BigFuel(this, random_Big));
+	this->AddEntity(new BunkerB(this,Point2D(30,30)));	
 	
 }
 

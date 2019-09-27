@@ -43,30 +43,31 @@ void Shape::deleteAbsolutes() {
 
 void Shape::UpdateAbsolutes( Point2D origin, Level *world ) {
 
-  
-  Point2D point;
-  list<Point2D>::iterator it_offset, it_absolute;
-  it_offset = this->offset_points.begin();
-  it_absolute = this->absolute_points.begin();
-  
-  for (; it_offset != this->offset_points.end(); it_offset++, it_absolute++ ) {
+ if ( world != NULL )  {
+    Point2D point;
+    list<Point2D>::iterator it_offset, it_absolute;
+    it_offset = this->offset_points.begin();
+    it_absolute = this->absolute_points.begin();
     
-    point = origin;
-    point.Add(*it_offset);
-    point = world->GetNormalizedPoint(point);
-    (*it_absolute) = point;
+    for (; it_offset != this->offset_points.end(); it_offset++, it_absolute++ ) {
+      
+      point = origin;
+      point.Add(*it_offset);
+      point = world->GetNormalizedPoint(point);
+      (*it_absolute) = point;
+    }
   }
 }
 
 // Intersezioni
-bool Shape::IsShapeColliding( Shape* collision_shape, Vector* bounds ) {
+bool Shape::IsShapeColliding( Shape* collision_shape, Level *world ) {
   
   list<Point2D> collision_points = collision_shape->getAbsolutes();
   std::list<Point2D>::iterator it = collision_points.begin();
   bool is_Colliding = false;
 
   while( !is_Colliding && it != collision_points.end() ){
-    if ( this->ray_Casting(*it, bounds ) ) is_Colliding = true;
+    if ( this->ray_Casting(*it, world ) ) is_Colliding = true;
     it++;
   }
   if (is_Colliding) return true;
@@ -74,10 +75,14 @@ bool Shape::IsShapeColliding( Shape* collision_shape, Vector* bounds ) {
 }
 
 
-bool Shape::ray_Casting(Point2D point, Vector* bounds ) {
+bool Shape::ray_Casting(Point2D point, Level *world ) {
 
   int intersections = 0;
   float e = 1.0;
+  Vector* ptr_bounds = NULL;
+	Vector bounds;
+	bounds = world->GetBounds();
+	ptr_bounds = &bounds;
 
   // Imposta i valori minimi e massimi del poligono
   float Xmin = this->absolute_points.front().GetX();
@@ -105,10 +110,10 @@ bool Shape::ray_Casting(Point2D point, Vector* bounds ) {
 	distance_Y_point_to_Y_min,
 	distance_Y_point_to_Y_max;
 
-	GetOffSet(&distance_X_point_to_X_min, point_min, point, BOUND_INDEX_WIDTH, bounds ); // point.GetX() < Xmin -> point.GetX() - Xmin < 0
-	GetOffSet(&distance_X_point_to_X_max, point_max, point, BOUND_INDEX_WIDTH, bounds ); // point.GetX() > Xmax -> point.GetX() - Xmax > 0
-	GetOffSet(&distance_Y_point_to_Y_min, point_min, point, BOUND_INDEX_HEIGHT, bounds ); // point.GetY() < Ymin -> point.GetY() - Ymin < 0
-	GetOffSet(&distance_Y_point_to_Y_max, point_max, point, BOUND_INDEX_HEIGHT, bounds ); // point.GetY() > Ymax -> point.GetY() - Ymax > 0
+	GetOffSet(&distance_X_point_to_X_min, point_min, point, BOUND_INDEX_WIDTH, ptr_bounds ); // point.GetX() < Xmin -> point.GetX() - Xmin < 0
+	GetOffSet(&distance_X_point_to_X_max, point_max, point, BOUND_INDEX_WIDTH, ptr_bounds ); // point.GetX() > Xmax -> point.GetX() - Xmax > 0
+	GetOffSet(&distance_Y_point_to_Y_min, point_min, point, BOUND_INDEX_HEIGHT, ptr_bounds ); // point.GetY() < Ymin -> point.GetY() - Ymin < 0
+	GetOffSet(&distance_Y_point_to_Y_max, point_max, point, BOUND_INDEX_HEIGHT, ptr_bounds ); // point.GetY() > Ymax -> point.GetY() - Ymax > 0
 	if (distance_X_point_to_X_min < 0 || distance_X_point_to_X_max > 0 || distance_Y_point_to_Y_min < 0 || distance_Y_point_to_Y_max > 0) {
 		return false;
 	}
@@ -126,7 +131,7 @@ bool Shape::ray_Casting(Point2D point, Vector* bounds ) {
     it++;
     end = *it;
     Side side = Side( start, end );
-    if (areIntersecting ( side, ray ) ) intersections ++;   }
+    if (areIntersecting ( side, ray, world) ) intersections ++;   }
 
     // Se le intersezioni sono dispari il punto è all'interno del poligono
     if ((intersections & 1) == 1) {
@@ -136,67 +141,117 @@ bool Shape::ray_Casting(Point2D point, Vector* bounds ) {
       // Outside of polygon
       return false;
     }
-  }   
+  }  
 
-bool Shape::areIntersecting( Side v1, Side v2) {
-    
-    float v1x1 = v1.getA().GetX();
-    float v1y1 = v1.getA().GetY();
-    float v1x2 = v1.getB().GetX();
-    float v1y2 = v1.getB().GetY();
+bool Shape::areIntersecting( Side a, Side b, Level *world) {
+	Vector* ptr_bounds = NULL;
+	Vector bounds;
+	bounds = world->GetBounds();
+	ptr_bounds = &bounds;
 
-    float v2x1 = v2.getA().GetX();
-    float v2y1 = v2.getA().GetY();
-    float v2x2 = v2.getB().GetX();
-    float v2y2 = v2.getB().GetY();
+	// a = side
+	// b = ray
 
-    float d1, d2;
-    float a1, a2, b1, b2, c1, c2;
+	float a_x1 = a.getA().GetX();
+	float a_y1 = a.getA().GetY();
+	float a_x2 = a.getB().GetX();
+	float a_y2 = a.getB().GetY();
 
-    // Convert vector 1 to a line (line 1) of infinite length.
-    // We want the line in linear equation standard form: A*x + B*y + C = 0
-    // See: http://en.wikipedia.org/wiki/Linear_equation
-    a1 = v1y2 - v1y1;
-    b1 = v1x1 - v1x2;
-    c1 = (v1x2 * v1y1) - (v1x1 * v1y2);
+	float b_x1 = b.getA().GetX();
+	float b_y1 = b.getA().GetY();
+	float b_x2 = b.getB().GetX();
+	float b_y2 = b.getB().GetY();
 
-    // Every point (x,y), that solves the equation above, is on the line,
-    // every point that does not solve it, is not. The equation will have a
-    // positive result if it is on one side of the line and a negative one 
-    // if is on the other side of it. We insert (x1,y1) and (x2,y2) of vector
-    // 2 into the equation above.
-    d1 = (a1 * v2x1) + (b1 * v2y1) + c1;
-    d2 = (a1 * v2x2) + (b1 * v2y2) + c1;
+	float *m1, *m2, q1, q2, xc, yc, xm, ym;
+	Point2D point_m, point_c, point_r;
 
-    // If d1 and d2 both have the same sign, they are both on the same side
-    // of our line 1 and in that case no intersection is possible. Careful, 
-    // 0 is a special case, that's why we don't test ">=" and "<=", 
-    // but "<" and ">".
-    if (d1 > 0 && d2 > 0) return false;
-    if (d1 < 0 && d2 < 0) return false;
+	// y = m2*x + q = retta ray casting
+	// y = m1*x + q = il lato
 
-     // The fact that vector 2 intersected the infinite line 1 above doesn't 
-    // mean it also intersects the vector 1. Vector 1 is only a subset of that
-    // infinite line 1, so it may have intersected that line before the vector
-    // started or after it ended. To know for sure, we have to repeat the
-    // the same test the other way round. We start by calculating the 
-    // infinite line 2 in linear equation standard form.
-    a2 = v2y2 - v2y1;
-    b2 = v2x1 - v2x2;
-    c2 = (v2x2 * v2y1) - (v2x1 * v2y2);
+	m1 = NULL;
+	m2 = NULL;
+	q1 = 0;
+	q2 = 0;
 
-    // Calculate d1 and d2 again, this time using points of vector 1.
-    d1 = (a2 * v1x1) + (b2 * v1y1) + c2;
-    d2 = (a2 * v1x2) + (b2 * v1y2) + c2;
+	if ( (a_x2 - a_x1) != 0 ) {
+		m1 = new float;
+		*m1 = (( a_y2 - a_y1 ) / ( a_x2 - a_x1 ));
+		q1 = a_y1 - (*m1)*(a_x1);
+	}
+	if ( (b_x2 - b_x1) != 0 ) {
+		m2 = new float;
+		*m2 = (( b_y2 - b_y1 ) / ( b_x2 - b_x1 ));
+		q2 = b_y1 - (*m2)*(b_x1);
+	}
 
-    // Again, if both have the same sign (and neither one is 0),
-    // no intersection is possible.
-    if (d1 > 0 && d2 > 0) return false;
-    if (d1 < 0 && d2 < 0) return false;
 
-    // If we get here, only two possibilities are left. Either the two
-    // vectors intersect in exactly one point or they are collinear, which
-    // means they intersect in any number of points from zero to infinite.
-    // If they are not collinear, they must intersect in exactly one point.
-    return true;
-}
+	// rette coincidenti o parallele verticali
+	if ( ( m1 == NULL ) && ( m2 == NULL ) ) {
+		
+	}
+	// retta A verticale
+	else if ( m1 == NULL ) {
+
+		xc = a_x1;
+		yc = (*m2)*(xc) + q2;
+		point_c = Point2D(xc,yc);
+
+		xm = a_x1;
+		ym = a_y1 + a_y2;
+		point_m.SetY(ym);
+		world->GetNormalizedPoint(point_m);
+		point_m.SetY(point_m.GetY()/2);
+		point_m.SetX(xm);
+
+		point_r = a.getA();
+
+	}
+	// retta B verticale
+	else if ( m2 == NULL ) {
+
+		xc = b_x1;
+		yc = (*m1)*(xc) + q1;
+		point_c = Point2D(xc,yc);
+
+		xm = b_x1;
+		ym = b_y1 + b_y2;
+		point_m.SetY(ym);
+		world->GetNormalizedPoint(point_m);
+		point_m.SetY(point_m.GetY()/2);
+		point_m.SetX(xm);
+
+		point_r = b.getA();
+	}
+	// rette parallele
+	else if ( *m1 == *m2 ){
+		return false;
+	}
+	// nessuna retta verticale
+	else {
+		xc = (q2 - q1) / (m1 - m2);
+		yc = (*m1)*(xc) + q1;
+		point_c = Point2D(xc,yc);
+
+		xm = a_x1 + a_x2;
+		point_m.SetX(xm);
+		world->GetNormalizedPoint(point_m);
+		point_m.SetX(point_m.GetX()/2);
+
+		ym = a_y1 + a_y2;
+		point_m.SetY(ym);
+		world->GetNormalizedPoint(point_m);
+		point_m.SetY(point_m.GetY()/2);
+
+		point_r = a.getA();
+	}
+
+		//pr punto estremo del raggio: può essere p1 o p2 in base al caso
+		//raggio di point m e punto collisione deve essere inferiore o uguale al raggio di point m e pr (punto più estremo del raggio)
+		world->GetNormalizedPoint(point_m);
+		world->GetNormalizedPoint(point_r);
+		world->GetNormalizedPoint(point_c);
+		if (point_m.DistanceSquared(point_c, ptr_bounds) <= point_m.DistanceSquared(point_r, ptr_bounds)) {
+		 	return true;
+		 }  
+		return false; 
+	}

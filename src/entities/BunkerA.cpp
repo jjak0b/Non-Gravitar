@@ -57,10 +57,4 @@ bool BunkerA::Update(GameEngine* game) {
 
 void BunkerA::Draw( ViewPort *view ){
 	Bunker::Draw( view );
-	// DEBUG
-	// list<Point2D> points = this->shape->getPoints();
-	// for (std::list<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
-	// 	Point2D point= (*it);
-	// view->Draw(NULL, this->world, point );
-	// }
 }
