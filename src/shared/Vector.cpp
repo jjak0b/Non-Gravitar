@@ -113,20 +113,28 @@ void Vector::round(){
 	}
 }
 
-bool GetOffSet( VECTOR_VALUE_TYPE* offset, Vector start, Vector end, unsigned int index_dimension, Vector* bounds ){
+bool GetUnitOffset( VECTOR_VALUE_TYPE* offset, const VECTOR_VALUE_TYPE start, const VECTOR_VALUE_TYPE end, const unsigned int index_dimension, Vector* bounds ){
+	VECTOR_VALUE_TYPE bound_value = 0;
+	if( offset != NULL && bounds != NULL && bounds->Get(index_dimension, &bound_value ) ){
+		*offset = end - start;
+		if( bounds != NULL && bounds->Get(index_dimension, &bound_value ) ){
+			if( *offset > 0 && *offset > (bound_value / 2.0 ) ){
+				*offset = bound_value - *offset;
+			}
+			else if( *offset < 0 && (-(*offset)) > (bound_value / 2.0 ) ){
+				*offset = -bound_value - *offset;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GetOffSet( VECTOR_VALUE_TYPE* offset, Vector start, Vector end, const unsigned int index_dimension, Vector* bounds ){
 	VECTOR_VALUE_TYPE valueEnd = 0, valueStart = 0, bound_value = 0;
 	if( start.GetSize() == end.GetSize() && offset != NULL ){
 		if( end.Get( index_dimension, &valueEnd) && start.Get( index_dimension, &valueStart) ){
-			*offset = valueEnd - valueStart;
-			if( bounds != NULL && bounds->Get(index_dimension, &bound_value ) ){
-				if( *offset > 0 && *offset > (bound_value / 2.0 ) ){
-					*offset = bound_value - *offset;
-				}
-				else if( *offset < 0 && (-(*offset)) > (bound_value / 2.0 ) ){
-					*offset = -bound_value - *offset;
-				}
-			}
-			return true;
+			return GetUnitOffset( offset, valueStart, valueEnd, index_dimension, bounds );
 		}
 	}
 	return false;

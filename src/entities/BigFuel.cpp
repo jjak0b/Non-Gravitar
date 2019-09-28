@@ -13,8 +13,8 @@ BigFuel::BigFuel( Level *world, Point2D origin) : Fuel( world, origin) {
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D( -1, 0 ), origin);
 	this->shape->addOffset(Point2D( +1, 0 ), origin);
-	this->shape->addOffset(Point2D( -1, +3 ), origin);
 	this->shape->addOffset(Point2D( +1, +3), origin);
+	this->shape->addOffset(Point2D( -1, +3 ), origin);
 }
 
 bool BigFuel::Update(GameEngine *game) {

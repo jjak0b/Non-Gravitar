@@ -29,10 +29,10 @@ Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( w
 	this->score = 0;
 
 	this->shape = new Shape();
-	this->shape->addOffset(Point2D( -2, 5 ), origin);
 	this->shape->addOffset(Point2D( -2, 0 ), origin);
-	this->shape->addOffset(Point2D( -2, 0 ), origin);
-	this->shape->addOffset(Point2D( +2, +5 ), origin);
+	this->shape->addOffset(Point2D( +2, 0 ), origin);
+	this->shape->addOffset(Point2D( +2, +6 ), origin);
+	this->shape->addOffset(Point2D( -2, 6 ), origin);
 
 	
 }

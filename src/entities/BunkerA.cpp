@@ -16,8 +16,8 @@ BunkerA::BunkerA( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D( -1, 0 ), origin);
 	this->shape->addOffset(Point2D( +1, 0 ), origin);
-	this->shape->addOffset(Point2D( -1, +2 ), origin);
 	this->shape->addOffset(Point2D( +1, +2 ), origin);
+	this->shape->addOffset(Point2D( -1, +2 ), origin);
 }
 
 bool BunkerA::Update(GameEngine* game) {

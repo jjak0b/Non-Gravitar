@@ -112,7 +112,23 @@ public:
 };
 
 /**
- * @brief Restituisce true se è stato assegnato un valore al valore puntato da offset, false altrimenti
+ * @brief Restituisce true se è stato assegnato un valore al valore puntato da offset, false altrimenti.
+ * Tale valore viene ridimensionato in base al limite nella i-esima dimensione di bounds
+ * PreCondition: offset != NULL, bounds != NULL
+ * PostCondition: Assegna il valore della differenza tra end e start al valore puntato da offset;
+ * 
+ * @param offset 
+ * @param start 
+ * @param end 
+ * @param index_dimension 
+ * @param bounds 
+ * @return true 
+ * @return false 
+ */
+bool GetUnitOffset( VECTOR_VALUE_TYPE* offset, const VECTOR_VALUE_TYPE start, const VECTOR_VALUE_TYPE end, const unsigned int index_dimension, Vector* bounds );
+
+/**
+ * @brief come GetUnitOffset(...) ma viene effettutato tra i valori nell'i-esmia dimensione dei vettori
  * PreCondition: start, end, offset != NULL, start.GetSize() = end.GetSize()
  * PostCondition: Assegna il valore della differenza dell'i-esima componente di start e end al valore puntato da offset;
  * se bound != NULL allora tale valore viene ridimensionato in base al limite nella i-esima dimensione di bounds
@@ -133,7 +149,7 @@ public:
  * @return true se è stato assegnato un valore al valore puntato da offset
  * @return false altrimenti
  */
-bool GetOffSet( VECTOR_VALUE_TYPE* offset, Vector start, Vector end, unsigned int i, Vector* bounds );
+bool GetOffSet( VECTOR_VALUE_TYPE* offset, Vector start, Vector end, const unsigned int i, Vector* bounds );
 
 /**
  * @brief Restituisce il vettore direzione (offset) dal punto start a end (end-start);

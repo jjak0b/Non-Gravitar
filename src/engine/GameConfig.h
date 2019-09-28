@@ -23,7 +23,7 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define INPUT_USE_FIRE 'f'
 #define INPUT_USE_BEAM 'r'
 
-//#define DEBUG
+#define DEBUG
 #define _DEFAULT_WINDOW_HEIGHT 30
 #define _DEFAULT_WINDOW_WIDTH 120
 #define DEFAULT_WINDOW_HEIGHT (_DEFAULT_WINDOW_HEIGHT)
@@ -35,4 +35,5 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 
 #define _USE_MATH_DEFINES
 
-//#define ENABLE_ANSI_IF_SUPPORTED
+#define ENABLE_ANSI_IF_SUPPORTED
+#define DEBUG_COLLISION_DRAWING
