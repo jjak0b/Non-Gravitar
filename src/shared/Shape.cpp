@@ -163,15 +163,15 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 	float b_y2 = b.getB().GetY();
 
 	float *m1, *m2, q1, q2, xc, yc, xm, ym;
-	Point2D point_m, point_c, point_r;
+	Point2D point_m, point_c, point_r, point_k1, point_k2;
 
 	// y = m2*x + q = retta ray casting
 	// y = m1*x + q = il lato
 
 	m1 = NULL;
 	m2 = NULL;
-	q1 = 0;
-	q2 = 0;
+	q1 = a_x1;
+	q2 = b_x1;
 
 	if ( (a_x2 - a_x1) != 0 ) {
 		m1 = new float;
@@ -183,6 +183,7 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 		*m2 = (( b_y2 - b_y1 ) / ( b_x2 - b_x1 ));
 		q2 = b_y1 - (*m2)*(b_x1);
 	}
+	
 
 
 	// rette coincidenti o parallele verticali
@@ -225,6 +226,9 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 
 		point_r = a.getA();
 
+		point_k1 = b.getA();
+		point_k2 = b.getB();
+
 	}
 	// retta B verticale
 	else if ( m2 == NULL ) {
@@ -244,8 +248,51 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 	}
 	// rette parallele
 	else if ( *m1 == *m2 ){
-		return false;
+
+		if ((a_y1 == a_y2) && (b_y1 == b_y2) && (a_y1 == a_y2)) {
+
+			xm = a_y1 + a_y2;
+			point_m.SetX(xm);
+			world->GetNormalizedPoint(point_m);
+			point_m.SetX(point_m.GetX()/2);
+			point_m.SetY(a_y1);
+			world->GetNormalizedPoint(point_m);
+
+			if ((point_m.DistanceSquared(b.getA(), ptr_bounds) <= point_m.DistanceSquared(a.getA(), ptr_bounds)) ||
+				(point_m.DistanceSquared(b.getB(), ptr_bounds) <= point_m.DistanceSquared(a.getA(), ptr_bounds))) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else if ( q1 == q2) {
+
+			xm = a_x1 + a_x2;
+			point_m.SetX(xm);
+			world->GetNormalizedPoint(point_m);
+			point_m.SetX(point_m.GetX()/2);
+
+			ym = a_y1 + a_y2;
+			point_m.SetY(ym);
+			world->GetNormalizedPoint(point_m);
+			point_m.SetY(point_m.GetY()/2);
+
+			if ((point_m.DistanceSquared(b.getA(), ptr_bounds) <= point_m.DistanceSquared(a.getA(), ptr_bounds)) ||
+				(point_m.DistanceSquared(b.getB(), ptr_bounds) <= point_m.DistanceSquared(a.getA(), ptr_bounds))) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+		
 	}
+
+	// TO DO same slope same line no vert no orizz
 	// nessuna retta verticale
 	else {
 		xc = (q2 - q1) / (m1 - m2);
@@ -270,8 +317,80 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 		world->GetNormalizedPoint(point_m);
 		world->GetNormalizedPoint(point_r);
 		world->GetNormalizedPoint(point_c);
-		if (point_m.DistanceSquared(point_c, ptr_bounds) <= point_m.DistanceSquared(point_r, ptr_bounds)) {
-		 	return true;
-		 }  
+
+
+		float 
+			a_x_max, a_x_min, a_y_max, a_y_min,
+			b_x_max, b_x_min, b_y_max, b_y_min;
+
+		VECTOR_VALUE_TYPE
+			a_distance_x_left, a_distance_x_right,
+			a_distance_y_up, a_distance_y_down,
+			b_distance_x_left, b_distance_x_right,
+			b_distance_y_up, b_distance_y_down;
+
+		Point2D 
+			a_point_max, a_point_min,
+			b_point_max, b_point_min;
+
+		a_x_max = a_x1;
+		a_x_min = a_x2;
+		if ( a_x1 < a_x2) {
+			a_x_max = a_x2;
+			a_x_min = a_x1;
+		}
+
+		a_y_max = a_y1;
+		a_y_min = a_y2;
+		if ( a_y1 < a_y2 ) {
+			a_y_max = a_y2;
+			a_y_min = a_y1;
+		}
+
+		b_x_max = b_x1;
+		b_x_min = b_x2;
+		if ( b_x1 < b_x2) {
+			b_x_max = b_x2;
+			b_x_min = b_x1;
+		}
+
+		b_y_max = b_y1;
+		b_y_min = b_y2;
+		if ( b_y1 < b_y2 ) {
+			b_y_max = b_y2;
+			b_y_min = b_y1;
+		}
+		
+		a_point_max = Point2D( a_x_max, a_y_max );
+		a_point_min = Point2D( a_x_min, a_y_min );
+		b_point_max = Point2D( b_x_max, b_y_max );
+		b_point_min = Point2D( b_x_min, b_y_min );
+
+		GetOffSet( &a_distance_x_left, point_c, a_point_min, 0, ptr_bounds );
+		GetOffSet( &a_distance_x_right, point_c, a_point_max, 0, ptr_bounds );
+		GetOffSet( &a_distance_y_up, point_c, a_point_max, 1, ptr_bounds );
+		GetOffSet( &a_distance_y_down, point_c, a_point_min, 1, ptr_bounds );
+
+		GetOffSet( &b_distance_x_left, point_c, b_point_min, 0, ptr_bounds );
+		GetOffSet( &b_distance_x_right, point_c, b_point_max, 0, ptr_bounds );
+		GetOffSet( &b_distance_y_up, point_c, b_point_max, 1, ptr_bounds );
+		GetOffSet( &b_distance_y_down, point_c, b_point_min, 1, ptr_bounds );
+
+		if ((a_distance_x_left <= 0) && (a_distance_x_right >= 0) &&
+			(a_distance_y_down <= 0) && (a_distance_y_up >= 0) &&
+			(b_distance_x_left <= 0) && (b_distance_x_right >= 0) &&
+			(b_distance_y_down <= 0) && (b_distance_y_up >= 0)) {
+			return true;
+		}
+
+
+
+
+		// if (point_m.DistanceSquared(point_c, ptr_bounds) <= point_m.DistanceSquared(point_r, ptr_bounds) &&
+		// 	( (point_m.DistanceSquared(point_k1, ptr_bounds) <= point_m.DistanceSquared(point_r, ptr_bounds)) ||
+		// 	(point_m.DistanceSquared(point_k2, ptr_bounds) <= point_m.DistanceSquared(point_r, ptr_bounds) ) ) ) {
+		//  	return true;
+		//  }  
 		return false; 
 	}
+

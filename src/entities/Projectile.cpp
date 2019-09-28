@@ -51,14 +51,12 @@ bool Projectile::Update( GameEngine *game ) {
 
 		bool isCollisionDetected = false;
 
-		// // controllo collisione surface
-		// std::list<Point2D> surface = this->world->GetShape()->getAbsolutes();
-		// Shape surface_shape = Shape();
-		// surface_shape.addAbsoluteList(surface);
-		
-		// if (surface_shape.ray_Casting(this->GetOrigin()))	{
-		// 	isCollisionDetected = true;	
+		// Side o = Side(Point2D(this->origin.GetX() - 1, this->origin.GetY()), Point2D(this->origin.GetX() + 1, this->origin.GetY())  );
+		// Side t = Side( Point2D(30,40), Point2D(30,20) );
+		// if ( this->shape->areIntersecting(t, o, this->world )) {
+		// 	isCollisionDetected = true;
 		// }
+
 
 		// eliminazione per collisione o posizione esterna al pianeta
 		if( isCollisionDetected || this->IsOutOfTheWorld() ){
