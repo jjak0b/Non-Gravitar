@@ -4,7 +4,7 @@
 #include "Side.hpp"
 #include <cmath>
 #include "entities/Level.hpp"
-
+#include "Line2D.hpp"
 
 Shape::Shape() {
 };
@@ -92,12 +92,21 @@ bool Shape::ray_Casting(Point2D point, Level *world ) {
         
   std::list<Point2D>::iterator it = this->absolute_points.begin();
   it++;
-  for (it; it !=  this->absolute_points.end(); it++) {
+  VECTOR_VALUE_TYPE difference;
 
-    if ( (*it).GetX() < Xmin ) Xmin = (*it).GetX();
-    if ( (*it).GetX() > Xmax ) Xmax = (*it).GetX();
-    if ( (*it).GetY() < Ymin ) Ymin = (*it).GetY();
-    if ( (*it).GetY() > Ymax ) Ymax = (*it).GetY();
+  for (it; it !=  this->absolute_points.end(); it++) {
+	GetUnitOffset( &difference, Xmin , (*it).GetX(), 0, ptr_bounds);
+    if ( difference < 0 ) // (*it).GetX() < Xmin
+		Xmin = (*it).GetX();
+	GetUnitOffset( &difference, Xmax , (*it).GetX(), 0, ptr_bounds);
+    if ( difference > 0 ) // (*it).GetX() > Xmax
+		Xmax = (*it).GetX();
+	GetUnitOffset( &difference, Ymin , (*it).GetY(), 1, NULL);
+    if ( difference < 0 ) // (*it).GetY() < Ymin
+		Ymin = (*it).GetY();
+	GetUnitOffset( &difference, Ymax , (*it).GetY(), 1, NULL );
+    if ( difference > 0 ) //  (*it).GetY() > Ymax
+		Ymax = (*it).GetY();
 
   }
 
@@ -112,8 +121,8 @@ bool Shape::ray_Casting(Point2D point, Level *world ) {
 
 	GetOffSet(&distance_X_point_to_X_min, point_min, point, BOUND_INDEX_WIDTH, ptr_bounds ); // point.GetX() < Xmin -> point.GetX() - Xmin < 0
 	GetOffSet(&distance_X_point_to_X_max, point_max, point, BOUND_INDEX_WIDTH, ptr_bounds ); // point.GetX() > Xmax -> point.GetX() - Xmax > 0
-	GetOffSet(&distance_Y_point_to_Y_min, point_min, point, BOUND_INDEX_HEIGHT, ptr_bounds ); // point.GetY() < Ymin -> point.GetY() - Ymin < 0
-	GetOffSet(&distance_Y_point_to_Y_max, point_max, point, BOUND_INDEX_HEIGHT, ptr_bounds ); // point.GetY() > Ymax -> point.GetY() - Ymax > 0
+	GetOffSet(&distance_Y_point_to_Y_min, point_min, point, BOUND_INDEX_HEIGHT, NULL ); // point.GetY() < Ymin -> point.GetY() - Ymin < 0
+	GetOffSet(&distance_Y_point_to_Y_max, point_max, point, BOUND_INDEX_HEIGHT, NULL ); // point.GetY() > Ymax -> point.GetY() - Ymax > 0
 	if (distance_X_point_to_X_min < 0 || distance_X_point_to_X_max > 0 || distance_Y_point_to_Y_min < 0 || distance_Y_point_to_Y_max > 0) {
 		return false;
 	}
@@ -123,15 +132,16 @@ bool Shape::ray_Casting(Point2D point, Level *world ) {
   Side ray = Side(ray_A, point);
         
 
-  it =this->absolute_points.begin();
-      
-  Point2D start, end;
-  while( it != this->absolute_points.end() ){
-    start = *it;
-    it++;
-    end = *it;
-    Side side = Side( start, end );
-    if (areIntersecting ( side, ray, world) ) intersections ++;   }
+	it =this->absolute_points.begin();
+	Point2D start, end;
+	while( it != this->absolute_points.end() ){
+		start = *it;
+		it++;
+		end = *it;
+		Side side = Side( start, end );
+		if (areIntersecting ( side, ray, world) )
+			intersections ++;
+	}
 
     // Se le intersezioni sono dispari il punto è all'interno del poligono
     if ((intersections & 1) == 1) {
@@ -143,29 +153,114 @@ bool Shape::ray_Casting(Point2D point, Level *world ) {
     }
   }  
 
+bool AreIntersecting( Side a, Side b, Level *world  ){
+	Vector bounds = world->GetBounds();
+	Line2D l1 = Line2D( a, &bounds );
+	Line2D l2 = Line2D( b, &bounds );
+	return l1.IsIntersecting( l2 );
+}
+
+bool _areIntersecting( Side v1, Side v2, Level *world ) {
+    
+	Vector bounds = world->GetBounds();
+    float v1x1 = v1.GetStart().GetX();
+    float v1y1 = v1.GetStart().GetY();
+    float v1x2 = v1.GetEnd().GetX();
+    float v1y2 = v1.GetEnd().GetY();
+
+    float v2x1 = v2.GetStart().GetX();
+    float v2y1 = v2.GetStart().GetY();
+    float v2x2 = v2.GetEnd().GetX();
+    float v2y2 = v2.GetEnd().GetY();
+
+    float d1, d2;
+    float a1, a2, b1, b2, c1, c2;
+
+    // Convert vector 1 to a line (line 1) of infinite length.
+    // We want the line in linear equation standard form: A*x + B*y + C = 0
+    // See: http://en.wikipedia.org/wiki/Linear_equation
+    GetUnitOffset(&a1, v1y1, v1y2, 1, NULL );// a1 = v1y2 - v1y1;
+    GetUnitOffset(&b1, v1x2, v1x1, 0, &bounds ); // b1 = v1x1 - v1x2;
+    c1 = (v1x2 * v1y1) - (v1x1 * v1y2);
+
+    // Every point (x,y), that solves the equation above, is on the line,
+    // every point that does not solve it, is not. The equation will have a
+    // positive result if it is on one side of the line and a negative one 
+    // if is on the other side of it. We insert (x1,y1) and (x2,y2) of vector
+    // 2 into the equation above.
+    d1 = (a1 * v2x1) + (b1 * v2y1) + c1;
+    d2 = (a1 * v2x2) + (b1 * v2y2) + c1;
+
+    // If d1 and d2 both have the same sign, they are both on the same side
+    // of our line 1 and in that case no intersection is possible. Careful, 
+    // 0 is a special case, that's why we don't test ">=" and "<=", 
+    // but "<" and ">".
+    if (d1 > 0 && d2 > 0) return false;
+    if (d1 < 0 && d2 < 0) return false;
+
+     // The fact that vector 2 intersected the infinite line 1 above doesn't 
+    // mean it also intersects the vector 1. Vector 1 is only a subset of that
+    // infinite line 1, so it may have intersected that line before the vector
+    // started or after it ended. To know for sure, we have to repeat the
+    // the same test the other way round. We start by calculating the 
+    // infinite line 2 in linear equation standard form.
+    GetUnitOffset(&a2, v2y1, v2y2, 1, NULL ); // a2 = v2y2 - v2y1;
+    GetUnitOffset(&b2, v2x2, v2x1, 0, &bounds ); // b2 = v2x1 - v2x2;
+    c2 = (v2x2 * v2y1) - (v2x1 * v2y2);
+
+    // Calculate d1 and d2 again, this time using points of vector 1.
+    d1 = (a2 * v1x1) + (b2 * v1y1) + c2;
+    d2 = (a2 * v1x2) + (b2 * v1y2) + c2;
+
+    // Again, if both have the same sign (and neither one is 0),
+    // no intersection is possible.
+    if (d1 > 0 && d2 > 0) return false;
+    if (d1 < 0 && d2 < 0) return false;
+
+    // If we get here, only two possibilities are left. Either the two
+    // vectors intersect in exactly one point or they are collinear, which
+    // means they intersect in any number of points from zero to infinite.
+    // If they are not collinear, they must intersect in exactly one point.
+    return true;
+}
+
 bool Shape::areIntersecting( Side a, Side b, Level *world) {
+	Vector bounds = world->GetBounds();
+	return AreIntersecting( a, b, world);
+
 	Vector* ptr_bounds = NULL;
-	Vector bounds;
 	bounds = world->GetBounds();
 	ptr_bounds = &bounds;
 
 	// a = side
 	// b = ray
 
-	float a_x1 = a.getA().GetX();
-	float a_y1 = a.getA().GetY();
-	float a_x2 = a.getB().GetX();
-	float a_y2 = a.getB().GetY();
+	VECTOR_VALUE_TYPE a_x1 = a.GetStart().GetX();
+	VECTOR_VALUE_TYPE a_y1 = a.GetStart().GetY();
+	VECTOR_VALUE_TYPE a_x2 = a.GetEnd().GetX();
+	VECTOR_VALUE_TYPE a_y2 = a.GetEnd().GetY();
 
-	float b_x1 = b.getA().GetX();
-	float b_y1 = b.getA().GetY();
-	float b_x2 = b.getB().GetX();
-	float b_y2 = b.getB().GetY();
+	VECTOR_VALUE_TYPE b_x1 = b.GetStart().GetX();
+	VECTOR_VALUE_TYPE b_y1 = b.GetStart().GetY();
+	VECTOR_VALUE_TYPE b_x2 = b.GetEnd().GetX();
+	VECTOR_VALUE_TYPE b_y2 = b.GetEnd().GetY();
 
-	float *m1, *m2, q1, q2, xc, yc, xm, ym;
-	Point2D point_m, point_c, point_r, point_k1, point_k2;
+	VECTOR_VALUE_TYPE
+		*m1,
+		*m2,
+		q1,
+		q2,
+		xc, yc,
+		xm, ym;
 
-	float 
+	Point2D
+		point_m,
+		point_c,
+		point_r,
+		point_k1,
+		point_k2;
+
+	VECTOR_VALUE_TYPE
 		a_x_max, a_x_min, a_y_max, a_y_min,
 		b_x_max, b_x_min, b_y_max, b_y_min;
 
@@ -179,30 +274,36 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 		a_point_max, a_point_min,
 		b_point_max, b_point_min;
 
+	VECTOR_VALUE_TYPE distance;
+
 	a_x_max = a_x1;
 	a_x_min = a_x2;
-	if ( a_x1 < a_x2) {
+	GetUnitOffset( &distance, a_x2, a_x1, 0, &bounds );
+	if ( distance < 0) { //  a_x1 < a_x2
 		a_x_max = a_x2;
 		a_x_min = a_x1;
 	}
 
 	a_y_max = a_y1;
 	a_y_min = a_y2;
-	if ( a_y1 < a_y2 ) {
+	GetUnitOffset( &distance, a_y2, a_y1, 1, &bounds );
+	if ( distance < 0) { // a_y1 < a_y2
 		a_y_max = a_y2;
 		a_y_min = a_y1;
 	}
 
 	b_x_max = b_x1;
 	b_x_min = b_x2;
-	if ( b_x1 < b_x2) {
+	GetUnitOffset( &distance, b_x2, b_x1, 0, &bounds );
+	if ( distance < 0 ) { // b_x1 < b_x2
 		b_x_max = b_x2;
 		b_x_min = b_x1;
 	}
 
 	b_y_max = b_y1;
 	b_y_min = b_y2;
-	if ( b_y1 < b_y2 ) {
+	GetUnitOffset( &distance, b_y2, b_y1, 1, &bounds );
+	if ( distance < 0 ) { // b_y1 < b_y2
 		b_y_max = b_y2;
 		b_y_min = b_y1;
 	}
@@ -219,37 +320,47 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 	m2 = NULL;
 	q1 = a_x1;
 	q2 = b_x1;
+	
+	VECTOR_VALUE_TYPE a_distance_x, a_distance_y, b_distance_x, b_distance_y;
 
-	if ( (a_x2 - a_x1) != 0 ) {
+	GetUnitOffset( &a_distance_x, a_x1, a_x2, 0, ptr_bounds );
+	GetUnitOffset( &a_distance_y, a_y1, a_y2, 1, ptr_bounds );
+	GetUnitOffset( &b_distance_x, b_x1, b_x2, 0, ptr_bounds );
+	GetUnitOffset( &b_distance_y, b_y1, b_y2, 1, ptr_bounds );
+
+	if ( a_distance_x != 0 ) {
 		m1 = new float;
-		*m1 = (( a_y2 - a_y1 ) / ( a_x2 - a_x1 ));
+		*m1 = ( a_distance_y / a_distance_x );
 		q1 = a_y1 - (*m1)*(a_x1);
 	}
-	if ( (b_x2 - b_x1) != 0 ) {
+	if ( b_distance_x != 0 ) {
 		m2 = new float;
-		*m2 = (( b_y2 - b_y1 ) / ( b_x2 - b_x1 ));
+		*m2 = ( b_distance_y / b_distance_x);
 		q2 = b_y1 - (*m2)*(b_x1);
 	}
 
 	// rette coincidenti o parallele verticali
 	if ( ( m1 == NULL ) && ( m2 == NULL ) ) {
 		if (a_x1 == b_x1) {
+			float distance_bmax_up;
+			float distance_bmax_down;
+			float distance_bmin_up;
+			float distance_bmin_down;
+			
+			GetOffSet( &distance_bmax_up, b_point_max, a_point_max, 1, ptr_bounds );
+			GetOffSet( &distance_bmax_down, b_point_max, a_point_min, 1, ptr_bounds );
+			GetOffSet( &distance_bmin_up, b_point_min, a_point_max, 1, ptr_bounds );
+			GetOffSet( &distance_bmin_down, b_point_min, a_point_min, 1, ptr_bounds );
+			// eiste almeno un y tale che a_y_min <= b_y_min <= a_y_max || a_y_min <= b_y_max <= a_y_max
+			// <=> (a_y_min - b_y_min <= 0 && a_y_max - b_y_min >= 0) || ( a_y_min - b_y_max <= 0 && a_y_max - b_y_max >= 0 )
 
-		float distance_bmax_up;
-		float distance_bmax_down;
-		float distance_bmin_up;
-		float distance_bmin_down;
-		
-		GetOffSet( &distance_bmax_up, b_point_max, a_point_max, 1, ptr_bounds );
-		GetOffSet( &distance_bmax_down, b_point_max, a_point_min, 1, ptr_bounds );
-		GetOffSet( &distance_bmin_up, b_point_min, a_point_max, 1, ptr_bounds );
-		GetOffSet( &distance_bmin_down, b_point_min, a_point_min, 1, ptr_bounds );
-
-		if ( (distance_bmax_down <= 0 && distance_bmax_up >= 0) ||
-			distance_bmin_down <= 0 && distance_bmin_up >= 0 ) {
-				return true;
+			// if ( (distance_bmax_down <= 0 && distance_bmax_up >= 0) || (distance_bmin_down <= 0 && distance_bmin_up >= 0 ) ) {
+			if( (distance_bmin_down <= 0 && distance_bmin_up >= 0) || ( distance_bmax_down <= 0 && distance_bmax_up >= 0 ) ){
+					return true;
 			}
-		else return false;
+			else {
+				return false;
+			}
 			
 			// float distance_a;
 			// float distance_bmax;
@@ -295,7 +406,8 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 
 	// nessuna retta verticale
 	else {
-		xc = (q2 - q1) / (m1 - m2);
+		VECTOR_VALUE_TYPE diff_m, diff_q;
+		xc = (q2 - q1) / (*m1 - *m2);
 		yc = (*m1)*(xc) + q1;
 		point_c = Point2D(xc,yc);
 

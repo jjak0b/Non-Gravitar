@@ -114,7 +114,8 @@ public:
 /**
  * @brief Restituisce true se è stato assegnato un valore al valore puntato da offset, false altrimenti.
  * Tale valore viene ridimensionato in base al limite nella i-esima dimensione di bounds
- * PreCondition: offset != NULL, bounds != NULL
+ * Se bounds == NULL allora esegue semplicemente la differenza: end - start assegnadola a offset
+ * PreCondition: offset != NULL
  * PostCondition: Assegna il valore della differenza tra end e start al valore puntato da offset;
  * 
  * @param offset 
@@ -131,7 +132,7 @@ bool GetUnitOffset( VECTOR_VALUE_TYPE* offset, const VECTOR_VALUE_TYPE start, co
  * @brief come GetUnitOffset(...) ma viene effettutato tra i valori nell'i-esmia dimensione dei vettori
  * PreCondition: start, end, offset != NULL, start.GetSize() = end.GetSize()
  * PostCondition: Assegna il valore della differenza dell'i-esima componente di start e end al valore puntato da offset;
- * se bound != NULL allora tale valore viene ridimensionato in base al limite nella i-esima dimensione di bounds
+ * se bound != NULL allora tale valore viene ridimensionato in base al limite nella i-esima dimensione di bounds, altrimenti offset = end - start
  * 
  * es:
  * offset;

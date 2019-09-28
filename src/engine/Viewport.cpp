@@ -235,38 +235,45 @@ void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
 void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color color ){
 	bool isVertical = false; // la retta è verticale
 	double angular_coeffcient = 0.0; // coeff. angolare della retta
-	if( end.GetX() - start.GetX() != 0){
-		angular_coeffcient = (end.GetY() - start.GetY()) / ( end.GetX() - start.GetX() );
+	Vector bounds = world->GetBounds();
+	VECTOR_VALUE_TYPE
+		x, y,
+		inc_value = 1.0f, // rateo di campionatura
+		distance = 0.0f,
+		distance_x,
+		distance_y;
+		GetOffSet(&distance_x, start, end, BOUND_INDEX_WIDTH, &bounds );
+		GetOffSet(&distance_y, start, end, BOUND_INDEX_HEIGHT, NULL );	
+	VECTOR_VALUE_TYPE
+		distance_x_abs = abs( distance_x ),
+		distance_y_abs = abs( distance_y );
+
+	if( distance_x != 0){
+		angular_coeffcient = (distance_y) / ( distance_x );
 	}
 	else{ // il coeff angolare non è definito per tan( 90° )
 		isVertical = true;
 	}
 
 	Point2D temp_point = Point2D();
-	VECTOR_VALUE_TYPE
-		x, y,
-		inc_value = 1.0f, // rateo di campionatura
-		distance = 0.0f,
-		distance_x = abs( end.GetX() - start.GetX()),
-		distance_y = abs( end.GetY() - start.GetY());
 
 	if( isVertical ){
-		distance = distance_y;
+		distance = distance_y_abs;
 	}
 	else{
-		distance = distance_x;
+		distance = distance_x_abs;
 
 		// se si trova nella stessa ordinata, la campionatura basta di 1 unità
 		// altrimenti la risoluzione di campionamento delle ascisse diventa sempre più precisa quando la retta tende ad essere verticale
-		if( distance_y != 0 ){
-			inc_value = min( (VECTOR_VALUE_TYPE)1.0, distance_x / distance_y );
+		if( distance_y_abs != 0 ){
+			inc_value = min( (VECTOR_VALUE_TYPE)1.0, distance_x_abs / distance_y_abs );
 		}
 	}
 
 	for( VECTOR_VALUE_TYPE i = 0.0; i < distance; i += inc_value ){
 		if( isVertical ){
 			x = 0.0;
-			if( end.GetY() >= start.GetY() ){
+			if( distance_y >= 0 ){
 				y = i;
 			}
 			else{
@@ -274,7 +281,7 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color c
 			}
 		}
 		else{
-			if( end.GetX() >= start.GetX() ){
+			if( distance_x >= 0 ){
 				x = i;
 			}
 			else{

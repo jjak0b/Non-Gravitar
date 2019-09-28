@@ -67,7 +67,6 @@ bool Level::Update( GameEngine *game ){
 	if( shouldUpdateNextFrame ){
 		bool update_result = false;
 
-
 		std::list<Entity*>::iterator entity_it, entity_it_2; 
 		list<Entity*> ents = GetEntities(NULL, false, false);
 		entity_it = ents.begin();
@@ -76,7 +75,7 @@ bool Level::Update( GameEngine *game ){
 		while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
 			entity = *entity_it;
 			if ( IsDefined( entity ) ) {
-				if ( this->IsColliding( entity ) ) {
+				if ( entity->IsColliding( this ) ) {
 					entity->Callback_OnCollide(game, this);
 				}
 			}
@@ -125,8 +124,10 @@ bool Level::Update( GameEngine *game ){
 }
 
 void Level::Draw( ViewPort *view ){
+
+#ifndef DEBUG_COLLISION_DRAWING
 	if (this->shape != NULL) {
-			list<Point2D> surface_points = this->shape->getAbsolutes();
+		list<Point2D> surface_points = this->shape->getAbsolutes();
 		std::list<Point2D>::iterator surface_it, surface_next_it;
 		surface_it = surface_points.begin();
 		Color surface = COLOR_GREEN;
@@ -139,20 +140,20 @@ void Level::Draw( ViewPort *view ){
 			end = *surface_it;
 			DrawLine( view, this, start, end, surface );
 		#ifdef DEBUG
-				const int size_str_buffer = 30;
-				char str_print_buffer[size_str_buffer] = "";
-				Point2D temp;
+			const int size_str_buffer = 30;
+			char str_print_buffer[size_str_buffer] = "";
+			Point2D temp;
 
-				snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
-				temp = start;
-				temp.SetY( temp.GetY() + 3 );
-				view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+			snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
+			temp = start;
+			temp.SetY( temp.GetY() + 3 );
+			view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 
-				snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
-				temp = end;
-				temp.SetY( temp.GetY() + 3 );
-				view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
-		#endif}
+			snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
+			temp = end;
+			temp.SetY( temp.GetY() + 3 );
+			view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+		#endif
 		}
 	}
 
@@ -165,6 +166,38 @@ void Level::Draw( ViewPort *view ){
 	if( IsDefined( this->player ) ){
 		this->player->Draw( view );
 	}
+#else
+	Color c = Color( 255, 255, 0 );
+	std::list<Entity*> ents = GetEntities( NULL, false, false );
+	ents.push_front( this );
+	for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
+		Entity* ent = *it;
+		if( IsDefined( ent  ) ){
+			if( ent->GetShape() != NULL ) {
+				std::list<Point2D> points = ent->GetShape()->getAbsolutes();
+				std::list<Point2D>::iterator it_p = points.begin();
+				Point2D start, end;
+				Point2D first, last;
+				first = *points.begin();
+				while ( !points.empty() && it_p != points.end()) {
+					start = *it_p;
+					last = start;
+					it_p++;
+					if( it_p != points.end() ) {
+						end = *it_p;
+						last = end;
+						view->Draw( NULL, this, start );
+						view->Draw( NULL, this, end );
+						DrawLine(view, this, start, end, c);
+					}
+				}
+				view->Draw( NULL, this, first );
+				view->Draw( NULL, this, last );
+				DrawLine(view, this, last, first, c );
+			}
+		}
+	}
+#endif
 }
 
 void Level::Generate( GameEngine *game ){

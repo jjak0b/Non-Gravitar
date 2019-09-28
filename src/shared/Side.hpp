@@ -4,12 +4,12 @@
 
 class Side {
     protected:
-    Point2D a = Point2D(0,0);
-    Point2D b = Point2D(0,0);
+    Point2D start = Point2D(0,0);
+    Point2D end = Point2D(0,0);
 
     public:
 
-    Side(Point2D a, Point2D b);
-    Point2D getA();
-    Point2D getB();
+    Side(Point2D start, Point2D end);
+    Point2D GetStart();
+    Point2D GetEnd();
 };

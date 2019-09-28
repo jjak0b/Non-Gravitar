@@ -113,19 +113,22 @@ void Vector::round(){
 	}
 }
 
-bool GetUnitOffset( VECTOR_VALUE_TYPE* offset, const VECTOR_VALUE_TYPE start, const VECTOR_VALUE_TYPE end, const unsigned int index_dimension, Vector* bounds ){
+bool GetUnitOffset( VECTOR_VALUE_TYPE* offset, VECTOR_VALUE_TYPE start, VECTOR_VALUE_TYPE end, const unsigned int index_dimension, Vector* bounds ){
 	VECTOR_VALUE_TYPE bound_value = 0;
-	if( offset != NULL && bounds != NULL && bounds->Get(index_dimension, &bound_value ) ){
+	if( offset != NULL ){
 		*offset = end - start;
 		if( bounds != NULL && bounds->Get(index_dimension, &bound_value ) ){
-			if( *offset > 0 && *offset > (bound_value / 2.0 ) ){
-				*offset = bound_value - *offset;
+			if( abs(*offset) > (bound_value / 2.0 ) ) {
+				if( start < end ){
+					end = end - bound_value;
+				}
+				else if( start > end ){
+					start = start - bound_value;
+				}
+				*offset = end - start;
 			}
-			else if( *offset < 0 && (-(*offset)) > (bound_value / 2.0 ) ){
-				*offset = -bound_value - *offset;
-			}
-			return true;
 		}
+		return true;
 	}
 	return false;
 }

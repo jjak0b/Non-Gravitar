@@ -1,14 +1,14 @@
 #include "Side.hpp"
 
-Side::Side(Point2D a, Point2D b) {
-    this->a = a;
-    this->b = b;
+Side::Side(Point2D start, Point2D end) {
+    this->start = start;
+    this->end = end;
 }
 
-Point2D Side::getA() {
-    return this->a;
+Point2D Side::GetStart() {
+    return this->start;
 }
 
-Point2D Side::getB() {
-    return this->b;
+Point2D Side::GetEnd() {
+    return this->end;
 }

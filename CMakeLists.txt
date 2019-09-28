@@ -21,6 +21,8 @@ add_executable(NonGravitar
         src/shared/Shape.hpp
         src/shared/Side.cpp
         src/shared/Side.hpp
+        src/shared/Line2D.cpp
+        src/shared/Line2D.hpp
         src/shared/Utility.cpp
         src/shared/Utility.h
         src/engine/Bitmap.cpp

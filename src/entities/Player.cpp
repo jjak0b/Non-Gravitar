@@ -157,7 +157,12 @@ void Player::Draw( ViewPort *view ){
 
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
-	projectile_origin.Add( direction ); // non lo genero nelle stesse coordinate del giocatore
+	
+	// TODO: dopo tests sostituire temp con dirextion senza Scale
+	Vector temp = direction;
+	temp.Scale(6); // Scalo la direzione per farlo sparare oltre la collision shape
+	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
+
 	Projectile *p = new Projectile( this->world, projectile_origin, direction, 50, "Player_Projectile", this->GetMaxSpeed() + 5 );
 	return p;
 }
@@ -165,6 +170,12 @@ Projectile *Player::Fire( Vector direction ){
 Projectile *Player::Beam( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	projectile_origin.Add( direction );
+	Vector temp = direction;
+
+	// TODO: dopo tests sostituire temp con dirextion senza Scale
+	temp.Scale(6); // Scalo la direzione per farlo sparare oltre la collision shape
+	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
+
 	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile", this->GetMaxSpeed() + 5 );
 	return p;
 }
@@ -209,21 +220,27 @@ Vector Player::GetLastMove(){
 
 void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( collide_ent != NULL ){
-#ifdef DEBUG
+		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
+			return;
+		}
+#ifdef DEBUG_COLLISION_DRAWING 
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
 		Sleep(1000);
 
 #endif
 		// Collisione contro il terreno
 		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
-			this->DoDamage( this->GetHealth() );
+			// TODO: temp
+			// this->DoDamage( this->GetHealth() );
 		}
 		// Collisione contro un proiettile
 		else if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){
 			Projectile *proj = (Projectile*)collide_ent;
-			this->DoDamage( proj->GetDamage());
-#ifdef DEBUG
+			
+#ifdef DEBUG_COLLISION_DRAWING
 			DrawLine( game->view, this->world, proj->GetFireOrigin(), collide_ent->GetOrigin(), COLOR_RED );
+#else
+			this->DoDamage( proj->GetDamage());
 #endif
 		}
 		// Collisione contro un Bunker
