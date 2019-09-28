@@ -150,13 +150,14 @@ void PlanetLevel::Generate( GameEngine *game ){
 	random_Small.SetY(random_Small.GetY() + 1);
 	random_Big.SetY(random_Big.GetY() + 1);
 
-	// this->AddEntity(new BunkerA(this, random_A));
-	// this->AddEntity(new BunkerB(this,random_B));
-	// this->AddEntity(new BunkerC(this,random_C));
+	this->AddEntity(new BunkerA(this, random_A));
+	this->AddEntity(new BunkerB(this,random_B));
+	this->AddEntity(new BunkerC(this,random_C));
 
-	// this->AddEntity(new SmallFuel(this, random_Small));
-	// this->AddEntity(new BigFuel(this, random_Big));
-	this->AddEntity(new BunkerB(this,Point2D(30,30)));	
+	this->AddEntity(new SmallFuel(this, random_Small));
+	this->AddEntity(new BigFuel(this, random_Big));
+	// this->AddEntity(new SmallFuel(this,Point2D(20,20)));
+	// this->AddEntity(new SmallFuel(this,Point2D(20,40)));	
 	
 }
 
