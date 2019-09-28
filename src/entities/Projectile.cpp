@@ -51,11 +51,14 @@ bool Projectile::Update( GameEngine *game ) {
 
 		bool isCollisionDetected = false;
 
-		// Side o = Side(Point2D(this->origin.GetX() - 1, this->origin.GetY()), Point2D(this->origin.GetX() + 1, this->origin.GetY())  );
-		// Side t = Side( Point2D(30,40), Point2D(30,20) );
-		// if ( this->shape->areIntersecting(t, o, this->world )) {
+		// Side proj = Side(Point2D(this->origin.GetX() , this->origin.GetY() ), Point2D(this->origin.GetX(), this->origin.GetY()  ) );
+		// Side side = Side( Point2D(20,20), Point2D(20,40) );
+		// if ( this->shape->areIntersecting(side, proj, this->world )) {
 		// 	isCollisionDetected = true;
 		// }
+		
+
+
 
 
 		// eliminazione per collisione o posizione esterna al pianeta

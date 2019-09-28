@@ -138,21 +138,21 @@ void Level::Draw( ViewPort *view ){
 			surface_it++;
 			end = *surface_it;
 			DrawLine( view, this, start, end, surface );
-		// #ifdef DEBUG
-		// 		const int size_str_buffer = 30;
-		// 		char str_print_buffer[size_str_buffer] = "";
-		// 		Point2D temp;
+		#ifdef DEBUG
+				const int size_str_buffer = 30;
+				char str_print_buffer[size_str_buffer] = "";
+				Point2D temp;
 
-		// 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
-		// 		temp = start;
-		// 		temp.SetY( temp.GetY() + 3 );
-		// 		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+				snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", start.GetX(), start.GetY() );
+				temp = start;
+				temp.SetY( temp.GetY() + 3 );
+				view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 
-		// 		snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
-		// 		temp = end;
-		// 		temp.SetY( temp.GetY() + 3 );
-		// 		view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
-		// #endif}
+				snprintf( str_print_buffer, size_str_buffer, "(%.2f,\n%.2f)", end.GetX(), end.GetY() );
+				temp = end;
+				temp.SetY( temp.GetY() + 3 );
+				view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
+		#endif}
 		}
 	}
 
