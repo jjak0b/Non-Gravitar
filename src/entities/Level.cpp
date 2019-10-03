@@ -127,7 +127,7 @@ void Level::Draw( ViewPort *view ){
 
 #ifndef DEBUG_COLLISION_DRAWING
 	if (this->shape != NULL) {
-		list<Point2D> surface_points = this->shape->getAbsolutes();
+		list<Point2D> surface_points = this->shape->getOffsetPoints();
 		std::list<Point2D>::iterator surface_it, surface_next_it;
 		surface_it = surface_points.begin();
 		Color surface = COLOR_GREEN;

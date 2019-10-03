@@ -103,9 +103,9 @@ bool Entity::IsColliding( Entity *entity ){
 		ptr_bounds = &bounds;
 	}
 	if( this->world != NULL && this->shape != NULL && entity->shape != NULL){
-		isColliding = this->GetShape()->IsShapeColliding( entity->GetShape(), this->world );
+		isColliding = this->GetShape()->IsShapeColliding( this->GetOrigin(), entity->GetOrigin(), entity->GetShape(), this->world );
 		if( !isColliding ){
-			isColliding = entity->GetShape()->IsShapeColliding( this->GetShape(), this->world );
+			isColliding = entity->GetShape()->IsShapeColliding(entity->GetOrigin(), this->GetOrigin(), this->GetShape(), this->world );
 		}
 	}
 	return isColliding;

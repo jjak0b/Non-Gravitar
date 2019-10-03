@@ -36,6 +36,9 @@ void Shape::addOffset( Point2D point, Point2D origin ) {
 list<Point2D> Shape::getAbsolutes() {
   return this->absolute_points;
 }
+list<Point2D> Shape::getOffsetPoints() {
+  return this->offset_points;
+}
 
 void Shape::deleteAbsolutes() {
   this->absolute_points.clear();
@@ -53,18 +56,41 @@ void Shape::UpdateAbsolutes( Point2D origin, Level *world ) {
       
       point = origin;
       point.Add(*it_offset);
-      point = world->GetNormalizedPoint(point);
+      
       (*it_absolute) = point;
     }
   }
 }
 
 // Intersezioni
-bool Shape::IsShapeColliding( Shape* collision_shape, Level *world ) {
-  
+bool Shape::IsShapeColliding( Point2D o1, Point2D o2, Shape* collision_shape, Level *world ) {
+	
+	Vector* ptr_bounds = NULL;
+	Vector bounds;
+	bounds = world->GetBounds();
+	ptr_bounds = &bounds;
+
+	VECTOR_VALUE_TYPE invert;
+	invert = GetOffSet( &invert, o1, o2, 0, ptr_bounds );
+	Point2D temp;
+	if (invert < 0) {
+		temp = o1;
+		o1 = o2;
+		o2 = temp;
+	}
+
+	Vector direction_v;
+	direction_v = BuildDirection( o1, o2, ptr_bounds );
+	Point2D direction = Point2D(0,0);
+	
+	this->UpdateAbsolutes(direction, world);
+	direction.Add(direction_v);
+	this->UpdateAbsolutes(direction, world );
+
 	list<Point2D> collision_points = collision_shape->getAbsolutes();
 	std::list<Point2D>::iterator it = collision_points.begin();
 	bool is_Colliding = false;
+
 
 	while( !is_Colliding && it != collision_points.end() ){
 		if ( this->ray_Casting(*it, world ) ) is_Colliding = true;
@@ -82,9 +108,11 @@ bool Shape::IsShapeColliding( Shape* collision_shape, Level *world ) {
 }
 
 
-bool Shape::ray_Casting(Point2D point, Level *world ) {
+
+	bool Shape::ray_Casting(Point2D point, Level *world ) {
 
   int intersections = 0;
+  float e = 1.0;
   Vector* ptr_bounds = NULL;
 	Vector bounds;
 	bounds = world->GetBounds();
@@ -96,85 +124,46 @@ bool Shape::ray_Casting(Point2D point, Level *world ) {
   float Ymin = this->absolute_points.front().GetY();
   float Ymax = this->absolute_points.front().GetY(); 
         
-std::list<Point2D>::iterator it = this->absolute_points.begin();
+  std::list<Point2D>::iterator it = this->absolute_points.begin();
   it++;
-  VECTOR_VALUE_TYPE difference;
-
   for (it; it !=  this->absolute_points.end(); it++) {
-	GetUnitOffset( &difference, Xmin , (*it).GetX(), 0, ptr_bounds);
-    if ( difference < 0 ) // (*it).GetX() < Xmin
-		Xmin = (*it).GetX();
-	GetUnitOffset( &difference, Xmax , (*it).GetX(), 0, ptr_bounds);
-    if ( difference > 0 ) // (*it).GetX() > Xmax
-		Xmax = (*it).GetX();
-	GetUnitOffset( &difference, Ymin , (*it).GetY(), 1, NULL);
-    if ( difference < 0 ) // (*it).GetY() < Ymin
-		Ymin = (*it).GetY();
-	GetUnitOffset( &difference, Ymax , (*it).GetY(), 1, NULL );
-    if ( difference > 0 ) //  (*it).GetY() > Ymax
-		Ymax = (*it).GetY();
+
+    if ( (*it).GetX() < Xmin ) Xmin = (*it).GetX();
+    if ( (*it).GetX() > Xmax ) Xmax = (*it).GetX();
+    if ( (*it).GetY() < Ymin ) Ymin = (*it).GetY();
+    if ( (*it).GetY() > Ymax ) Ymax = (*it).GetY();
+
   }
-	Point2D point_min = Point2D( Xmin, Ymin );
-	Point2D point_max = Point2D( Xmax, Ymax );
 
-	VECTOR_VALUE_TYPE
-		distance_X_point_to_X_min,
-		distance_X_point_to_X_max,
-		distance_Y_point_to_Y_min,
-		distance_Y_point_to_Y_max;
+  if (point.GetX() < Xmin || point.GetX() > Xmax || point.GetY() < Ymin || point.GetY() > Ymax) {
+    return false;
+  }
+        
+	// conta le intersezioni del ray con i lati del poligono
+  Point2D ray_A = Point2D( ( Xmin - e/point.GetY() ) , point.GetY());
+  Side ray = Side(ray_A, point);
+        
 
-		GetOffSet(&distance_X_point_to_X_min, point_min, point, BOUND_INDEX_WIDTH, ptr_bounds ); // point.GetX() < Xmin -> point.GetX() - Xmin < 0
-		GetOffSet(&distance_X_point_to_X_max, point_max, point, BOUND_INDEX_WIDTH, ptr_bounds ); // point.GetX() > Xmax -> point.GetX() - Xmax > 0
-		GetOffSet(&distance_Y_point_to_Y_min, point_min, point, BOUND_INDEX_HEIGHT, NULL ); // point.GetY() < Ymin -> point.GetY() - Ymin < 0
-		GetOffSet(&distance_Y_point_to_Y_max, point_max, point, BOUND_INDEX_HEIGHT, NULL ); // point.GetY() > Ymax -> point.GetY() - Ymax > 0
-		if (distance_X_point_to_X_min < 0 || distance_X_point_to_X_max > 0 || distance_Y_point_to_Y_min < 0 || distance_Y_point_to_Y_max > 0) {
-			return false;
-		}
+  it =this->absolute_points.begin();
+      
+  Point2D start, end;
+  while( it != this->absolute_points.end() ){
+    start = *it;
+    it++;
+    end = *it;
+    Side side = Side( start, end );
+    if (_areIntersecting( side, ray, world ) ) intersections ++;   }
 
-		bool inside = false;
-		float xp0, yp0, xp1, yp1, x, y;
-		VECTOR_VALUE_TYPE
-			distance_X_end_to_X_start;
+    // Se le intersezioni sono dispari il punto è all'interno del poligono
+    if ((intersections & 1) == 1) {
+    // Inside of polygon
+      return true;
+    } else {
+      // Outside of polygon
+      return false;
+    }
+}  
 
-		// 	distance_yp0_to_y, distance_yp1_to_y, 
-		// 	distance_xp1_to_xp0, distance_y_to_yp0, distance_yp1_to_yp0,
-		// 	distance_cross_to_x;
-		x = point.GetX();
-		y = point.GetY();
-		
-		it =this->absolute_points.begin();
-		Point2D start, end;
-		while( it != this->absolute_points.end() ){
-			start = *it;
-			it++;
-			end = *it;
-			Side side = Side( start, end );
-			
-			xp0 = start.GetX();
-			yp0 = start.GetY();
-			xp1 = end.GetX();
-			yp1 = end.GetY();
-
-			// GetOffSet(&distance_yp0_to_y, point, start, BOUND_INDEX_HEIGHT, NULL ); // yp0 <= y -> yp0 - y <= 0
-			// GetOffSet(&distance_yp1_to_y, point, end, BOUND_INDEX_HEIGHT, NULL ); // yp1 > y -> yp1 - y > 0
-			GetOffSet(&distance_X_end_to_X_start, start, end, BOUND_INDEX_WIDTH, ptr_bounds ); // end.getX() - start.getX()
-			
-			if ((yp0 <= y) && (yp1 > y) || (yp1 <= y) && (yp0 > y))
-				{
-					// If so, get the point where it crosses that line. This is a simple solution
-					// to a linear equation. Note that we can't get a division by zero here -
-					// if yp1 == yp0 then the above if be false.
-					float cross = ((distance_X_end_to_X_start) * (y - yp0) / (yp1 - yp0) + xp0);
-					//cross.SetX((distance_X_end_to_X_start) * (y - yp0) / (yp1 - yp0) + xp0);
-					//GetOffSet(&distance_X_end_to_X_start, point, cross, BOUND_INDEX_WIDTH, ptr_bounds ); // cross < x -> cross - x < 0
-					// Finally check if it crosses to the left of our test point. You could equally
-					// do right and it should give the same result.
-					if (cross < x)
-						inside = !inside;
-				}
-			}
-    return inside;
-	}  
 
 
 // bool Shape::ray_Casting(Point2D point, Level *world ) {
@@ -241,7 +230,7 @@ std::list<Point2D>::iterator it = this->absolute_points.begin();
 // 		it++;
 // 		end = *it;
 // 		Side side = Side( start, end );
-// 		if (areIntersecting ( side, ray, world) )
+// 		if (_areIntersecting( side, ray, world) )
 // 			intersections ++;
 // 	}
 
@@ -262,7 +251,7 @@ bool AreIntersecting( Side a, Side b, Level *world  ){
 	return l1.IsIntersecting( l2 );
 }
 
-bool _areIntersecting( Side v1, Side v2, Level *world ) {
+bool Shape::_areIntersecting( Side v1, Side v2, Level *world ) {
     
 	Vector bounds = world->GetBounds();
     float v1x1 = v1.GetStart().GetX();
@@ -281,8 +270,10 @@ bool _areIntersecting( Side v1, Side v2, Level *world ) {
     // Convert vector 1 to a line (line 1) of infinite length.
     // We want the line in linear equation standard form: A*x + B*y + C = 0
     // See: http://en.wikipedia.org/wiki/Linear_equation
-    GetUnitOffset(&a1, v1y1, v1y2, 1, NULL );// a1 = v1y2 - v1y1;
-    GetUnitOffset(&b1, v1x2, v1x1, 0, &bounds ); // b1 = v1x1 - v1x2;
+    //GetUnitOffset(&a1, v1y1, v1y2, 1, NULL );// 
+	a1 = v1y2 - v1y1;
+    //GetUnitOffset(&b1, v1x2, v1x1, 0, &bounds ); // 
+	b1 = v1x1 - v1x2;
     c1 = (v1x2 * v1y1) - (v1x1 * v1y2);
 
     // Every point (x,y), that solves the equation above, is on the line,
@@ -306,8 +297,10 @@ bool _areIntersecting( Side v1, Side v2, Level *world ) {
     // started or after it ended. To know for sure, we have to repeat the
     // the same test the other way round. We start by calculating the 
     // infinite line 2 in linear equation standard form.
-    GetUnitOffset(&a2, v2y1, v2y2, 1, NULL ); // a2 = v2y2 - v2y1;
-    GetUnitOffset(&b2, v2x2, v2x1, 0, &bounds ); // b2 = v2x1 - v2x2;
+    //GetUnitOffset(&a2, v2y1, v2y2, 1, NULL ); // 
+	a2 = v2y2 - v2y1;
+    //GetUnitOffset(&b2, v2x2, v2x1, 0, &bounds ); //
+	b2 = v2x1 - v2x2;
     c2 = (v2x2 * v2y1) - (v2x1 * v2y2);
 
     // Calculate d1 and d2 again, this time using points of vector 1.
@@ -539,4 +532,3 @@ bool Shape::areIntersecting( Side a, Side b, Level *world) {
 
 		return false; 
 	}
-
