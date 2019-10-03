@@ -37,9 +37,7 @@ class PlanetLevel : public Level{
 	 */
 	PlanetLevel( PlanetEntity *planet_entity = NULL, Vector bounds = Vector( 2 ) );
 
-	virtual ~PlanetLevel();
-
-	virtual void Delete();
+	virtual void Delete( GameEngine* game );
 	
 	/**
 	 * @brief Restituisce il riferrimento all'entità pianeta a cui questo livello è associato

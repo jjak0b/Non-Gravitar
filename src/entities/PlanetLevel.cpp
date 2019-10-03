@@ -27,16 +27,12 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level(
 	this->shape = new Shape();
 }
 
-PlanetLevel::~PlanetLevel(){
-	this->Delete();
-}
-
-void PlanetLevel::Delete(){
+void PlanetLevel::Delete( GameEngine* game ){
 	if( this->planet_entity != NULL ){
 		this->planet_entity->SetPlanetLevel( NULL );
 		this->planet_entity = NULL;
 	}
-	this->Level::Delete();
+	Level::Delete( game );
 }
 
 PlanetEntity *PlanetLevel::GetPlanetEntity(){

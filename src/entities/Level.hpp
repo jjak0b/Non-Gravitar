@@ -22,6 +22,9 @@ public:
 	 * PostCondition: se player != NULL allora esso non viene reinstanziato
 	 */
 	Level( Vector _bounds = Vector( 2 ), const char _className[] = "Level" );
+	/**
+	 * PreCondition: requisiti Entity::~Entity()
+	 */
 	virtual ~Level();
 
 	/**
@@ -102,7 +105,7 @@ public:
 	 * @brief Elimina le entità nel mondo, deallocando le risorse occupate
 	 * PostCondition: il giocatore non verrà eliminato, quindi deve essere rimosso prima di richiamare questo metodo
 	 */
-	virtual void Delete();
+	virtual void Delete( GameEngine* game );
 
 	/**
 	 * @brief Restituisce la lista di puntatori alle entità presenti nel mondo (incluso il giocatore in essa ), in base alle seguenti condizioni

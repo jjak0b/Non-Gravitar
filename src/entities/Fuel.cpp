@@ -31,7 +31,7 @@ bool Fuel::Update(GameEngine *game) {
 	// 	}
 	// }
 
-	if (!update_result) this->Delete();
+	if (!update_result) this->Delete( game );
 	return update_result;
 }
 

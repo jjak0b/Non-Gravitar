@@ -17,6 +17,7 @@ GameEngine::GameEngine( unsigned int screen_width, unsigned int screen_height ){
 	this->deltaTime = 0.0;
 	this->currentLevel = NULL;
 	this->view = new ViewPort( screen_width, screen_height, Point2D(0,0) );
+	this->garbage_collector = list<Entity*>();
 }
 
 bool GameEngine::update( double deltaTime, char key_pressed, unsigned width, unsigned height ){
@@ -93,7 +94,7 @@ bool GameEngine::frame( double dtime ){
 		last_loaded_level = NULL;
 		
 		if( player != NULL ){
-			player->Delete();
+			player->Delete( this );
 			player = NULL;
 		}
 
@@ -139,96 +140,36 @@ void GameEngine::UnloadLevel( Level *last_loaded_level ){
 		this->SetCurrentLevel( NULL ); // poichè è lo stesso livello, dealloco l'ultimo livello specificato
 	}
 	else if( this->GetCurrentLevel() != NULL ){
-		this->GetCurrentLevel()->Delete();
+		this->GetCurrentLevel()->Delete( this );
 		this->SetCurrentLevel( NULL );
 	}
 
 	if( last_loaded_level != NULL ){
-		last_loaded_level->Delete();
+		last_loaded_level->Delete( this );
 		last_loaded_level = NULL;
 	}
 }
 
+void GameEngine::AddGarbage(Entity *entity) {
+    if( entity != NULL ){
+        if( !entity->IsGarbage() ){
+            entity->Delete( this );
+        }
+        this->garbage_collector.push_front( entity );
+    }
+}
+
 void GameEngine::ClearGarbageCollector(){
-	list<Entity*>::iterator entity_iterator = this->garbage_collector.begin();
-	while( !this->garbage_collector.empty() && entity_iterator != this->garbage_collector.end() ){
-		delete *entity_iterator;
-		this->garbage_collector.erase( entity_iterator );
-		entity_iterator++;
+	Entity *entity;
+	while( !this->garbage_collector.empty() ){
+		entity = this->garbage_collector.back();
+		delete entity;
+		this->garbage_collector.pop_back();
 	}
 }
 
 bool IsDefined( Entity *entity ){
 	return entity != NULL && !entity->IsGarbage();
-}
-
-bool EntityUpdateSelector( GameEngine *game, Entity *entity ){
-	bool update_result = false;
-	if( IsDefined( entity ) ){
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			Player *ent = (Player*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Level" ) ){
-			Level *ent = (Level*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "PlanetEntity" ) ){
-			PlanetEntity *ent = (PlanetEntity*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "PlanetLevel" ) ){
-			PlanetLevel *ent = (PlanetLevel*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "SolarSystem" ) ){
-			SolarSystem *ent = (SolarSystem*)entity;
-			update_result = ent->Update( game );
-		}
-		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-			Projectile *ent = (Projectile*)entity;
-			update_result = ent->Update( game );
-		}
-		// TODO: aggiungere altri tipi di Update
-		else{
-			update_result = entity->Update( game );
-		}
-	}
-	
-	return update_result;
-}
-
-void EntityDrawSelector( ViewPort *view, Entity *entity ){
-	if( IsDefined( entity ) ){
-		if( !strcmp( entity->GetClassname(), "Player" ) ){
-			Player *ent = (Player*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "Level" ) ){
-			Level *ent = (Level*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "PlanetEntity" ) ){
-			PlanetEntity *ent = (PlanetEntity*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "PlanetLevel" ) ){
-			PlanetLevel *ent = (PlanetLevel*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "SolarSystem" ) ){
-			SolarSystem *ent = (SolarSystem*)entity;
-			ent->Draw( view );
-		}
-		else if( !strcmp( entity->GetClassname(), "Projectile" ) ){
-			Projectile *ent = (Projectile*)entity;
-			ent->Draw( view );
-		}
-		// TODO: aggiungere altri tipi di Draw
-		else{
-			entity->Draw( view );
-		}
-	}
 }
 
 bool OsSupportAnsiEscape(){

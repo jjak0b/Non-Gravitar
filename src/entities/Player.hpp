@@ -30,7 +30,7 @@ class Player : public DynamicEntity, public Damageable {
 
 	virtual ~Player();
 
-	virtual void Delete();
+	virtual void Delete( GameEngine* game );
 
 	virtual bool Update( GameEngine *game );
 

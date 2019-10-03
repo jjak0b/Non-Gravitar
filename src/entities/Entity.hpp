@@ -21,6 +21,10 @@ protected:
 
 public:
 	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "", Shape *shape = NULL );
+
+	/**
+	 * PreCondition: chiamare prima Delete( GameEngine* ) prima di deallocare tramite costruttore.
+	 */
 	virtual ~Entity();
 
 	/**
@@ -89,7 +93,7 @@ public:
 	 * @brief prepara questa entità per essere eliminata,
 	 * PostCondition: dopo essere chiamata deve effettuare il delete comunque per essere deallocata
 	 */
-	virtual void Delete();
+	virtual void Delete( GameEngine* game );
 
 	/**
 	 * @brief Verifica se questa entità sta collidendo con quella specificata,

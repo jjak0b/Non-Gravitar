@@ -38,12 +38,14 @@ Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( w
 }
 
 Player::~Player(){
-	this->Delete();
+	if( moveOverride != NULL ){
+	    delete moveOverride;
+	}
 }
 
-void Player::Delete(){
-	DynamicEntity::Delete();
+void Player::Delete(GameEngine* game ){;
 	this->SetMoveOverride( NULL );
+    Entity::Delete( game );
 }
 
 bool Player::Update( GameEngine *game ){
@@ -62,12 +64,14 @@ bool Player::Update( GameEngine *game ){
 
 		if( IsDefined( this ) ){
 			if( !update_result || this->GetFuel() <= 0 || this->GetHealth() <= 0 ){
-				this->Delete();
+                update_result = false;
 			}
 		}
 
-		update_result = IsDefined( this );
-		if( update_result ) {
+		if ( !update_result ){
+            this->Delete( game );
+		}
+		else{
 			INPUT_TYPE input = game->GetkeyPressed();
 			Vector direction;
 

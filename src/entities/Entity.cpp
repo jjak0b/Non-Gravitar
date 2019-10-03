@@ -21,7 +21,6 @@ Entity::~Entity(){
 		delete this->shape;
 		this->shape = NULL;
 	}
-	this->Entity::Delete();
 
 	if( this->str_classname != NULL ){
 		delete this->str_classname;
@@ -34,13 +33,11 @@ Entity::~Entity(){
 	}
 }
 
-void Entity::Delete(){
-	if( !this->IsGarbage() ){
+void Entity::Delete(GameEngine* game ){
+	if( !this->garbage ){
 		this->SetWorld( NULL );
 		this->garbage = true;
-		//game->AddGarbage(this);
-		// TODO: Aggiungere entità al garbage collector
-		
+		game->AddGarbage(this);
 	}
 }
 
@@ -76,7 +73,7 @@ char* Entity::GetClassname(){
 bool Entity::Update( GameEngine *game ){
 
 	if( this->shouldDeleteOnUpdate ){
-		this->Delete();
+		this->Delete( game );
 	}
 
 	bool update_result = IsDefined(this);

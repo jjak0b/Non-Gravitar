@@ -52,7 +52,7 @@ bool SolarSystem::Update( GameEngine *game ){
 				// faccio notare all'engine che deve cambiare livello
 				this->player->SetMoveOverride( NULL );
 				this->GetOutPlayer();
-				this->Delete();
+				this->Delete( game );
 				game->SetCurrentLevel( NULL );
 				update_result = false;
 			}

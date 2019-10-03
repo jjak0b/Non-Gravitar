@@ -63,14 +63,16 @@ bool Projectile::Update( GameEngine *game ) {
 
 		// eliminazione per collisione o posizione esterna al pianeta
 		if( isCollisionDetected || this->IsOutOfTheWorld() ){
-			this->Delete();
 			update_result = false;
 		}
 
 		// eliminazione per tempo di vita
 		else if( game->GetTime() > this->deathtime ) {
-			this->Delete();
 			update_result = false;
+		}
+
+		if( !update_result ){
+            this->Delete( game );
 		}
 	}
 

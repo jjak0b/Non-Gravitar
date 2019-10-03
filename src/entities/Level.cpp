@@ -23,7 +23,7 @@ Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(
 }
 
 Level::~Level(){
-	this->Delete();
+    this->entities.clear();
 }
 
 void Level::SetOrigin(){} // La ridefinizione serve per non renderla visibile esternamente
@@ -255,9 +255,7 @@ void Level::AddEntity( Entity *entity ){
 // 	return false;
 // }
 
-void Level::Delete(){
-	this->Entity::Delete();
-	
+void Level::Delete( GameEngine* game ){
 	this->GetOutPlayer();
 
 	// pulisce i dati riigardanti la superficie
@@ -267,13 +265,14 @@ void Level::Delete(){
 	list<Entity*>::iterator entity_iterator = this->entities.begin();
 	while( !this->entities.empty() && entity_iterator != this->entities.end() ){
 		if( *entity_iterator != NULL ){
-			(*entity_iterator)->Delete();
+			(*entity_iterator)->Delete( game );
 			entity_iterator = this->entities.erase( entity_iterator );
 		}
 		else{
 			entity_iterator++;
 		}
-	}	
+	}
+	Entity::Delete( game );
 }
 
 list<Entity*> Level::GetEntities( const char *className, bool b_exclude, bool b_search_className_as_subString){

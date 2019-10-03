@@ -43,13 +43,16 @@ class PlanetEntity : public Entity{
 	public:
 	PlanetEntity( SolarSystem *_world = NULL, Point2D origin = Point2D(0,0), Bitmap *texture = NULL, unsigned int _radius = 4, Vector _bounds = Vector( 2 ) );
 
+	/**
+	 * PreCondition: requisiti Entity::~Entity()
+	 */
 	virtual ~PlanetEntity();
 
 	/**
 	 * @brief Dealloca le risorse occupate da questa'entità ( Vedere anche Entity::Delete() )
 	 * PostCondition: il giocatore nel livello di questo pianeta non viene deallocato
 	 */
-	virtual void Delete();
+	virtual void Delete( GameEngine* game );
 	
 	PlanetLevel *GetPlanetLevel();
 

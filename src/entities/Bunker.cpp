@@ -9,7 +9,7 @@ Bunker::Bunker( Level *world, Point2D origin, double health, const char classnam
 bool Bunker::Update(GameEngine* game) {
 	bool update_result = this->Entity::Update( game );
 	if (health <= 0) update_result = false;
-	if (!update_result) this->Delete();
+	if (!update_result) this->Delete( game );
     return update_result;
 }
 

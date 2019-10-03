@@ -19,17 +19,15 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture,
 	this->shape = new Shape();
 }
 
-PlanetEntity::~PlanetEntity(){
-	this->Delete(); // aggiungerà eventualmente il livello associato al garbage collector
-}
+PlanetEntity::~PlanetEntity(){}
 
-void PlanetEntity::Delete(){
+void PlanetEntity::Delete( GameEngine* game ){
 	if( !this->IsGarbage() ){
 		if( IsDefined( this->planet_level ) ){
-			this->planet_level->Delete(); // questo livello verrà aggiunto al garbage collector
+			this->planet_level->Delete( game ); // questo livello verrà aggiunto al garbage collector
 			this->planet_level = NULL;
 		}
-		this->Entity::Delete();
+		this->Entity::Delete( game );
 	}
 }
 
@@ -49,7 +47,7 @@ bool PlanetEntity::Update( GameEngine *game ){
 		Player *player = this->GetWorld()->GetPlayer();
 		player->AddScore( PLAYER_SCORE_PLANET_DESTROYED );
 		update_result = false;
-		this->Delete(); // Il Planetlevel associato e questa entità non saranno più significativi
+		this->Delete( game ); // Il Planetlevel associato e questa entità non saranno più significativi
 	}
 	/*else if( update_result ){
 		// Mi interessa verificare solo la collisione con l'entità giocatore per verificare se vuole entrare nel pianeta
