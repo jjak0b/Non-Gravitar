@@ -19,6 +19,7 @@
 #include "SmallFuel.hpp"
 #include "BigFuel.hpp"
 #include <cstring>
+#include "shared/Utility.h"
 
 
 
@@ -88,10 +89,10 @@ bool PlanetLevel::IsFree(){
 
 void PlanetLevel::Generate( GameEngine *game ){
 	VECTOR_VALUE_TYPE
-		min_point_distance_x = 4,
-		max_point_distance_x = 15,
+		min_point_distance_x = 7,
+		max_point_distance_x = 17,
 		min_point_distance_y = 3,
-		max_point_distance_y = 8,
+		max_point_distance_y = 11,
 		max_point_height = (6.0/10.0)*this->GetMaxHeight(),
 		min_point_height = 3;
 
@@ -99,34 +100,44 @@ void PlanetLevel::Generate( GameEngine *game ){
 		offset_x,
 		offset_y;
 
-	Point2D start = Point2D();
-	Point2D end = start;
-	end.SetX( this->GetMaxWidth() - 1 );
+	VECTOR_VALUE_TYPE half_width = this->GetMaxWidth() / 2;
+	VECTOR_VALUE_TYPE linking_height = RANDOM_RANGE( min_point_distance_y, max_point_distance_y );
+
+	Point2D start = Point2D( -half_width, linking_height );
+	Point2D end = Point2D( half_width - 1 , linking_height );
 	Vector direction = Vector( start.GetSize() );
 
 	// temp è il punto che viene generato ed aggiunto alla lista
 	list<Point2D> surface;
-	Point2D temp = start;
+	Point2D
+		temp = start,
+		old_temp = temp;
+
+
 	while( temp.GetX() < end.GetX() ){
-		this->shape->addOffset( temp, origin );
-		//surface.push_front(temp);
-		offset_x = min_point_distance_x + (rand() % (int)(max_point_distance_x - min_point_distance_x));
-		offset_y = min_point_distance_y + (rand() % (int)(max_point_distance_y - min_point_distance_y));
-		if( rand() % 100 < 50 ){ // scelgo se variare l'offset del punto in positivo o in negativo
-			offset_y *= -1;
-		}
-		direction.Set( 1, offset_y );
-		direction.Set( 0, offset_x );
-		temp.Add( direction );
-		// temp.SetY( min_point_height + (temp.GetY() % (int)(max_point_height - min_point_distance_y) ) );
-		// l'ordinata deve essere compresa tra min_point_height e max_point_height
-		temp.SetY(
-				max(
-					min( temp.GetY(), max_point_height ),
-					min_point_height ) );
+		do {
+			this->shape->addOffset(temp, origin);
+			//surface.push_front(temp);
+			offset_x = RANDOM_RANGE(min_point_distance_x, max_point_distance_x);
+			offset_y = min_point_height + RANDOM_RANGE(min_point_distance_y, max_point_distance_y);
+			if (rand() % 100 < 50) { // scelgo se variare l'offset del punto in positivo o in negativo
+				offset_y *= -1;
+			}
+
+			direction.Set(0, offset_x);
+			direction.Set(1, offset_y);
+
+			temp.Add(direction);
+
+			// l'ordinata deve essere compresa tra min_point_height e max_point_height
+			temp.SetY(
+					max(
+							min(temp.GetY(), max_point_height),
+							min_point_height));
+		}while( temp.GetY() == old_temp.GetY() );
+		old_temp = temp;
 	}
 	this->shape->addOffset( end, origin );
-	//surface.push_front(end);
 	//this->shape->addAbsoluteList(surface);
 
 	Point2D random_A = RandomPoint();

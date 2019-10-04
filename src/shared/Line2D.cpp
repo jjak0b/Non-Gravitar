@@ -8,34 +8,49 @@ Line2D::Line2D( Side segment, Vector* bounds ): Side( segment.GetStart(), segmen
 void Line2D::evaluate(Vector* bounds ){
 	VECTOR_VALUE_TYPE difference_x, difference_y, temp;
 	GetOffSet( &difference_x, start, end, 0, bounds );
-	GetOffSet( &difference_y, start, end, 1, NULL );
+	GetOffSet( &difference_y, start, end, 1, bounds );
 
-	isVertical = true;
+
 	if ( difference_x != 0 ) {
 		m = difference_y / difference_x ;
-		GetUnitOffset(&q, m * start.GetX(), start.GetX(), 1, NULL ); // y - fx()
+		GetUnitOffset(&q, m * start.GetX(), start.GetX(), 1, bounds ); // y - fx()
 		isVertical = false;
 	}
-}
+	else{
+		isVertical = true;
+	}
 
-bool Line2D::GetM( VECTOR_VALUE_TYPE* value ){
-	if( isVertical ){
-		return false;
+	if( difference_y != 0 ){
+		m_inverse = difference_x / difference_y ;
+		isHorizontal = false;
 	}
 	else{
-		*value = m;
-		return true;
+		isHorizontal = true;
 	}
 }
 
-/**
- * @brief restituisce il valore dell'ordinata all'origine, assegnandolo a value
- * @PreCondition: value != NULL, bounds != NULL
- * @param value 
- * @param bounds : Limiti degli assi
- * @return true se a value è stato assegnato un valore -> la retta non è verticale
- * @return false altrimenti -> M è nullo quindi la retta à verticale
- */
+bool Line2D::GetM( VECTOR_VALUE_TYPE* value, bool inverse ){
+
+	if( inverse ){
+		if( isHorizontal ){
+			return false;
+		}
+		else{
+			*value = m_inverse;
+			return true;
+		}
+	}
+	else{
+		if( isVertical ){
+			return false;
+		}
+		else{
+			*value = m;
+			return true;
+		}
+	}
+}
+
 bool Line2D::GetQ( VECTOR_VALUE_TYPE* value ){
 	if( isVertical ){
 		return false;
@@ -46,23 +61,15 @@ bool Line2D::GetQ( VECTOR_VALUE_TYPE* value ){
 	}
 }
 
-/**
- * @brief Indica se la retta è verticale in base al suo coefficiente angolare
- * 
- * @return true 
- * @return false 
- */
 bool Line2D::IsVertical(){
 	return isVertical;
 }
 
-/**
- * @brief Indica se questa retta infinita interseca la retta infinita line
- * 
- * @param line 
- * @return true 
- * @return false 
- */
+
+bool Line2D::IsHorizontal(){
+	return isHorizontal;
+}
+
 bool Line2D::IsIntersecting( Line2D line ){
 
 	if( this->isVertical && line.isVertical ){

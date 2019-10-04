@@ -5,6 +5,9 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
+#include <cmath>
+#define RANDOM_RANGE( min, max ) ( (min) + (rand() % (int)( (max) - (min) )))
+
 namespace Utility {
 
 	/**

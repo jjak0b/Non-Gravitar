@@ -227,11 +227,11 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
 			return;
 		}
-#ifdef DEBUG_COLLISION_DRAWING 
+// #ifdef DEBUG_COLLISION_DRAWING
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
-		Sleep(1000);
+		// Sleep(1000);
 
-#endif
+// #endif
 		// Collisione contro il terreno
 		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
 			// TODO: temp
@@ -249,7 +249,8 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		}
 		// Collisione contro un Bunker
 		else if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Bunker", true ) ){
-			this->DoDamage( this->GetHealth() );
+			// this->DoDamage( this->GetHealth() );
+			Sleep(1000);
 		}
 		else if( !strcmp( collide_ent->GetClassname(), "PlanetEntity" ) ) {
 			PlanetEntity* planet = (PlanetEntity*)collide_ent;

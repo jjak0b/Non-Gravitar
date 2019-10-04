@@ -77,8 +77,10 @@ bool Entity::Update( GameEngine *game ){
 	}
 
 	bool update_result = IsDefined(this);
-	
-	if ( IsDefined(this) && this->shape != NULL  ) this->shape->UpdateAbsolutes(this->GetOrigin(), this->GetWorld());
+
+	if ( IsDefined(this) && this->shape != NULL  ) {
+		this->shape->UpdateAbsolutes(this->GetOrigin() );
+	}
 	return update_result;
 }
 
@@ -101,11 +103,12 @@ bool Entity::IsColliding( Entity *entity ){
 	if( this->GetWorld() != NULL ) {
 		bounds = this->GetWorld()->GetBounds();
 		ptr_bounds = &bounds;
+		ptr_bounds->Set( 1, 0 );
 	}
 	if( this->world != NULL && this->shape != NULL && entity->shape != NULL){
-		isColliding = this->GetShape()->IsShapeColliding( this->GetOrigin(), entity->GetOrigin(), entity->GetShape(), this->world );
+		isColliding = this->GetShape()->IsShapeColliding( this->GetOrigin(), entity->GetOrigin(), entity->GetShape(), ptr_bounds );
 		if( !isColliding ){
-			isColliding = entity->GetShape()->IsShapeColliding(entity->GetOrigin(), this->GetOrigin(), this->GetShape(), this->world );
+			isColliding = entity->GetShape()->IsShapeColliding(entity->GetOrigin(), this->GetOrigin(), this->GetShape(), ptr_bounds );
 		}
 	}
 	return isColliding;

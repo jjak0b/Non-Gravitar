@@ -19,6 +19,7 @@ Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(
 	}
 	this->bounds = _bounds;
 	this->player = NULL;
+	this->SetWorld( this );
 
 }
 
@@ -81,6 +82,8 @@ bool Level::Update( GameEngine *game ){
 			}
 			entity_it++;
 		}
+		if( this->GetShape() != NULL )
+			this->GetShape()->UpdateAbsolutes( origin );
 
 		Entity *entity2 = NULL;
 		entity_it = ents.begin();
@@ -93,7 +96,16 @@ bool Level::Update( GameEngine *game ){
 					entity2->Callback_OnCollide(game, entity );
 
 				}
+
+				if( entity->GetShape() != NULL ){
+					entity->GetShape()->UpdateAbsolutes( entity->GetOrigin() );
+				}
+				if( entity2->GetShape() != NULL ){
+					entity2->GetShape()->UpdateAbsolutes( entity2->GetOrigin() );
+				}
+
 				entity_it_2++;
+
 			}
 			entity_it++;
 		}
@@ -136,10 +148,12 @@ void Level::Draw( ViewPort *view ){
 		// TODO: ricontrollare
 		while( surface_it != surface_points.end() ){
 			start = *surface_it;
+			start = this->GetNormalizedPoint( start );
 			surface_it++;
 			end = *surface_it;
+			end = this->GetNormalizedPoint( end );
 			DrawLine( view, this, start, end, surface );
-		#ifdef DEBUG
+/*		#ifdef DEBUG
 			const int size_str_buffer = 30;
 			char str_print_buffer[size_str_buffer] = "";
 			Point2D temp;
@@ -153,7 +167,7 @@ void Level::Draw( ViewPort *view ){
 			temp = end;
 			temp.SetY( temp.GetY() + 3 );
 			view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
-		#endif
+		#endif*/
 		}
 	}
 
@@ -175,25 +189,18 @@ void Level::Draw( ViewPort *view ){
 		if( IsDefined( ent  ) ){
 			if( ent->GetShape() != NULL ) {
 				std::list<Point2D> points = ent->GetShape()->getAbsolutes();
+				Point2D
+					start = points.back(),
+					end;
 				std::list<Point2D>::iterator it_p = points.begin();
-				Point2D start, end;
-				Point2D first, last;
-				first = *points.begin();
 				while ( !points.empty() && it_p != points.end()) {
-					start = *it_p;
-					last = start;
+					end = *it_p;
+					view->Draw( NULL, this, start );
+					view->Draw( NULL, this, end );
+					DrawLine(view, this, start, end, c );
+					start = end;
 					it_p++;
-					if( it_p != points.end() ) {
-						end = *it_p;
-						last = end;
-						view->Draw( NULL, this, start );
-						view->Draw( NULL, this, end );
-						DrawLine(view, this, start, end, c);
-					}
 				}
-				view->Draw( NULL, this, first );
-				view->Draw( NULL, this, last );
-				DrawLine(view, this, last, first, c );
 			}
 		}
 	}
