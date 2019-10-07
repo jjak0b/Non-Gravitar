@@ -45,8 +45,8 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 			// correggo le coordinate relative alla view, per far si che la texture sia centrata rispetto alla coordinata
 			// ( cioè per partire a copiare da in alto a sinistra;
 			Vector offset_from_bitmap_point_to_texture_top_left = Vector( point_on_bitmap.GetSize() );
-			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns()/2.0) );
-			offset_from_bitmap_point_to_texture_top_left.Set( 1, 1 - (int)(texture->GetRows()) ); // l'1 è riferito alla riga "extra" della viewport che contiene 2 caratteri
+			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns() / 2 ) );
+			offset_from_bitmap_point_to_texture_top_left.Set( 1, -(int)(texture->GetRows() / 2 ) ); // l'1 è riferito alla riga "extra" della viewport che contiene 2 caratteri
 			point_on_bitmap.Add( offset_from_bitmap_point_to_texture_top_left );
 
 			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
@@ -98,7 +98,7 @@ void ViewPort::Print( const char str_text[], Point2D view_point, Color color ){
 			
 		}
 		else{
-			this->SetBitmapData( value, color, point_cursor );
+			SetBitmapData( this->data, value, color, point_cursor );
 			point_cursor.SetX( point_cursor.GetX() + 1 );
 		}
 		
@@ -151,7 +151,7 @@ bool SetPixel( Bitmap* bitmap, Point2D view_point, Color color ){
 			value = CHAR_PIXEL_UP_DOWN;
 		}
 	}
-	else if( current_pixel == CHAR_PIXEL_EMPTY ){
+	else {//if( current_pixel == CHAR_PIXEL_EMPTY ){
 		if( b_isPixelDown ){
 			value = CHAR_PIXEL_DOWN;
 		}
@@ -233,18 +233,17 @@ void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
 	this->world_origin = WorldOrigin;
 }
 
-void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color color ){
+Bitmap* PaintLineIntoBitmap( Bitmap* bitmap, Vector bounds, Point2D view_point_start, Point2D view_point_end, Color color ){
 	bool isVertical = false; // la retta è verticale
 	double angular_coeffcient = 0.0; // coeff. angolare della retta
-	Vector bounds = world->GetBounds();
 	VECTOR_VALUE_TYPE
 		x, y,
 		inc_value = 1.0f, // rateo di campionatura
 		distance = 0.0f,
 		distance_x,
 		distance_y;
-		GetOffSet(&distance_x, start, end, BOUND_INDEX_WIDTH, &bounds );
-		GetOffSet(&distance_y, start, end, BOUND_INDEX_HEIGHT, NULL );	
+		GetOffSet(&distance_x, view_point_start, view_point_end, BOUND_INDEX_WIDTH, &bounds );
+		GetOffSet(&distance_y, view_point_start, view_point_end, BOUND_INDEX_HEIGHT, &bounds );
 	VECTOR_VALUE_TYPE
 		distance_x_abs = abs( distance_x ),
 		distance_y_abs = abs( distance_y );
@@ -292,18 +291,23 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color c
 		}
 		temp_point.SetX( x );
 		temp_point.SetY( y );
-		temp_point.Add( start );
-		view->SetPixel( view->WorldPointToViewPoint( world, temp_point ), color );
+		temp_point.Add( view_point_start );
+		SetPixel( bitmap, temp_point, color );
 	}
-	view->SetPixel( view->WorldPointToViewPoint( world, end ), color );
+	SetPixel( bitmap, view_point_end, color );
+	return bitmap;
 }
 
-Bitmap* PaintCircleBitmap( Bitmap* bitmap, Level *world, double radius, Color color ){
+Bitmap* PaintCircleIntoBitmap( Bitmap* bitmap, Point2D centre_view_point, double radius, Color color ){
 	if( bitmap == NULL ) {
-		bitmap = new Bitmap(2 * radius, 2 * radius, color);
+		// TODO: aggiustare valori
+		unsigned int extra_size = 1;
+		unsigned int rows = radius + extra_size;
+		unsigned int columns = extra_size + 1 + 2 * radius; // il + 1 serve per lo spazio centrale dedicato al centro
+		bitmap = new Bitmap( rows , columns );
+		centre_view_point.SetX( columns / 2.0  );
+		centre_view_point.SetY( rows );
 	}
-	Point2D circle_bitmap_origin = Point2D( );
-	circle_bitmap_origin = ViewPointToBitMapPoint(circle_bitmap_origin, bitmap );
 	Point2D circle_point;
 	double tmp_x = 0, tmp_y = 0;
 	const double DEGREESTEP = 5;
@@ -318,29 +322,27 @@ Bitmap* PaintCircleBitmap( Bitmap* bitmap, Level *world, double radius, Color co
 
 		circle_point.SetX( tmp_x );
 		circle_point.SetY( tmp_y );
-		circle_point.Add( circle_bitmap_origin );
-
+		circle_point.Add( centre_view_point );
 		SetPixel(bitmap, circle_point, color );
 	}
 	return bitmap;
 }
 
-void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius, Color color ){
-	Point2D circle_point;
-	double tmp_x = 0, tmp_y = 0;
-	const double DEGREESTEP = 5;
-	const double DEGREES = 360.0;
-	const double DEG_TO_RAD_COEF = (M_PI / 180.0);
-	double rad = 0.0;
-	
-	for (double deg = 0.0; deg < DEGREES; deg += DEGREESTEP ){
-		rad = deg * DEG_TO_RAD_COEF;
-		tmp_y = radius * sin( rad );
-		tmp_x = radius * cos( rad );
-		
-		circle_point.SetX( tmp_x );
-		circle_point.SetY( tmp_y );
-		circle_point.Add( world_origin );
-		view->SetPixel( view->WorldPointToViewPoint( world, circle_point), color );
-	}
+void ViewPort::DrawLine( Level *world, Point2D start, Point2D end, Color color ){
+	Vector bounds = world->GetBounds();
+	bounds.Set( BOUND_INDEX_HEIGHT, 0 );
+	PaintLineIntoBitmap(
+			this->data,
+			bounds,
+			this->WorldPointToViewPoint( world, start ),
+			this->WorldPointToViewPoint( world, end ),
+			color );
+}
+
+void ViewPort::DrawCircle( Level *world, Point2D world_origin, double radius, Color color ){
+	PaintCircleIntoBitmap(
+			this->data,
+			this->WorldPointToViewPoint( world, world_origin),
+			radius,
+			color );
 }

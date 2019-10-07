@@ -4,8 +4,12 @@
 #include "SolarSystem.hpp"
 #include "Player.hpp"
 #include <cstring>
+#include "engine/Viewport.hpp"
 
-PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, unsigned int _radius, Vector _bounds ) : Entity( world, origin, texture, "PlanetEntity" ){
+PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, unsigned int _radius, Vector _bounds ) : Entity( world,
+																												 origin,
+																												 NULL,
+																												 "PlanetEntity" ){
 	this->radius = _radius;
 	this->planet_level = new PlanetLevel( this, _bounds );
 
@@ -17,6 +21,8 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, unsigned int _ra
 	this->escape_point.Add( default_escape_point_offset );
 
 	this->shape = new Shape();
+	this->texture = PaintCircleIntoBitmap(NULL, Point2D(), (double)_radius, COLOR_WHITE );
+	this->texture->Fill( 'O' );
 }
 
 PlanetEntity::~PlanetEntity(){}
@@ -63,7 +69,8 @@ bool PlanetEntity::Update( GameEngine *game ){
 
 void PlanetEntity::Draw( ViewPort *view ){
 	if( IsDefined( this ) )
-		DrawCircle( view, this->world, this->origin, this->radius, COLOR_WHITE );
+		Entity::Draw( view );
+		// view->DrawCircle( this->world, this->origin, this->radius, COLOR_WHITE );
 }
 
 bool PlanetEntity::IsColliding( Entity *entity ){

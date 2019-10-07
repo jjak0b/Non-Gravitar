@@ -152,7 +152,7 @@ void Level::Draw( ViewPort *view ){
 			surface_it++;
 			end = *surface_it;
 			end = this->GetNormalizedPoint( end );
-			DrawLine( view, this, start, end, surface );
+			view->DrawLine(  this, start, end, surface );
 /*		#ifdef DEBUG
 			const int size_str_buffer = 30;
 			char str_print_buffer[size_str_buffer] = "";
@@ -197,7 +197,7 @@ void Level::Draw( ViewPort *view ){
 					end = *it_p;
 					view->Draw( NULL, this, start );
 					view->Draw( NULL, this, end );
-					DrawLine(view, this, start, end, c );
+					view->DrawLine( this, start, end, c );
 					start = end;
 					it_p++;
 				}

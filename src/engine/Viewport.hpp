@@ -127,6 +127,25 @@ public:
 	 */
 	void SetWorldOrigin( Point2D WorldOrigin );
 
+		/**
+	 * @brief Disegna nella ViewPort un linea a partire da start fino a end, dove start e end sono coordinate del mondo
+	 * @param view
+	 * @param world
+	 * @param start
+	 * @param end
+	 */
+	void DrawLine( Level *world, Point2D start, Point2D end, Color color );
+
+	/**
+	 * @brief Disegna nella Viewport un cerchio con centro le coordinate dell'origine, e raggio specificati
+	 *
+	 * @param view
+	 * @param world
+	 * @param world_origin
+	 * @param radius
+	 */
+	void DrawCircle( Level *world, Point2D world_origin, double radius, Color color );
+
 	protected:
 
 	/**
@@ -173,21 +192,13 @@ bool SetBitmapData( Bitmap* bitmap, BITMAP_DATA_TYPE value, Color color, Point2D
 bool SetPixel( Bitmap* bitmap,  Point2D view_point, Color color );
 
 /**
- * @brief Disegna nella ViewPort un linea a partire da start fino a end, dove start e end sono coordinate del mondo
- * @param view 
- * @param world 
- * @param start 
- * @param end 
+ * @brief Disegna un cerchio aventi certe caratteristiche nella bitmap fornita;
+ * @PostCondition Se bitmap == NULL allora sarà allocata una nuova bitmap, di dimensione 2*radius x 2*radius, necessaria
+ * all'operazione
+ * @param bitmap
+ * @param centre_view_point : centro del cerchio, se bitmap == NULL, allora sarà considerata al centro della bitmap creata
+ * @param radius
+ * @param color
+ * @return il puntatore della bitmap su cui si è effettuata l'operazione
  */
-void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color color );
-
-/**
- * @brief Disegna nella Viewport un cerchio con centro le coordinate dell'origine, e raggio specificati
- * 
- * @param view 
- * @param world 
- * @param world_origin 
- * @param radius 
- */
-void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius, Color color );
-
+Bitmap* PaintCircleIntoBitmap( Bitmap* bitmap, Point2D centre_view_point, double radius, Color color );

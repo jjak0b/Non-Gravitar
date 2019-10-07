@@ -10,7 +10,7 @@
 Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char classname[], Shape *shape ){
 	this->garbage = false;
 	this->str_classname = _strdup( classname );
-	this->texture = NULL;
+	this->texture = texture;
 	if( IsDefined( _world ) ){
 		_world->AddEntity( this );
 	}

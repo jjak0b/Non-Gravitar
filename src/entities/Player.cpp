@@ -177,7 +177,7 @@ Projectile *Player::Beam( Vector direction ){
 	Vector temp = direction;
 
 	// TODO: dopo tests sostituire temp con dirextion senza Scale
-	temp.Scale(6); // Scalo la direzione per farlo sparare oltre la collision shape
+	temp.Scale(3); // Scalo la direzione per farlo sparare oltre la collision shape
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
 	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile", this->GetMaxSpeed() + 5 );
@@ -242,7 +242,7 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 			Projectile *proj = (Projectile*)collide_ent;
 			
 #ifdef DEBUG_COLLISION_DRAWING
-			DrawLine( game->view, this->world, proj->GetFireOrigin(), collide_ent->GetOrigin(), COLOR_RED );
+			game->view->DrawLine( this->world, proj->GetFireOrigin(), collide_ent->GetOrigin(), COLOR_RED );
 #else
 			this->DoDamage( proj->GetDamage());
 #endif
