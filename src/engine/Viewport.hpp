@@ -49,6 +49,7 @@ protected:
 	Point2D world_origin; // posizione relativa al mondo dalla quale mostra gli elementi del livello a seguire
 	Vector bounds; // dimensioni della schermata viewport
 	PrintableBitmap *data; // "Memoria video" aggiornata frame dopo frame
+
 public:
 	ViewPort( unsigned int width, unsigned int height, Point2D origin );
 
@@ -100,34 +101,6 @@ public:
 	void Print( const char str_text[], Point2D view_point, Color);
 
 	/**
-	 * @brief Restituisce il valore attuale nella Viewport al punto specificato
-	 * PreCondition: il punto è locale relativo alla viewport, cioè prendendo in consideraione il punto nel primo quadrante del piano cartesiano 
-	 * @param view_point 
-	 * @return BITMAP_DATA_TYPE 
-	 */
-	BITMAP_DATA_TYPE GetBitmapData( Point2D view_point );
-
-	/**
-	 * @brief Imposta il "valore" del pixel nel punto specificato relativo alla viewport 
-	 * PreCondition: il punto è locale relativo alla viewport, cioè prendendo in consideraione il punto nel primo quadrante del piano cartesiano 
-	 * PostCondition: se value è CHAR_PIXEL_UP o CHAR_PIXEL_DOWN verrà automaticamente adattato alla viewport tramite SetPixel( ... )
-	 * @param value 
-	 * @param view_point 
-	 * @return true 
-	 * @return false 
-	 */
-	bool SetBitmapData( BITMAP_DATA_TYPE value, Color color, Point2D view_point );
-
-	/**
-	 * @brief Imposta il pixel al punto specificato relativo alla viewport 
-	 * PreCondition: il punto è locale relativo alla viewport, cioè prendendo in consideraione il punto nel primo quadrante del piano cartesiano 
-	 * @param view_point 
-	 * @return true se il pixel è stato impostato nel punto fornito
-	 * @return false altrimenti ( il punto non è interno alla viewport )
-	 */
-	bool SetPixel( Point2D view_point, Color color );
-
-	/**
 	 * @brief Restituisce il punto della viewport relative al punto del livello
 	 * @param world 
 	 * @param world_point 
@@ -172,6 +145,34 @@ public:
 Point2D ViewPointToBitMapPoint( Point2D view_point, Bitmap *bitmap );
 
 /**
+ * @brief Restituisce il valore attuale nella Viewport al punto specificato
+ * PreCondition: il punto è locale relativo alla viewport, cioè prendendo in consideraione il punto nel primo quadrante del piano cartesiano
+ * @param view_point
+ * @return BITMAP_DATA_TYPE
+ */
+BITMAP_DATA_TYPE GetBitmapData( Bitmap* bitmap, Point2D view_point );
+
+/**
+ * @brief Imposta il "valore" del pixel nel punto specificato relativo alla viewport
+ * PreCondition: il punto è locale relativo alla viewport, cioè prendendo in consideraione il punto nel primo quadrante del piano cartesiano
+ * PostCondition: se value è CHAR_PIXEL_UP o CHAR_PIXEL_DOWN verrà automaticamente adattato alla viewport tramite SetPixel( ... )
+ * @param value
+ * @param view_point
+ * @return true
+ * @return false
+ */
+bool SetBitmapData( Bitmap* bitmap, BITMAP_DATA_TYPE value, Color color, Point2D view_point );
+
+/**
+ * @brief Imposta il pixel al punto specificato relativo alla viewport
+ * PreCondition: il punto è locale relativo alla viewport, cioè prendendo in consideraione il punto nel primo quadrante del piano cartesiano
+ * @param view_point
+ * @return true se il pixel è stato impostato nel punto fornito
+ * @return false altrimenti ( il punto non è interno alla viewport )
+ */
+bool SetPixel( Bitmap* bitmap,  Point2D view_point, Color color );
+
+/**
  * @brief Disegna nella ViewPort un linea a partire da start fino a end, dove start e end sono coordinate del mondo
  * @param view 
  * @param world 
@@ -189,3 +190,4 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color c
  * @param radius 
  */
 void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius, Color color );
+

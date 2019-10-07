@@ -41,7 +41,7 @@ class PlanetEntity : public Entity{
 	PlanetLevel *planet_level;
 
 	public:
-	PlanetEntity( SolarSystem *_world = NULL, Point2D origin = Point2D(0,0), Bitmap *texture = NULL, unsigned int _radius = 4, Vector _bounds = Vector( 2 ) );
+	PlanetEntity( SolarSystem *_world = NULL, Point2D origin = Point2D(0,0), unsigned int _radius = 4, Vector _bounds = Vector( 2 ) );
 
 	/**
 	 * PreCondition: requisiti Entity::~Entity()

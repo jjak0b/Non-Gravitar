@@ -50,10 +50,10 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 			point_on_bitmap.Add( offset_from_bitmap_point_to_texture_top_left );
 
 			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
-			this->SetPixel( point_relative_to_bottom_left_view, COLOR_WHITE );
+			SetPixel( data, point_relative_to_bottom_left_view, COLOR_WHITE );
 		}
 		else{
-			this->SetPixel( point_relative_to_bottom_left_view, COLOR_WHITE );
+			SetPixel( data, point_relative_to_bottom_left_view, COLOR_WHITE );
 		}
 	}
 }
@@ -106,34 +106,35 @@ void ViewPort::Print( const char str_text[], Point2D view_point, Color color ){
 	}
 }
 
-BITMAP_DATA_TYPE ViewPort::GetBitmapData( Point2D view_point ){
-	Point2D bitmapPoint = ViewPointToBitMapPoint( view_point, this->data );
+
+BITMAP_DATA_TYPE GetBitmapData( Bitmap* bitmap, Point2D view_point ){
+	Point2D bitmapPoint = ViewPointToBitMapPoint( view_point, bitmap );
 	bitmapPoint.round();
-	if( this->data != NULL ){
-		return this->data->GetValue( bitmapPoint.GetY(), bitmapPoint.GetX() );
+	if( bitmap != NULL ){
+		return bitmap->GetValue( bitmapPoint.GetY(), bitmapPoint.GetX() );
 	}
 	return BITMAP_DATA_NULL;
 }
 
-bool ViewPort::SetBitmapData( BITMAP_DATA_TYPE value, Color color, Point2D view_point ){
-	Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
+bool SetBitmapData( Bitmap* bitmap, BITMAP_DATA_TYPE value, Color color, Point2D view_point ){
+	Point2D bitmap_point = ViewPointToBitMapPoint( view_point, bitmap );
 	bitmap_point.round();
-	if( this->data != NULL ){
+	if( bitmap != NULL ){
 		if( IS_PIXEL_DATA( value ) ){
-			return this->SetPixel( view_point, color );
+			return SetPixel( bitmap, view_point, color );
 		}
 		else{
-			this->data->SetColor( color, bitmap_point.GetY(), bitmap_point.GetX() );
-			return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
+			bitmap->SetColor( color, bitmap_point.GetY(), bitmap_point.GetX() );
+			return bitmap->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
 		}
 	}
 	return false; 
 }
 
-bool ViewPort::SetPixel( Point2D view_point, Color color ){
+bool SetPixel( Bitmap* bitmap, Point2D view_point, Color color ){
 	view_point.round();
 	BITMAP_DATA_TYPE value = BITMAP_DATA_NULL;
-	BITMAP_DATA_TYPE current_pixel = this->GetBitmapData( view_point );
+	BITMAP_DATA_TYPE current_pixel = GetBitmapData( bitmap, view_point );
 	bool b_isPixelDown = false;
 
 	if( ( (int)view_point.GetY() % 2 == 0 ) ){
@@ -160,10 +161,10 @@ bool ViewPort::SetPixel( Point2D view_point, Color color ){
 	}
 
 	if( value != BITMAP_DATA_NULL ){
-		Point2D bitmap_point = ViewPointToBitMapPoint( view_point, this->data );
+		Point2D bitmap_point = ViewPointToBitMapPoint( view_point, bitmap );
 		bitmap_point.round();
-		this->data->SetColor( color, bitmap_point.GetY(), bitmap_point.GetX() );
-		return this->data->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
+		bitmap->SetColor( color, bitmap_point.GetY(), bitmap_point.GetX() );
+		return bitmap->SetValue( value, bitmap_point.GetY(), bitmap_point.GetX() );
 	}
 	return false;
 }
@@ -295,6 +296,33 @@ void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color c
 		view->SetPixel( view->WorldPointToViewPoint( world, temp_point ), color );
 	}
 	view->SetPixel( view->WorldPointToViewPoint( world, end ), color );
+}
+
+Bitmap* PaintCircleBitmap( Bitmap* bitmap, Level *world, double radius, Color color ){
+	if( bitmap == NULL ) {
+		bitmap = new Bitmap(2 * radius, 2 * radius, color);
+	}
+	Point2D circle_bitmap_origin = Point2D( );
+	circle_bitmap_origin = ViewPointToBitMapPoint(circle_bitmap_origin, bitmap );
+	Point2D circle_point;
+	double tmp_x = 0, tmp_y = 0;
+	const double DEGREESTEP = 5;
+	const double DEGREES = 360.0;
+	const double DEG_TO_RAD_COEF = (M_PI / 180.0);
+	double rad = 0.0;
+
+	for (double deg = 0.0; deg < DEGREES; deg += DEGREESTEP ){
+		rad = deg * DEG_TO_RAD_COEF;
+		tmp_y = radius * sin( rad );
+		tmp_x = radius * cos( rad );
+
+		circle_point.SetX( tmp_x );
+		circle_point.SetY( tmp_y );
+		circle_point.Add( circle_bitmap_origin );
+
+		SetPixel(bitmap, circle_point, color );
+	}
+	return bitmap;
 }
 
 void DrawCircle( ViewPort *view, Level *world, Point2D world_origin, double radius, Color color ){

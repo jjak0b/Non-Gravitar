@@ -104,7 +104,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 	VECTOR_VALUE_TYPE linking_height = RANDOM_RANGE( min_point_distance_y, max_point_distance_y );
 
 	Point2D start = Point2D( -half_width, linking_height );
-	Point2D end = Point2D( half_width - 1 , linking_height );
+	Point2D end = Point2D( half_width , linking_height );
 	Vector direction = Vector( start.GetSize() );
 
 	// temp è il punto che viene generato ed aggiunto alla lista
@@ -138,6 +138,9 @@ void PlanetLevel::Generate( GameEngine *game ){
 		old_temp = temp;
 	}
 	this->shape->addOffset( end, origin );
+	temp = *this->shape->getOffsetPoints().begin();
+	temp = this->GetNormalizedPoint( temp );
+	this->shape->addOffset( temp, origin );
 	//this->shape->addAbsoluteList(surface);
 
 	Point2D random_A = RandomPoint();

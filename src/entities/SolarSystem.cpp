@@ -18,7 +18,7 @@ SolarSystem::SolarSystem( Vector _bounds, unsigned int number_of_planets ) : Lev
 		unsigned int radius = 4 + circumference % 4;
 		planet_bounds.Set( BOUND_INDEX_WIDTH, circumference );
 		planet_bounds.Set( BOUND_INDEX_HEIGHT, MaxHeight );
-		PlanetEntity *planet = new PlanetEntity( this, planet_origin, NULL, radius, planet_bounds );
+		PlanetEntity *planet = new PlanetEntity( this, planet_origin, radius, planet_bounds );
 		// imposta l'offset di posizione (del prossimo pianeta) dalla posizione del pianeta generato in precedenza
 		offset_distance.Reset();
 		if( MaxHeight != 0 ){
