@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include "Player.hpp"
+#include "Beam.hpp"
 
 Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed, double _lifetime ) : DynamicEntity( world, origin, NULL , classname, speed){
 	this->fireOrigin = origin;
@@ -18,12 +19,14 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D(0,0), origin);
 
-		if  ( !strcmp( this->GetClassname(), "Beam_Projectile" ))   {	
-		this->texture = new Bitmap( 1, 1, COLOR_BLUE );
-		const BITMAP_DATA_TYPE raw_texturer0[] = "\xB1";
-		const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0};
-		this->texture->Load( rawtexture, NULL, 1, 1);
-	}
+	if  ( !strcmp( this->GetClassname(), "Beam_Projectile" )) this->beam = new Beam(world, origin);
+
+	// 	if  ( !strcmp( this->GetClassname(), "Beam_Projectile" ))   {	
+	// 	this->texture = new Bitmap( 1, 1, COLOR_BLUE );
+	// 	const BITMAP_DATA_TYPE raw_texturer0[] = "\xB1";
+	// 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0};
+	// 	this->texture->Load( rawtexture, NULL, 1, 1);
+	// }
 
 }
 
@@ -46,35 +49,22 @@ bool Projectile::Update( GameEngine *game ) {
 		this->deathtime = game->GetTime() + this->lifetime;
 	}
 
-
+	
 	if( update_result ){
 
-		bool isCollisionDetected = false;
+		if (this->beam != NULL) this->beam->addNext();
 
-		// Side proj = Side(Point2D(this->origin.GetX() , this->origin.GetY() ), Point2D(this->origin.GetX(), this->origin.GetY()  ) );
-		// Side side = Side( Point2D(20,20), Point2D(20,40) );
-		// if ( this->shape->areIntersecting(side, proj, this->world )) {
-		// 	isCollisionDetected = true;
-		// }
-		
-
-
-
-
-		// eliminazione per collisione o posizione esterna al pianeta
-		if( isCollisionDetected || this->IsOutOfTheWorld() ){
+		// eliminazione per tempo di vita o posizione esterna al pianeta
+		if( game->GetTime() > this->deathtime || this->IsOutOfTheWorld()  ) {
 			update_result = false;
 		}
 
-		// eliminazione per tempo di vita
-		else if( game->GetTime() > this->deathtime ) {
-			update_result = false;
-		}
-
-		if( !update_result ){
+	}
+	
+	if( !update_result ){
+			if (this->beam != NULL) this->beam->Kill(game);
             this->Delete( game );
 		}
-	}
 
 	return update_result;
 }
@@ -84,6 +74,7 @@ void Projectile::Draw( ViewPort *view ){
 }
 
 void Projectile::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
+	if (this->beam != NULL) this->beam->Kill(game);
 	this->shouldDeleteOnUpdate = true;
 }
 

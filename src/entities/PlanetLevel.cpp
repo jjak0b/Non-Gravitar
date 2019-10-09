@@ -113,6 +113,31 @@ void PlanetLevel::Generate( GameEngine *game ){
 		temp = start,
 		old_temp = temp;
 
+	int random_prob_gen = 0;
+	int min_prob_gen = 40;
+
+	int random_prob_ent = 0;
+	int which_ent = 0;
+
+	// int min_prob_BunkerA = 50;
+	// int min_prob_BunkerB = 50;
+	// int min_prob_BunkerC = 50;
+	// int min_prob_SmallFuel = 50;
+	// int min_prob_BigFuel = 50;
+
+
+	int prob_Bunker = 50;
+	int bunker_Counter = 0;
+	int fuel_Counter = 0;
+	int max_Bunker = RANDOM_RANGE( 4, 8 );
+	int max_Fuel = RANDOM_RANGE( 3 , 5 );
+	
+
+	// int BunkerA_counter = 0;
+	// int BunkerB_counter = 0;
+	// int BunkerC_counter = 0;
+	// int BigFuel_counter = 0;
+	// int SmallFuel_counter = 0;
 
 	while( temp.GetX() < end.GetX() ){
 		do {
@@ -135,38 +160,51 @@ void PlanetLevel::Generate( GameEngine *game ){
 							min(temp.GetY(), max_point_height),
 							min_point_height));
 		}while( temp.GetY() == old_temp.GetY() );
+
+
+		
 		old_temp = temp;
+
+		random_prob_gen = RANDOM_RANGE(0, 100);
+		if (random_prob_gen <= min_prob_gen ) {
+			random_prob_ent = RANDOM_RANGE(0, 100);
+			if ( (random_prob_ent <= prob_Bunker) && (bunker_Counter < max_Bunker) ) {
+
+				which_ent = RANDOM_RANGE(0, 4);
+				if ( which_ent == 1 ) {
+					this->AddEntity( new BunkerA(this,temp));
+				}
+				else if ( which_ent == 2) {
+					this->AddEntity( new BunkerB(this, temp));
+				}
+				else {
+					this->AddEntity( new BunkerC(this, temp) );
+				}
+
+				bunker_Counter++;
+				prob_Bunker = prob_Bunker - 20;
+			}
+		else if( fuel_Counter < max_Fuel ) {
+			which_ent = RANDOM_RANGE(0, 3);
+
+			if ( which_ent == 1 ) {
+					this->AddEntity( new SmallFuel(this,temp));
+				}
+			else if ( which_ent == 2) {
+					this->AddEntity( new BigFuel(this, temp));
+			}
+
+			fuel_Counter++;
+			prob_Bunker = prob_Bunker + 20;
+
+		}	
+			
+		}
+		else min_prob_gen = min_prob_gen + 5;
 	}
 	this->shape->addOffset( end, origin );
-	//this->shape->addAbsoluteList(surface);
-
-	Point2D random_A = RandomPoint();
-
-	Point2D random_B = RandomPoint();
-	while (random_B.Equals(random_A)) random_B = RandomPoint();;
 	
-	Point2D random_C = RandomPoint();
-	while (random_C.Equals(random_A) || random_C.Equals(random_B)) random_C = RandomPoint();
-
-	Point2D random_Small = RandomPoint();
-	while (random_Small.Equals(random_A) || random_Small.Equals(random_B) || random_Small.Equals(random_C)) random_Small = RandomPoint();
-
-	Point2D random_Big = RandomPoint();
-	while (random_Big.Equals(random_A) || random_Big.Equals(random_B) || random_Big.Equals(random_C) || random_Big.Equals(random_Small)) random_Big = RandomPoint();
-
-	random_Small.SetY(random_Small.GetY() + 1);
-	random_Big.SetY(random_Big.GetY() + 1);
-
-	this->AddEntity(new BunkerA(this, random_A));
-	this->AddEntity(new BunkerB(this,random_B));
-	this->AddEntity(new BunkerC(this,random_C));
-
-	this->AddEntity(new SmallFuel(this, random_Small));
-	this->AddEntity(new BigFuel(this, random_Big));
-	// this->AddEntity(new SmallFuel(this,Point2D(20,20)));
-	// this->AddEntity(new SmallFuel(this,Point2D(20,40)));	
-	
-}
+	}
 
 Point2D PlanetLevel::RandomPoint() {
 

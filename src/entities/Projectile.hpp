@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DynamicEntity.hpp"
+#include "Beam.hpp"
 class Damageable;
 
 class Projectile : public DynamicEntity{
@@ -10,6 +11,7 @@ class Projectile : public DynamicEntity{
 	Vector direction; // vettore che indica la direzione dell'entità
 	double lifetime; // tempo di esistenza di questo proiettile, priam di essere eliminato
 	double deathtime; // tempo di gioco, in cui dovrà essere eliminato questa entità
+	Beam *beam = NULL;
 
 	public:
 	Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed = 10, double lifetime = 4.0 );
