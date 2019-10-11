@@ -1,21 +1,16 @@
 #pragma once
 
-#include "DynamicEntity.hpp"
+#include "Entity.hpp"
+
 class Damageable;
 
 class Beam : public Entity{
 	protected:
 	Beam *next = NULL;
-	bool death = false;
-	bool add = false;
-
 
 	public:
 	Beam( Level *world, Point2D origin );
 
-
-
-
-	void Kill(GameEngine *game);
-	void addNext();
+	virtual void Delete( GameEngine* game );
+	void addNext(Point2D origin);
 };

@@ -20,14 +20,6 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 	this->shape->addOffset(Point2D(0,0), origin);
 
 	if  ( !strcmp( this->GetClassname(), "Beam_Projectile" )) this->beam = new Beam(world, origin);
-
-	// 	if  ( !strcmp( this->GetClassname(), "Beam_Projectile" ))   {	
-	// 	this->texture = new Bitmap( 1, 1, COLOR_BLUE );
-	// 	const BITMAP_DATA_TYPE raw_texturer0[] = "\xB1";
-	// 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0};
-	// 	this->texture->Load( rawtexture, NULL, 1, 1);
-	// }
-
 }
 
 Vector Projectile::GetDirection(){
@@ -52,17 +44,18 @@ bool Projectile::Update( GameEngine *game ) {
 	
 	if( update_result ){
 
-		if (this->beam != NULL) this->beam->addNext();
+		
 
 		// eliminazione per tempo di vita o posizione esterna al pianeta
 		if( game->GetTime() > this->deathtime || this->IsOutOfTheWorld()  ) {
 			update_result = false;
 		}
+		if (update_result && this->beam != NULL) this->beam->addNext(origin);
 
 	}
 	
 	if( !update_result ){
-			if (this->beam != NULL) this->beam->Kill(game);
+			if (this->beam != NULL) this->beam->Delete(game);
             this->Delete( game );
 		}
 
@@ -74,7 +67,6 @@ void Projectile::Draw( ViewPort *view ){
 }
 
 void Projectile::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
-	if (this->beam != NULL) this->beam->Kill(game);
 	this->shouldDeleteOnUpdate = true;
 }
 

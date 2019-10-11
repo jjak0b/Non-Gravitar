@@ -108,36 +108,26 @@ void PlanetLevel::Generate( GameEngine *game ){
 	Vector direction = Vector( start.GetSize() );
 
 	// temp è il punto che viene generato ed aggiunto alla lista
-	list<Point2D> surface;
+	list<Point2D> surface_empty;
+	list<Point2D>::iterator temp_point;
 	Point2D
 		temp = start,
 		old_temp = temp;
 
-	int random_prob_gen = 0;
-	int min_prob_gen = 40;
+	int random_prob_gen = 40,
+		min_prob_gen = 0,
 
-	int random_prob_ent = 0;
-	int which_ent = 0;
+		random_prob_ent = 0,
+		which_ent = 0,
 
-	// int min_prob_BunkerA = 50;
-	// int min_prob_BunkerB = 50;
-	// int min_prob_BunkerC = 50;
-	// int min_prob_SmallFuel = 50;
-	// int min_prob_BigFuel = 50;
-
-
-	int prob_Bunker = 50;
-	int bunker_Counter = 0;
-	int fuel_Counter = 0;
-	int max_Bunker = RANDOM_RANGE( 4, 8 );
-	int max_Fuel = RANDOM_RANGE( 3 , 5 );
+		prob_Bunker = 50,
+		bunker_Counter = 0,
+		fuel_Counter = 0,
+		min_Fuel = 2,
+		min_Bunker = 3,
+		max_Bunker = RANDOM_RANGE( min_Bunker, 8 ),
+		max_Fuel = RANDOM_RANGE( min_Fuel, max_Bunker );
 	
-
-	// int BunkerA_counter = 0;
-	// int BunkerB_counter = 0;
-	// int BunkerC_counter = 0;
-	// int BigFuel_counter = 0;
-	// int SmallFuel_counter = 0;
 
 	while( temp.GetX() < end.GetX() ){
 		do {
@@ -184,52 +174,56 @@ void PlanetLevel::Generate( GameEngine *game ){
 				bunker_Counter++;
 				prob_Bunker = prob_Bunker - 20;
 			}
-		else if( fuel_Counter < max_Fuel ) {
-			which_ent = RANDOM_RANGE(0, 3);
+			else if( fuel_Counter < max_Fuel ) {
+				which_ent = RANDOM_RANGE(0, 3);
 
-			if ( which_ent == 1 ) {
-					this->AddEntity( new SmallFuel(this,temp));
+				if ( which_ent == 1 ) {
+						this->AddEntity( new SmallFuel(this,temp));
+					}
+				else if ( which_ent == 2) {
+						this->AddEntity( new BigFuel(this, temp));
 				}
-			else if ( which_ent == 2) {
-					this->AddEntity( new BigFuel(this, temp));
-			}
 
-			fuel_Counter++;
-			prob_Bunker = prob_Bunker + 20;
-
-		}	
-			
+				fuel_Counter++;
+				prob_Bunker = prob_Bunker + 20;
+			}			
 		}
-		else min_prob_gen = min_prob_gen + 5;
+		else {
+			surface_empty.push_front(temp);
+			min_prob_gen = min_prob_gen + 5;
+		}
 	}
 	this->shape->addOffset( end, origin );
-	
+
+	while ( bunker_Counter < min_Bunker && !surface_empty.empty() ) {
+		temp_point = random_element(surface_empty.begin(), surface_empty.end());
+		which_ent = RANDOM_RANGE(0, 4);
+		if ( which_ent == 1 ) {
+			this->AddEntity( new BunkerA(this,*temp_point));
+		}
+		else if ( which_ent == 2) {
+			this->AddEntity( new BunkerB(this, *temp_point));
+		}
+		else {
+			this->AddEntity( new BunkerC(this, *temp_point) );
+		}
+		bunker_Counter++;
+		surface_empty.erase(temp_point);
 	}
-
-Point2D PlanetLevel::RandomPoint() {
-
-	list<Point2D> surface_points = this->shape->getAbsolutes();
-	std::list<Point2D>::iterator it_begin = surface_points.begin();
-	std::list<Point2D>::iterator it_end = surface_points.end();
-
-	std::list<Point2D>::iterator it_pre_random_A = this->random_element(it_begin, it_end);
-	std::list<Point2D>::iterator it_random_A = it_pre_random_A++;
-	std::list<Point2D>::iterator it_post_random_A = it_random_A++;
-
-	Point2D pre_random_A = (*(it_pre_random_A));
-	Point2D random_A = (*(it_random_A));
-	Point2D post_random_A = (*(it_post_random_A));
-
-	int random_A_height = random_A.GetY();
-	int pre_random_A_height = pre_random_A.GetY();
-	int post_random_A_height = post_random_A.GetY();
+	while ( fuel_Counter < min_Fuel && !surface_empty.empty() ) {
+		temp_point = random_element(surface_empty.begin(), surface_empty.end());
+		which_ent = RANDOM_RANGE(0, 3);
+		if ( which_ent == 1 ) {
+				this->AddEntity( new SmallFuel(this,*temp_point));
+			}
+		else if ( which_ent == 2) {
+				this->AddEntity( new BigFuel(this, *temp_point));
+		}
+		fuel_Counter++;
+		surface_empty.erase(temp_point);
+	}
 	
-	if (random_A_height < pre_random_A_height || random_A_height < post_random_A_height ) random_A.SetY(random_A.GetY() + 3);
-	if (random_A_height < pre_random_A_height && random_A_height < post_random_A_height ) random_A.SetY(random_A.GetY() + 3);
-
-	return random_A;
 }
-
 
 std::list<Point2D>::iterator PlanetLevel::random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end) {
    

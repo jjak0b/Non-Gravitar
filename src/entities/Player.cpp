@@ -130,7 +130,7 @@ bool Player::Update( GameEngine *game ){
 				Vector direction = this->GetVelocity();
 				direction.Normalize();
 				//this->Fire( direction );
-				this->Beam(lastMove);
+				this->Beam();
 			}
 
 			this->lastInput = input;
@@ -171,8 +171,10 @@ Projectile *Player::Fire( Vector direction ){
 	return p;
 }
 
-Projectile *Player::Beam( Vector direction ){
+Projectile *Player::Beam( ){
 	Point2D projectile_origin = this->GetOrigin();
+	Vector direction;
+	direction.Set(1, -1);
 	projectile_origin.Add( direction );
 	Vector temp = direction;
 

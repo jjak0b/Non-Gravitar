@@ -42,7 +42,7 @@ class Player : public DynamicEntity, public Damageable {
 
 	Projectile *Fire( Vector direction );
 
-	Projectile *Beam( Vector direction );
+	Projectile *Beam();
 
 	Vector GetDirectionFromInput( INPUT_TYPE input );
 
