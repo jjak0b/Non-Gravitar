@@ -7,6 +7,7 @@
 class GameEngine;
 class Level;
 class Projectile;
+class Beam;
 
 #define PLAYER_HEALTH 500
 #define PLAYER_MAX_FUEL 500
@@ -42,7 +43,7 @@ class Player : public DynamicEntity, public Damageable {
 
 	Projectile *Fire( Vector direction );
 
-	Projectile *Beam();
+	Beam *Fire_Beam();
 
 	Vector GetDirectionFromInput( INPUT_TYPE input );
 

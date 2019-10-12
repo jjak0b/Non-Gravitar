@@ -1,16 +1,12 @@
 #pragma once
 
-#include "Entity.hpp"
+#include "Projectile.hpp"
+#include "Beam_FX.hpp"
 
-class Damageable;
-
-class Beam : public Entity{
+class Beam : public Projectile{
 	protected:
-	Beam *next = NULL;
-
+	Beam_FX *texture = NULL;
 	public:
-	Beam( Level *world, Point2D origin );
-
-	virtual void Delete( GameEngine* game );
-	void addNext(Point2D origin);
+	Beam( Level *world, Point2D origin, Vector direction);
+	virtual bool Update( GameEngine *game );
 };

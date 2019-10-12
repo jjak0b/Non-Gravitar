@@ -19,7 +19,7 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D(0,0), origin);
 
-	if  ( !strcmp( this->GetClassname(), "Beam_Projectile" )) this->beam = new Beam(world, origin);
+	//if  ( !strcmp( this->GetClassname(), "Beam_Projectile" )) this->beam = new Beam(world, origin);
 }
 
 Vector Projectile::GetDirection(){
@@ -50,12 +50,12 @@ bool Projectile::Update( GameEngine *game ) {
 		if( game->GetTime() > this->deathtime || this->IsOutOfTheWorld()  ) {
 			update_result = false;
 		}
-		if (update_result && this->beam != NULL) this->beam->addNext(origin);
+		//if (update_result && this->beam != NULL) this->beam->addNext(origin);
 
 	}
 	
 	if( !update_result ){
-			if (this->beam != NULL) this->beam->Delete(game);
+			//if (this->beam != NULL) this->beam->Delete(game);
             this->Delete( game );
 		}
 
