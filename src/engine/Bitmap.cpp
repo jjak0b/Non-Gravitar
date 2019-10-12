@@ -3,26 +3,15 @@
 #include "GameEngine.hpp"
 #include <cstring>
 
-#define ColoredBitmapColumnToBitmapColumn( index_column ) ( NUMBER_OF_CHAR_DEDICATED_TO_ANSI + ( ( NUMBER_OF_CHAR_DEDICATED_TO_ANSI+1) * (index_column) ) )
-
 template class Matrix::Matrix< BITMAP_DATA_TYPE >;
 template class Matrix::Matrix< Color >;
 
 Bitmap::Bitmap( unsigned int _rows, unsigned int _columns, Color color ) : Matrix< BITMAP_DATA_TYPE >::Matrix( _rows, _columns ){
-
+	this->Fill( BITMAP_DATA_EMPTY );
 	this->colors = new Matrix< Color >( _rows, _columns );
-#ifdef DEBUG
-	for( unsigned int i = 0; i < _rows; i++ ){
-		for( unsigned int j = 0; j < _columns; j++ ){
-			this->SetColor( color, i, j );
-			// this->SetColor( Color( rand() % 256, rand() % 256, rand() % 256 ), i, j );
-		}
-	}
-#else
 	if( this->colors != NULL ){
 		this->colors->Fill( color );
 	}
-#endif
 }
 
 Bitmap::~Bitmap(){
@@ -30,18 +19,6 @@ Bitmap::~Bitmap(){
 		delete this->colors;
 	}
 }
-
-/*unsigned int Bitmap::GetRows(){
-	return Matrix<BITMAP_DATA_TYPE>::GetRows();
-}
-
-unsigned int Bitmap::GetColumns(){
-	return Matrix<BITMAP_DATA_TYPE>::GetColumns();
-}
-
-bool Bitmap::SetValue( BITMAP_DATA_TYPE value, unsigned int row, unsigned int column ){
-	return Matrix<BITMAP_DATA_TYPE>::SetValue( value, row, column );
-}*/
 
 BITMAP_DATA_TYPE Bitmap::GetValue( unsigned int row, unsigned int column){
 	BITMAP_DATA_TYPE value;

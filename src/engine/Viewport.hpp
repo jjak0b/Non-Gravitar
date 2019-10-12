@@ -201,4 +201,4 @@ bool SetPixel( Bitmap* bitmap,  Point2D view_point, Color color );
  * @param color
  * @return il puntatore della bitmap su cui si è effettuata l'operazione
  */
-Bitmap* PaintCircleIntoBitmap( Bitmap* bitmap, Point2D centre_view_point, double radius, Color color );
+Bitmap* PaintCircleIntoBitmap( Bitmap* bitmap, Point2D centre_view_point, const unsigned int radius, const Color color );

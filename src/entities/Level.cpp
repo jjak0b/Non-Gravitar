@@ -145,12 +145,10 @@ void Level::Draw( ViewPort *view ){
 		Color surface = COLOR_GREEN;
 		Point2D start, end;
 
-		// TODO: ricontrollare
-		while( surface_it != surface_points.end() ){
-			start = *surface_it;
-			start = this->GetNormalizedPoint( start );
-			surface_it++;
+		start = *surface_it;
+		while( !surface_points.empty() && surface_it != surface_points.end() ){
 			end = *surface_it;
+			start = this->GetNormalizedPoint( start );
 			end = this->GetNormalizedPoint( end );
 			view->DrawLine(  this, start, end, surface );
 /*		#ifdef DEBUG
@@ -168,6 +166,8 @@ void Level::Draw( ViewPort *view ){
 			temp.SetY( temp.GetY() + 3 );
 			view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
 		#endif*/
+			start = end;
+			surface_it++;
 		}
 	}
 

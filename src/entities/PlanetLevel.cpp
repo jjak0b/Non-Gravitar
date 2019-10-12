@@ -100,8 +100,8 @@ void PlanetLevel::Generate( GameEngine *game ){
 		offset_x,
 		offset_y;
 
-	VECTOR_VALUE_TYPE half_width = this->GetMaxWidth() / 2;
-	VECTOR_VALUE_TYPE linking_height = RANDOM_RANGE( min_point_distance_y, max_point_distance_y );
+	VECTOR_VALUE_TYPE half_width = this->GetMaxWidth() / 2.0;
+	VECTOR_VALUE_TYPE linking_height = min_point_height;
 
 	Point2D start = Point2D( -half_width, linking_height );
 	Point2D end = Point2D( half_width , linking_height );
@@ -138,10 +138,6 @@ void PlanetLevel::Generate( GameEngine *game ){
 		old_temp = temp;
 	}
 	this->shape->addOffset( end, origin );
-	temp = *this->shape->getOffsetPoints().begin();
-	temp = this->GetNormalizedPoint( temp );
-	this->shape->addOffset( temp, origin );
-	//this->shape->addAbsoluteList(surface);
 
 	Point2D random_A = RandomPoint();
 

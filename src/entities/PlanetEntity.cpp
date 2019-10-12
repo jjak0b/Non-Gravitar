@@ -21,8 +21,7 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, unsigned int _ra
 	this->escape_point.Add( default_escape_point_offset );
 
 	this->shape = new Shape();
-	this->texture = PaintCircleIntoBitmap(NULL, Point2D(), (double)_radius, COLOR_WHITE );
-	this->texture->Fill( 'O' );
+	this->texture = PaintCircleIntoBitmap(NULL, Point2D(), _radius, COLOR_WHITE );
 }
 
 PlanetEntity::~PlanetEntity(){}
@@ -65,12 +64,6 @@ bool PlanetEntity::Update( GameEngine *game ){
 	}*/
 
 	return update_result;
-}
-
-void PlanetEntity::Draw( ViewPort *view ){
-	if( IsDefined( this ) )
-		Entity::Draw( view );
-		// view->DrawCircle( this->world, this->origin, this->radius, COLOR_WHITE );
 }
 
 bool PlanetEntity::IsColliding( Entity *entity ){

@@ -45,8 +45,8 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 			// correggo le coordinate relative alla view, per far si che la texture sia centrata rispetto alla coordinata
 			// ( cioè per partire a copiare da in alto a sinistra;
 			Vector offset_from_bitmap_point_to_texture_top_left = Vector( point_on_bitmap.GetSize() );
-			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns() / 2 ) );
-			offset_from_bitmap_point_to_texture_top_left.Set( 1, -(int)(texture->GetRows() / 2 ) ); // l'1 è riferito alla riga "extra" della viewport che contiene 2 caratteri
+			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns() / 2.0 ) );
+			offset_from_bitmap_point_to_texture_top_left.Set( 1, -(int)(texture->GetRows() / 2.0  ) ); // l'1 è riferito alla riga "extra" della viewport che contiene 2 caratteri
 			point_on_bitmap.Add( offset_from_bitmap_point_to_texture_top_left );
 
 			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );
@@ -151,7 +151,7 @@ bool SetPixel( Bitmap* bitmap, Point2D view_point, Color color ){
 			value = CHAR_PIXEL_UP_DOWN;
 		}
 	}
-	else {//if( current_pixel == CHAR_PIXEL_EMPTY ){
+	else if( current_pixel != CHAR_PIXEL_UP_DOWN ){
 		if( b_isPixelDown ){
 			value = CHAR_PIXEL_DOWN;
 		}
@@ -298,15 +298,13 @@ Bitmap* PaintLineIntoBitmap( Bitmap* bitmap, Vector bounds, Point2D view_point_s
 	return bitmap;
 }
 
-Bitmap* PaintCircleIntoBitmap( Bitmap* bitmap, Point2D centre_view_point, double radius, Color color ){
+Bitmap* PaintCircleIntoBitmap( Bitmap* bitmap, Point2D centre_view_point, const unsigned int radius, const Color color ){
 	if( bitmap == NULL ) {
-		// TODO: aggiustare valori
-		unsigned int extra_size = 1;
-		unsigned int rows = radius + extra_size;
-		unsigned int columns = extra_size + 1 + 2 * radius; // il + 1 serve per lo spazio centrale dedicato al centro
-		bitmap = new Bitmap( rows , columns );
-		centre_view_point.SetX( columns / 2.0  );
-		centre_view_point.SetY( rows );
+		unsigned int rows = 1 + radius; // non divido per 2 dato che 1 riga contiene 2 unità
+		unsigned int columns = 1 + (2*radius); // il + 1 serve per lo spazio centrale dedicato al centro
+		bitmap = new Bitmap( rows, columns );
+		centre_view_point.SetX( radius );
+		centre_view_point.SetY( radius );
 	}
 	Point2D circle_point;
 	double tmp_x = 0, tmp_y = 0;

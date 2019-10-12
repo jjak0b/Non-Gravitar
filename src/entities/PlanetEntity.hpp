@@ -60,8 +60,6 @@ class PlanetEntity : public Entity{
 
 	virtual bool Update( GameEngine *game );
 
-	virtual void Draw( ViewPort *view );
-
 	virtual bool IsColliding( Entity *entity );
 
 	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
