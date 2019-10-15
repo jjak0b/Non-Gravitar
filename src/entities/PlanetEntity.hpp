@@ -4,6 +4,8 @@
 #include "engine/Bitmap.hpp"
 #include <stddef.h>
 
+#define DEFAULT_PLANET_ENTITY_COLOR COLOR_ORANGE
+
 class SolarSystem;
 class PlanetLevel;
 

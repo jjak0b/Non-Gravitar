@@ -75,12 +75,8 @@ bool Entity::Update( GameEngine *game ){
 	if( this->shouldDeleteOnUpdate ){
 		this->Delete( game );
 	}
-
 	bool update_result = IsDefined(this);
 
-	if ( IsDefined(this) && this->shape != NULL  ) {
-		this->shape->UpdateAbsolutes(this->GetOrigin() );
-	}
 	return update_result;
 }
 

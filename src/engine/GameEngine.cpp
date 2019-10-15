@@ -47,9 +47,9 @@ bool GameEngine::frame( double dtime ){
 			this->SetCurrentLevel( new SolarSystem( _bounds, 4 ) );
 
 			// logica di spawn o trasferimento giocatore da un sistema solare ad un altro
-			Point2D spawn_point = Point2D( this->GetCurrentLevel()->GetMaxWidth()/2.0, this->GetCurrentLevel()->GetMaxHeight()/2.0 );
+			Point2D spawn_point = Point2D( 0, this->GetCurrentLevel()->GetMaxHeight()/2.0 );
 			if( player == NULL ){ // generiamo il giocatore e viene aggiunto al livello in automatico
-				player = new Player( this->GetCurrentLevel(), spawn_point, 150.0 );
+				player = new Player( this->GetCurrentLevel(), spawn_point, PLAYER_HEALTH );
 			}
 			else{ // il giocatore già definito entra nel livello
 				this->GetCurrentLevel()->AddEntity( player );

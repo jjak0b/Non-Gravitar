@@ -3,6 +3,8 @@
 #define COLOR_COMPONENT_TYPE unsigned char
 
 #define COLOR_RED Color( 255, 0, 0 )
+#define COLOR_ORANGE Color( 255, 127, 0 )
+#define COLOR_YELLOW Color( 255, 255, 0 )
 #define COLOR_GREEN Color( 0, 255, 0 )
 #define COLOR_BLUE Color( 0, 0, 255 )
 #define COLOR_BLACK Color( 0, 0, 0 )

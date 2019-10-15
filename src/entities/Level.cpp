@@ -82,9 +82,10 @@ bool Level::Update( GameEngine *game ){
 			}
 			entity_it++;
 		}
+#ifdef DEBUG_COLLISION_DRAWING
 		if( this->GetShape() != NULL )
 			this->GetShape()->UpdateAbsolutes( origin );
-
+#endif
 		Entity *entity2 = NULL;
 		entity_it = ents.begin();
 		while( !ents.empty() && entity_it != ents.end() ) {
@@ -96,14 +97,14 @@ bool Level::Update( GameEngine *game ){
 					entity2->Callback_OnCollide(game, entity );
 
 				}
-
+#ifdef DEBUG_COLLISION_DRAWING
 				if( entity->GetShape() != NULL ){
 					entity->GetShape()->UpdateAbsolutes( entity->GetOrigin() );
 				}
 				if( entity2->GetShape() != NULL ){
 					entity2->GetShape()->UpdateAbsolutes( entity2->GetOrigin() );
 				}
-
+#endif
 				entity_it_2++;
 
 			}

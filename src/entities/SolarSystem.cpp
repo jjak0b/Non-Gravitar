@@ -4,34 +4,9 @@
 #include "Player.hpp"
 #include <stdlib.h>
 #include <cmath>
-
+#include "shared/Utility.h"
 SolarSystem::SolarSystem( Vector _bounds, unsigned int number_of_planets ) : Level( _bounds, "SolarSystem"){
-	// il primo pianeta lo genero sempre in mezzo
-	unsigned int MaxHeight = this->GetMaxHeight();
-	unsigned int MaxWidth = this->GetMaxWidth();
-	
-	Point2D planet_origin = Point2D( 0, MaxHeight/2.0 );
-	Vector offset_distance = Vector( planet_origin.GetSize() );
-	Vector planet_bounds = Vector( planet_origin.GetSize() );
-	for( unsigned int i = 0; i < number_of_planets; i++ ){
-		unsigned int circumference = MaxWidth + (rand() % MaxWidth ); // TEMP
-		unsigned int radius = 4 + circumference % 4;
-		planet_bounds.Set( BOUND_INDEX_WIDTH, circumference );
-		planet_bounds.Set( BOUND_INDEX_HEIGHT, MaxHeight );
-		PlanetEntity *planet = new PlanetEntity( this, planet_origin, NULL, radius, planet_bounds );
-		// imposta l'offset di posizione (del prossimo pianeta) dalla posizione del pianeta generato in precedenza
-		offset_distance.Reset();
-		if( MaxHeight != 0 ){
-			offset_distance.Set( 1, rand() % (int)(MaxHeight/2.0) ); // l'offset y sarà casuale da 0 + o - (MaxHeight/2.0)-1 
-		}
-		else{
-			offset_distance.Set( 1, 0 );
-		}
-		offset_distance.Scale( pow( -1, rand() % 2 ) );
-		offset_distance.Set( 0, MaxWidth / number_of_planets );
-		planet_origin.Add( offset_distance );
-		planet_origin = this->GetNormalizedPoint( planet_origin );
-	}
+    this->count_planets = number_of_planets;
 }
 
 bool SolarSystem::Update( GameEngine *game ){
@@ -71,6 +46,60 @@ bool SolarSystem::Update( GameEngine *game ){
 	return update_result;
 }
 
+void SolarSystem::Generate(GameEngine *game) {
+    // il primo pianeta lo genero sempre in mezzo
+    unsigned int MaxHeight = this->GetMaxHeight();
+    unsigned int MaxWidth = this->GetMaxWidth();
+
+    Point2D ent_origin = Point2D( 0, MaxHeight/2.0 );;
+    unsigned int last_radius = 10;
+    if( GetPlayer() != NULL ){
+        ent_origin = GetPlayer()->GetOrigin();
+    }
+
+    Point2D planet_origin = ent_origin; // faccio finta che il pianeta precedente è stato generato nella poszione del pianeta
+    Vector planet_bounds = Vector( planet_origin.GetSize() );
+    Vector offset_distance = Vector( planet_origin.GetSize() );
+    double scale = 1.0; // fattore di inversione dell'offset Y
+    VECTOR_VALUE_TYPE offset; // distanza di variazione in una singola componente
+    for( unsigned int i = 0; i < count_planets; i++ ){
+        unsigned int circumference = MaxWidth + (rand() % MaxWidth ); // TEMP
+        unsigned int radius = 4 + circumference % 5;
+        planet_bounds.Set( BOUND_INDEX_WIDTH, circumference );
+        planet_bounds.Set( BOUND_INDEX_HEIGHT, MaxHeight );
+        PlanetEntity *planet = NULL;
+
+        // evito che il pianeta venga generato dove si trova il giocatore o lo scorso pianeta !!!
+
+        // parto dalla metà del piano in asse Y e poi aggiunto un certo offset Y di spostamento
+        planet_origin.SetY( MaxHeight/2.0 );
+
+        if( MaxHeight != 0 ){
+            offset = RANDOM_RANGE( 0, MaxHeight / 2.0 ) ;
+        }
+        else{
+            offset = 0;
+        }
+        offset *= scale; // vario l'offset in Y in modo alternato
+        offset_distance.Set( BOUND_INDEX_HEIGHT, offset );
+
+        // dall'origine precedente lascio lo spazio minimo richiesto:
+        // spazio del raggio precedente + raggio attuale
+        // oltre alla distanza minima, aggiungo una distanza aggiuntiva randomizzata
+        // la distanza aggiuntiva è bilanciata per un valore massimo per cui non possono sovraporsi pianeti
+        offset = RANDOM_RANGE( (last_radius + radius), (MaxWidth / (count_planets)) );
+        offset_distance.Set( BOUND_INDEX_WIDTH, offset );
+
+        // aggiungo l'offset calcolato all'origine precedente
+        planet_origin.Add( offset_distance );
+
+        // Il costruttore di Entity Aggiunge in automatico l'entità al mondo
+        planet = new PlanetEntity(this, planet_origin, NULL, radius, planet_bounds);
+
+        last_radius = radius;
+        scale *= -1.0; // cambio il fattore di inversione dell'offset Y
+    }
+}
 bool SolarSystem::IsGenerated(){
 	return !this->entities.empty();
 }

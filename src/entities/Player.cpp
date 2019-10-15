@@ -16,7 +16,7 @@
 #include <windows.h>
 #endif
 
-Player::Player( Level *world, Point2D origin, double health ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(PLAYER_HEALTH) {
+Player::Player( Level *world, Point2D origin, double health = PLAYER_HEALTH ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(health) {
 	this->texture = new Bitmap( 3, 5, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
@@ -229,6 +229,7 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		}
 // #ifdef DEBUG_COLLISION_DRAWING
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
+		DrawLine(game->view, this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
 		// Sleep(1000);
 
 // #endif

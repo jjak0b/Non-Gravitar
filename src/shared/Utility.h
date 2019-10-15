@@ -7,7 +7,7 @@
 
 #include <cmath>
 #define RANDOM_RANGE( min, max ) ( (min) + (rand() % (int)( (max) - (min) )))
-
+#define SQR( value ) ( (value)*(value) )
 namespace Utility {
 
 	/**
