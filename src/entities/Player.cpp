@@ -4,6 +4,7 @@
 #include "engine/GameEngine.hpp"
 #include "engine/GameConfig.h"
 #include "Projectile.hpp"
+#include "Beam.hpp"
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
 #include "shared/Point2D.hpp"
@@ -130,7 +131,7 @@ bool Player::Update( GameEngine *game ){
 				Vector direction = this->GetVelocity();
 				direction.Normalize();
 				//this->Fire( direction );
-				this->Beam(lastMove);
+				this->Fire_Beam();
 			}
 
 			this->lastInput = input;
@@ -171,8 +172,10 @@ Projectile *Player::Fire( Vector direction ){
 	return p;
 }
 
-Projectile *Player::Beam( Vector direction ){
+Beam *Player::Fire_Beam( ){
 	Point2D projectile_origin = this->GetOrigin();
+	Vector direction;
+	direction.Set(1, -1);
 	projectile_origin.Add( direction );
 	Vector temp = direction;
 
@@ -180,7 +183,7 @@ Projectile *Player::Beam( Vector direction ){
 	temp.Scale(6); // Scalo la direzione per farlo sparare oltre la collision shape
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 0, "Beam_Projectile", this->GetMaxSpeed() + 5 );
+	Beam *p = new Beam( this->world, projectile_origin, direction );
 	return p;
 }
 
