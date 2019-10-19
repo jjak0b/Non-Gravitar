@@ -1,7 +1,6 @@
 #include <iostream>
 #include <ctime>
 #include <conio.h>
-
 // dipendenti da SO
 #ifdef __WIN32__
 #include <Windows.h>
@@ -19,13 +18,12 @@
 #include <stdio.h>
 #endif
 
+#include "shared/Utility.h"
 #include "engine/GameConfig.h" // costanti e configurazioni del gioco
-
 #include <cmath> // così definisco le costanti per tutto il resto del programma con _USE_MATH_DEFINES
-
 #include "engine/GameEngine.hpp"
 
-char getInput(){
+char GetInput(){
 	char c = '\0';
 	c = _getch();
 	if( c == '\e' || c == INPUT_CODE_KEY_PREARROW ){  // se il carattere è il carattere di escape o di pre freccia
@@ -55,48 +53,6 @@ char getInput(){
 	return c;
 }
 
-void setCursor( int x, int y ){
-	#ifdef __WIN32__
-	HANDLE hOut;
-	COORD Position;
-
-	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	Position.X = x;
-	Position.Y = y;
-	SetConsoleCursorPosition(hOut, Position);
-	#else
-	cout << "\e[" << y << ";" << x << "H");
-	#endif
-}
-
-Point2D GetTerminalSize(){
-	#ifdef __WIN32__
-		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		int columns, rows;
-		HANDLE hOut;
-		hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-		GetConsoleScreenBufferInfo( hOut, &csbi);
-		columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-		rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-		return Point2D( columns, rows );
-	#else
-		struct winsize w;
-		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-		return Point2D( w.ws_col, w.ws_row );
-	#endif
-}
-
-void ClearScreen(){
-	#ifdef __WIN32__
-	system( "cls");
-	#else
-	system( "CLEAR");
-	#endif
-}
-
-#include <cstring>
-#include "shared/Color.hpp"
 
 int main(){
 	#ifdef __WIN32__
@@ -109,46 +65,67 @@ int main(){
 	}
 	#endif
 
-	bool b_keep_playing = true;
-	double dtime = 0.0;
+	bool
+		b_keep_playing = true,
+		b_windowSizeUpdated = false;
 	char key = '\0';
-	bool b_windowSizeUpdated = false;
-	clock_t current_time = clock(), last_frame_time = current_time;
-	Point2D screen_size = Point2D( 1, 1);
-	ClearScreen();
+	double
+			dtime = 0.0,
+			time_sleep_milliseconds = 0.0,
+			time_processing_milliseconds = 0.0;
+	clock_t
+		current_time = clock(),
+		last_frame_time = current_time;
 
-	// screen_size.SetX( 120 );
-	// screen_size.SetY( 30 );
+	Point2D screen_size = Point2D( 1, 1);
+	Utility::GUI::ClearScreen();
+
 	srand( time( 0 ) );// inizializzo generatori pseudocasuali
 	GameEngine engine = GameEngine( screen_size.GetX(), screen_size.GetY() );
 	do{
-		setCursor( 0, 0 );
+		// attende solo se il tempo di attesa è positivo, altrimenti l'esecuzione è in ritardo ... (lag)
+		if( time_sleep_milliseconds > 0.0 ) {
+			Utility::sleep( time_sleep_milliseconds );
+		}
+
+		Utility::GUI::Terminal::SetTerminalCursor(0, 0);
+		key = '\0';
 		if( _kbhit() ){
-			key = getInput();
+			key = GetInput();
 		}
 		current_time = clock();
 		dtime = double( current_time - last_frame_time ) / CLOCKS_PER_SEC;
-		if( dtime >= FRAME_TIME ){
-			last_frame_time = clock();
-			screen_size = GetTerminalSize();
-			#ifdef DEBUG
-			screen_size.SetY( screen_size.GetY() - 5 );
-			#endif
-			b_windowSizeUpdated = engine.update( dtime, key, screen_size.GetX(), screen_size.GetY() );
-			if( b_windowSizeUpdated ){
-				ClearScreen();
-			}
-			b_keep_playing = engine.frame( dtime );
-			key = '\0';
-#ifdef DEBUG  // DEBUG
-			std::cout << "Window: "<<screen_size.GetX() << "x" << screen_size.GetY() << " Duration: " << dtime << "\tFPS: ~" << round( 1.0 / dtime ) << "\tScreen size Updated: "<< b_windowSizeUpdated << std::endl;
+		last_frame_time = current_time;
+		screen_size = Utility::GUI::Terminal::GetTerminalSize();
+#ifdef DEBUG
+		screen_size.SetY( screen_size.GetY() - DEBUG_TERMINAL_LINES );
 #endif
+		b_windowSizeUpdated = engine.update( dtime, key, screen_size.GetX(), screen_size.GetY() );
+		if( b_windowSizeUpdated ){
+			Utility::GUI::ClearScreen();
 		}
+		b_keep_playing = engine.frame( dtime );
+
+		current_time = clock();
+		// tempo computazionale richiesto in questo frame
+		time_processing_milliseconds = double( current_time - last_frame_time );
+		// tempo di attesa richiesto prima del prossimo frame
+		time_sleep_milliseconds = ( (FRAME_TIME*CLOCKS_PER_SEC) - time_processing_milliseconds ) ;
+
+#ifdef DEBUG  // DEBUG
+		const int size_str_buffer = 150;
+		char str_print_buffer[size_str_buffer] = "";
+		snprintf( str_print_buffer,
+				  size_str_buffer,
+				  "Window: %d x %d \t Scr Updated: %d \t FPS: ~%.02f \t Frame time: %.03f \t Processing Time: %.03f \t Sleep: %.04f",
+				  (int)screen_size.GetX(), (int)screen_size.GetY(), b_windowSizeUpdated, round( 1.0 / dtime ), dtime, time_processing_milliseconds / CLOCKS_PER_SEC, time_sleep_milliseconds / CLOCKS_PER_SEC );
+		std::cout << str_print_buffer <<endl;
+#endif
 	}while( b_keep_playing );
 
 	const unsigned int closing_seconds = 5;
 	std::cout<< "Game Over" << std::endl << "The Game will close in " << closing_seconds << " seconds ..." << std::endl;
-	Sleep( closing_seconds * 1000 );
+	Utility::sleep( closing_seconds * CLOCKS_PER_SEC );
 
 	return 0;
 }

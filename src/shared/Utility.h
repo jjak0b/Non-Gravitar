@@ -25,6 +25,21 @@ namespace Utility {
 	bool CheckEqualsOrSubstring(const char *str, const char *str_or_substr, bool check_as_subString);
 
 	std::list<Point2D>::iterator random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end);
+
+	void sleep( unsigned milliseconds );
+
+	namespace GUI {
+
+		void ClearScreen();
+
+		namespace Terminal {
+
+			void SetTerminalCursor(int x, int y);
+
+			Point2D GetTerminalSize();
+
+		}
+	}
 }
 
 #endif

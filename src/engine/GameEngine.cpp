@@ -78,9 +78,10 @@ bool GameEngine::frame( double dtime ){
 	this->view->Clear();
 
 #ifdef DEBUG
-	std::cout << "View Width: " << this->view->GetWidth() << std::endl;
-	std::cout << "View Height: " << this->view->GetHeight() << std::endl;
-	std::cout << "Pressed: " << this->GetkeyPressed()<<std::endl;
+	std::cout << "#####################################\n";
+	std::cout << "View Width: " << this->view->GetWidth() << "\n";
+	std::cout << "View Height: " << this->view->GetHeight() << "\n";
+	std::cout << "Pressed: " << this->GetkeyPressed()<< "\n";
 	if( player != NULL ){
 		std::cout << "Player at (" << player->GetOrigin().GetX() << ", " << player->GetOrigin().GetY() << ")" <<std::endl;
 	}

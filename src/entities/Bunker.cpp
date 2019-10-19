@@ -2,20 +2,26 @@
 #include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
 #include <cstring>
+#include "Player.hpp"
 
 Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[] ) : Entity( world, origin, NULL, classname ), Damageable( health ) {
 }
 
 bool Bunker::Update(GameEngine* game) {
 	bool update_result = this->Entity::Update( game );
-	if (health <= 0) update_result = false;
-	if (!update_result) this->Delete( game );
+	if (health <= 0){
+		update_result = false;
+		Player* player = this->GetWorld()->GetPlayer();
+		if( IsDefined( player ) )
+			player->AddScore( PLAYER_SCORE_BUNKER_DESTROYED );
+		this->Delete( game );
+	}
+
     return update_result;
 }
 
 void Bunker::Draw( ViewPort* view ){
 	Entity::Draw( view );
-
 }
 
 Projectile *Bunker::Shoot(Point2D projectile_origin, Vector direction ){
