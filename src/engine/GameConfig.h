@@ -25,7 +25,8 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 
 #define DEBUG
 #ifdef DEBUG
-//#define DEBUG_COLLISION_DRAWING
+// #define DEBUG_COLLISION_DRAWING
+// #define DEBUG_SURFACE_TERRAIN
 #endif
 
 #define _DEFAULT_WINDOW_HEIGHT 30

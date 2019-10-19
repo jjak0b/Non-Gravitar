@@ -6,8 +6,12 @@
 #define UTILITY_HPP
 
 #include <cmath>
+#include "Point2D.hpp"
+#include <list>
+
 #define RANDOM_RANGE( min, max ) ( (min) + (rand() % (int)( (max) - (min) )))
 #define SQR( value ) ( (value)*(value) )
+
 namespace Utility {
 
 	/**
@@ -20,6 +24,7 @@ namespace Utility {
 	*/
 	bool CheckEqualsOrSubstring(const char *str, const char *str_or_substr, bool check_as_subString);
 
+	std::list<Point2D>::iterator random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end);
 }
 
 #endif

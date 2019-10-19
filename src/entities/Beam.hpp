@@ -5,7 +5,7 @@
 
 class Beam : public Projectile{
 	protected:
-	Beam_FX *texture = NULL;
+	Beam_FX *fx = NULL;
 	public:
 	Beam( Level *world, Point2D origin, Vector direction);
 	virtual bool Update( GameEngine *game );

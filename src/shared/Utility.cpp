@@ -16,4 +16,18 @@ namespace Utility {
 		o_str.clear();
 		return isMatching;
 	}
+
+	std::list<Point2D>::iterator random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end) {
+
+		unsigned long n = std::distance(begin, end);
+		unsigned long divisor = (RAND_MAX + 1) / n;
+
+		unsigned long k;
+		do {
+			k = std::rand() / divisor;
+		} while (k >= n);
+
+		std::advance(begin, k);
+		return begin;
+	}
 }

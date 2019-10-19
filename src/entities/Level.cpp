@@ -144,17 +144,17 @@ void Level::Draw( ViewPort *view ){
 		std::list<Point2D>::iterator surface_it, surface_next_it;
 		surface_it = surface_points.begin();
 		Color surface = COLOR_GREEN;
-		Point2D start, end;
+		Point2D
+			start =  surface_points.back(),
+			end;
 
-		// TODO: ricontrollare
 		while( surface_it != surface_points.end() ){
-			start = *surface_it;
-			start = this->GetNormalizedPoint( start );
-			surface_it++;
 			end = *surface_it;
+			start = this->GetNormalizedPoint( start );
 			end = this->GetNormalizedPoint( end );
+
 			DrawLine( view, this, start, end, surface );
-/*		#ifdef DEBUG
+	#ifdef DEBUG_SURFACE_TERRAIN
 			const int size_str_buffer = 30;
 			char str_print_buffer[size_str_buffer] = "";
 			Point2D temp;
@@ -168,7 +168,9 @@ void Level::Draw( ViewPort *view ){
 			temp = end;
 			temp.SetY( temp.GetY() + 3 );
 			view->Print( str_print_buffer, view->WorldPointToViewPoint( this, temp ), COLOR_WHITE );
-		#endif*/
+	#endif
+			start = end;
+			surface_it++;
 		}
 	}
 

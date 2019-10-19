@@ -22,7 +22,6 @@
 #include "shared/Utility.h"
 
 
-
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level( _bounds, "PlanetLevel"){
 	this->planet_entity = planet_entity;
 	this->shape = new Shape();
@@ -100,7 +99,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 		offset_x,
 		offset_y;
 
-	VECTOR_VALUE_TYPE half_width = this->GetMaxWidth() / 2;
+	VECTOR_VALUE_TYPE half_width = this->GetMaxWidth() / 2.0;
 	VECTOR_VALUE_TYPE linking_height = RANDOM_RANGE( min_point_distance_y, max_point_distance_y );
 
 	Point2D start = Point2D( -half_width, linking_height );
@@ -130,6 +129,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 	
 
 	while( temp.GetX() < end.GetX() ){
+		// GENERAZIONE VERTICI DEL TERRENO
 		do {
 			this->shape->addOffset(temp, origin);
 			//surface.push_front(temp);
@@ -151,10 +151,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 							min_point_height));
 		}while( temp.GetY() == old_temp.GetY() );
 
-
-		
-		old_temp = temp;
-
+		// PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
 		random_prob_gen = RANDOM_RANGE(0, 100);
 		if (random_prob_gen <= min_prob_gen ) {
 			random_prob_ent = RANDOM_RANGE(0, 100);
@@ -162,13 +159,13 @@ void PlanetLevel::Generate( GameEngine *game ){
 
 				which_ent = RANDOM_RANGE(0, 4);
 				if ( which_ent == 1 ) {
-					this->AddEntity( new BunkerA(this,temp));
+					new BunkerA(this,temp);
 				}
 				else if ( which_ent == 2) {
-					this->AddEntity( new BunkerB(this, temp));
+					new BunkerB(this, temp);
 				}
 				else {
-					this->AddEntity( new BunkerC(this, temp) );
+					new BunkerC(this, temp);
 				}
 
 				bunker_Counter++;
@@ -176,12 +173,11 @@ void PlanetLevel::Generate( GameEngine *game ){
 			}
 			else if( fuel_Counter < max_Fuel ) {
 				which_ent = RANDOM_RANGE(0, 3);
-
 				if ( which_ent == 1 ) {
-						this->AddEntity( new SmallFuel(this,temp));
-					}
+					new SmallFuel(this,temp);
+				}
 				else if ( which_ent == 2) {
-						this->AddEntity( new BigFuel(this, temp));
+					new BigFuel(this, temp);
 				}
 
 				fuel_Counter++;
@@ -192,49 +188,40 @@ void PlanetLevel::Generate( GameEngine *game ){
 			surface_empty.push_front(temp);
 			min_prob_gen = min_prob_gen + 5;
 		}
+
+		old_temp = temp;
 	}
 	this->shape->addOffset( end, origin );
 
+	// DOPO LA GENERAZIONE DEL TERRENO TENTA LA GENERAZIONE DELLE ENTITA RIMASTE
 	while ( bunker_Counter < min_Bunker && !surface_empty.empty() ) {
-		temp_point = random_element(surface_empty.begin(), surface_empty.end());
+		temp_point = Utility::random_element(surface_empty.begin(), surface_empty.end());
 		which_ent = RANDOM_RANGE(0, 4);
 		if ( which_ent == 1 ) {
-			this->AddEntity( new BunkerA(this,*temp_point));
+			new BunkerA(this,*temp_point);
 		}
 		else if ( which_ent == 2) {
-			this->AddEntity( new BunkerB(this, *temp_point));
+			new BunkerB(this, *temp_point);
 		}
 		else {
-			this->AddEntity( new BunkerC(this, *temp_point) );
+			new BunkerC(this, *temp_point);
 		}
 		bunker_Counter++;
 		surface_empty.erase(temp_point);
 	}
 	while ( fuel_Counter < min_Fuel && !surface_empty.empty() ) {
-		temp_point = random_element(surface_empty.begin(), surface_empty.end());
+		temp_point = Utility::random_element(surface_empty.begin(), surface_empty.end());
 		which_ent = RANDOM_RANGE(0, 3);
 		if ( which_ent == 1 ) {
-				this->AddEntity( new SmallFuel(this,*temp_point));
-			}
+			new SmallFuel(this,*temp_point);
+		}
 		else if ( which_ent == 2) {
-				this->AddEntity( new BigFuel(this, *temp_point));
+			new BigFuel(this, *temp_point);
 		}
 		fuel_Counter++;
 		surface_empty.erase(temp_point);
 	}
 	
-}
-
-std::list<Point2D>::iterator PlanetLevel::random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end) {
-   
-	const unsigned long n = std::distance(begin, end);
-    const unsigned long divisor = (RAND_MAX + 1) / n;
-
-    unsigned long k;
-    do { k = std::rand() / divisor; } while (k >= n);
-
-    std::advance(begin, k);
-    return begin;
 }
 
 void PlanetLevel::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {

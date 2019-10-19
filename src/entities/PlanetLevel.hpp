@@ -78,8 +78,6 @@ class PlanetLevel : public Level{
 	 */
 	bool IsFree();
 
-	std::list<Point2D>::iterator random_element(std::list<Point2D>::iterator begin, std::list<Point2D>::iterator end);
-
 	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 	
 };
