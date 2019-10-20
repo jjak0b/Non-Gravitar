@@ -153,39 +153,47 @@ void PlanetLevel::Generate( GameEngine *game ){
 
 		// PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
 		random_prob_gen = RANDOM_RANGE(0, 100);
+
 		if (random_prob_gen <= min_prob_gen ) {
 			random_prob_ent = RANDOM_RANGE(0, 100);
+
+			// Probabilità generazione Bunker
 			if ( (random_prob_ent <= prob_Bunker) && (bunker_Counter < max_Bunker) ) {
 
 				which_ent = RANDOM_RANGE(0, 4);
 				if ( which_ent == 1 ) {
-					new BunkerA(this,temp);
+
+					new BunkerA(this,old_temp);
 				}
 				else if ( which_ent == 2) {
-					new BunkerB(this, temp);
+					new BunkerB(this, old_temp);
 				}
 				else {
-					new BunkerC(this, temp);
+					new BunkerC(this, old_temp);
 				}
 
 				bunker_Counter++;
 				prob_Bunker = prob_Bunker - 20;
 			}
+
+			// Probabilità generazione Fuel
 			else if( fuel_Counter < max_Fuel ) {
 				which_ent = RANDOM_RANGE(0, 3);
 				if ( which_ent == 1 ) {
-					new SmallFuel(this,temp);
+					new SmallFuel(this,old_temp);
 				}
 				else if ( which_ent == 2) {
-					new BigFuel(this, temp);
+					new BigFuel(this, old_temp);
 				}
 
 				fuel_Counter++;
 				prob_Bunker = prob_Bunker + 20;
 			}			
 		}
+
+		// I punti vuoti vengono inseriti in una lista
 		else {
-			surface_empty.push_front(temp);
+			surface_empty.push_front(old_temp);
 			min_prob_gen = min_prob_gen + 5;
 		}
 
