@@ -127,77 +127,91 @@ void PlanetLevel::Generate( GameEngine *game ){
 		max_Bunker = RANDOM_RANGE( min_Bunker, 8 ),
 		max_Fuel = RANDOM_RANGE( min_Fuel, max_Bunker );
 	
+	Point2D midpoint = Point2D(0,0);
+	Vector bounds = world->GetBounds();
 
 	while( temp.GetX() < end.GetX() ){
 		// GENERAZIONE VERTICI DEL TERRENO
-		do {
+		//do {
 			this->shape->addOffset(temp, origin);
-			//surface.push_front(temp);
-			offset_x = RANDOM_RANGE(min_point_distance_x, max_point_distance_x);
-			offset_y = min_point_height + RANDOM_RANGE(min_point_distance_y, max_point_distance_y);
-			if (rand() % 100 < 50) { // scelgo se variare l'offset del punto in positivo o in negativo
-				offset_y *= -1;
+			//new BunkerA(this, temp);
+
+		if (!temp.Equals(old_temp)) {
+			GetOffSet(&offset_x , old_temp, temp, BOUND_INDEX_WIDTH,  &bounds);
+			GetOffSet(&offset_y , old_temp, temp, BOUND_INDEX_HEIGHT,  NULL);
+			midpoint = Point2D( (old_temp).GetX() + offset_x/2, (old_temp).GetY() + offset_y/2 );
+			// // PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
+		// random_prob_gen = RANDOM_RANGE(0, 100);
+
+			if (random_prob_gen <= min_prob_gen ) {
+				random_prob_ent = RANDOM_RANGE(0, 100);
+
+				// Probabilità generazione Bunker
+				if ( (random_prob_ent <= prob_Bunker) && (bunker_Counter < max_Bunker) ) {
+
+					which_ent = RANDOM_RANGE(0, 4);
+					if ( which_ent == 1 ) {
+
+						new BunkerA(this,midpoint);
+					}
+					else if ( which_ent == 2) {
+						new BunkerB(this, midpoint);
+					}
+					else {
+						new BunkerC(this, midpoint);
+					}
+
+					bunker_Counter++;
+					prob_Bunker = prob_Bunker - 20;
+				}
+
+				// Probabilità generazione Fuel
+				else if( fuel_Counter < max_Fuel ) {
+					which_ent = RANDOM_RANGE(0, 3);
+					if ( which_ent == 1 ) {
+						new SmallFuel(this, midpoint);
+					}
+					else if ( which_ent == 2) {
+						new BigFuel(this, midpoint);
+					}
+
+					fuel_Counter++;
+					prob_Bunker = prob_Bunker + 20;
+				}			
 			}
 
-			direction.Set(0, offset_x);
-			direction.Set(1, offset_y);
-
-			temp.Add(direction);
-
-			// l'ordinata deve essere compresa tra min_point_height e max_point_height
-			temp.SetY(
-					max(
-							min(temp.GetY(), max_point_height),
-							min_point_height));
-		}while( temp.GetY() == old_temp.GetY() );
-
-		// PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
-		random_prob_gen = RANDOM_RANGE(0, 100);
-
-		if (random_prob_gen <= min_prob_gen ) {
-			random_prob_ent = RANDOM_RANGE(0, 100);
-
-			// Probabilità generazione Bunker
-			if ( (random_prob_ent <= prob_Bunker) && (bunker_Counter < max_Bunker) ) {
-
-				which_ent = RANDOM_RANGE(0, 4);
-				if ( which_ent == 1 ) {
-
-					new BunkerA(this,old_temp);
-				}
-				else if ( which_ent == 2) {
-					new BunkerB(this, old_temp);
-				}
-				else {
-					new BunkerC(this, old_temp);
-				}
-
-				bunker_Counter++;
-				prob_Bunker = prob_Bunker - 20;
+			// I punti vuoti vengono inseriti in una lista
+			else {
+				surface_empty.push_front(midpoint);
+				min_prob_gen = min_prob_gen + 5;
 			}
 
-			// Probabilità generazione Fuel
-			else if( fuel_Counter < max_Fuel ) {
-				which_ent = RANDOM_RANGE(0, 3);
-				if ( which_ent == 1 ) {
-					new SmallFuel(this,old_temp);
-				}
-				else if ( which_ent == 2) {
-					new BigFuel(this, old_temp);
-				}
-
-				fuel_Counter++;
-				prob_Bunker = prob_Bunker + 20;
-			}			
 		}
-
-		// I punti vuoti vengono inseriti in una lista
-		else {
-			surface_empty.push_front(old_temp);
-			min_prob_gen = min_prob_gen + 5;
-		}
-
+			
 		old_temp = temp;
+
+		offset_x = RANDOM_RANGE(min_point_distance_x, max_point_distance_x);
+		offset_y = min_point_height + RANDOM_RANGE(min_point_distance_y, max_point_distance_y);
+		if (rand() % 100 < 50) { // scelgo se variare l'offset del punto in positivo o in negativo
+			offset_y *= -1;
+		}
+
+		direction.Set(0, offset_x);
+		direction.Set(1, offset_y);
+
+		temp.Add(direction);
+
+		// l'ordinata deve essere compresa tra min_point_height e max_point_height
+		temp.SetY(
+				max(
+						min(temp.GetY(), max_point_height),
+						min_point_height));
+		//}while( temp.GetY() == old_temp.GetY() );
+		
+		
+
+		
+		//old_temp = temp;
 	}
 	this->shape->addOffset( end, origin );
 
