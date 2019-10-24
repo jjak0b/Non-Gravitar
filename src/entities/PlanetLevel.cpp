@@ -1,24 +1,11 @@
-    
 #include "PlanetLevel.hpp"
 #include "PlanetEntity.hpp"
-#include "engine/GameEngine.hpp"
 #include "Player.hpp"
 #include "BunkerA.hpp"
 #include "BunkerB.hpp"
-#include "BunkerC.hpp"
-#include "Bunker.hpp"
-#include "Projectile.hpp"
-#include "Damageable.hpp"
-#include <cmath>
-#include "Level.hpp"
-#include <ctime>    
-#include <cstdlib>  
-#include "Entity.hpp"
-#include "shared/Point2D.hpp"
-#include "Fuel.hpp"
+#include "BunkerC.hpp" 
 #include "SmallFuel.hpp"
 #include "BigFuel.hpp"
-#include <cstring>
 #include "shared/Utility.h"
 
 

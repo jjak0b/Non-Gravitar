@@ -1,11 +1,9 @@
 #include "Level.hpp"
 #include "Player.hpp"
 #include "engine/GameEngine.hpp"
-#include <iostream>
-#include <list>
-#include <iterator>
-#include <cstring>
 #include "shared/Utility.h"
+#include <cstring>
+
 using namespace std;
 
 Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){

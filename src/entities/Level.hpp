@@ -1,9 +1,6 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "shared/Point2D.hpp"
-#include <list>
-using namespace std;
 
 #define BOUND_INDEX_WIDTH 0
 #define BOUND_INDEX_HEIGHT 1

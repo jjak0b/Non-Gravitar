@@ -1,14 +1,5 @@
-#include "Bunker.hpp"
 #include "BunkerC.hpp"
-#include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
-#include <ctime>    
-#include <cstdlib>  
-#include <iostream>
-#include <list>
-#include <iterator>
-#include <cstring>
-
     
 BunkerC::BunkerC( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerC"){
 
@@ -31,7 +22,8 @@ bool BunkerC::Update(GameEngine* game) {
     bool update_result = this->Bunker::Update( game );
 
    if (update_result) {
-
+	
+	// Genera due proiettili nella stessa direzione.
 		if ((game->GetTime() - this->timer) >= 1.5) {
 
 			Vector *direction = new Vector();
@@ -48,11 +40,4 @@ bool BunkerC::Update(GameEngine* game) {
 
     }
     return update_result;
-
-}
-
-
-void BunkerC::Draw( ViewPort *view ){
-	Bunker::Draw( view );
-
 }

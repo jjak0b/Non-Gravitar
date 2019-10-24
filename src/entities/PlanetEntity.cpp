@@ -1,9 +1,7 @@
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
-#include "engine/GameEngine.hpp"
-#include "SolarSystem.hpp"
 #include "Player.hpp"
-#include <cstring>
+
 
 PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture, unsigned int _radius, Vector _bounds ) : Entity( world, origin, texture, "PlanetEntity" ){
 	this->radius = _radius;

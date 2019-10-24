@@ -1,41 +1,34 @@
 #include "Player.hpp"
-#include "Level.hpp"
-#include "engine/Bitmap.hpp"
-#include "engine/GameEngine.hpp"
-#include "engine/GameConfig.h"
 #include "Projectile.hpp"
 #include "Beam.hpp"
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
-#include "shared/Point2D.hpp"
-#include <iostream>
-#include <list>
-#include <iterator>
-#include <cstring>
 #include "shared/Utility.h"
+#include <cstring>
+
 #ifdef __WIN32__ // TODO: Rimuovere dopo test
 #include <windows.h>
 #endif
 
 Player::Player( Level *world, Point2D origin, double health = PLAYER_HEALTH ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(health) {
+
+	this->moveOverride = NULL;
+	this->MaxFuel = PLAYER_MAX_FUEL;
+	this->fuel = this->MaxFuel;
+	this->score = 0;
+
 	this->texture = new Bitmap( 3, 5, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
 	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
 	const BITMAP_DATA_TYPE raw_texturer2[] = "/   \\";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
 	this->texture->Load( rawtexture, NULL, 3, 5 );
-	this->moveOverride = NULL;
-	this->MaxFuel = PLAYER_MAX_FUEL;
-	this->fuel = this->MaxFuel;
-	this->score = 0;
-
+	
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D( -2, 6 ), origin);
 	this->shape->addOffset(Point2D( -2, 0 ), origin);
 	this->shape->addOffset(Point2D( +2, 0 ), origin);
 	this->shape->addOffset(Point2D( +2, 6 ), origin);
-
-	
 }
 
 Player::~Player(){
@@ -110,7 +103,8 @@ bool Player::Update( GameEngine *game ){
 				this->RemoveFuel( 1 );
 			#endif
 			}
-#endif
+#endif		
+			// Generazione proiettile
 			if (this->ShouldFire(input)) {
 				Vector direction = this->GetVelocity();
 				direction.Normalize();
@@ -120,6 +114,7 @@ bool Player::Update( GameEngine *game ){
 				this->Fire(lastMove);
 #endif
 			}
+			// Generazione raggio traente
 			else if (this->ShouldBeam(input)) {
 				Vector direction = this->GetVelocity();
 				direction.Normalize();
@@ -210,13 +205,6 @@ Vector Player::GetDirectionFromInput( char input ){
 	return direction;
 }
 
-char Player::GetLastInput(){
-	return this->lastInput;
-}
-Vector Player::GetLastMove(){
-	return this->lastMove;
-}
-
 void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
@@ -238,14 +226,14 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 			Projectile *proj = (Projectile*)collide_ent;
 			
 #ifdef DEBUG_COLLISION_DRAWING
-			DrawLine( game->view, this->world, proj->GetFireOrigin(), collide_ent->GetOrigin(), COLOR_RED );
+			DrawLine( game->view, this->world, proj->GetOrigin(), collide_ent->GetOrigin(), COLOR_RED );
 #else
 			this->DoDamage( proj->GetDamage());
 #endif
 		}
 		// Collisione contro un Bunker
 		else if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Bunker", true ) ){
-			// this->DoDamage( this->GetHealth() );
+			this->DoDamage( this->GetHealth() );
 			Utility::sleep(1000);
 		}
 		else if( !strcmp( collide_ent->GetClassname(), "PlanetEntity" ) ) {

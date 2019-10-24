@@ -7,9 +7,12 @@ Beam::Beam( Level *world, Point2D origin, Vector direction ) : Projectile( world
 
 bool Beam::Update(GameEngine *game) {
 	bool update_result = this->Projectile::Update(game);
+
+	// Aggiornamento texture del raggio.
 	if (update_result)
 		this->fx->addNext(origin);
 	else
 		this->fx->Delete(game);
+
 	return update_result;
 }

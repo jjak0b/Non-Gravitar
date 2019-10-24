@@ -2,8 +2,8 @@
 
 #include "shared/Point2D.hpp"
 #include "engine/Bitmap.hpp"
-#include <stddef.h> // usato per definizione di NULL
 #include "shared/Shape.hpp"
+#include <stddef.h> // usato per definizione di NULL
 
 class Level;
 class GameEngine;

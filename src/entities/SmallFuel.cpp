@@ -15,8 +15,3 @@ SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
 	this->shape->addOffset(Point2D( +1, +2 ), origin);
 	this->shape->addOffset(Point2D( -1, +2 ), origin);
 }
-
-bool SmallFuel::Update(GameEngine *game) {
-	bool update_result = Fuel::Update( game );
-	return update_result;
-}

@@ -1,13 +1,5 @@
-#include "Bunker.hpp"
 #include "BunkerB.hpp"
-#include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
-#include <ctime>    
-#include <cstdlib>  
-#include <iostream>
-#include <list>
-#include <iterator>
-#include <cstring>
     
 BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerB"){
 
@@ -27,43 +19,36 @@ BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 
 
 bool BunkerB::Update(GameEngine* game) {
-    
     bool update_result = this->Bunker::Update( game );
+	Vector direction;
+	Point2D projectile_origin;
 	
     if (update_result) {
 
+		// Genera tre proiettili con tre direzioni diverse.
 		if ((game->GetTime() - this->timer) >= 3) {
 
-			Vector *direction = new Vector();
-			direction->Set(0,-1);
-			direction->Set(1,1);
-			Point2D projectile_origin = Point2D(this->origin.GetX() -3, this->origin.GetY() +5 );
-			Shoot( projectile_origin, (*direction));
+			direction.Set(0,-1);
+			direction.Set(1,1);
+			projectile_origin = Point2D(this->origin.GetX() -3, this->origin.GetY() +5 );
+			Shoot( projectile_origin, direction);
 			
-			direction->Set(0,0);
-			direction->Set(1,1);
+			direction.Set(0,0);
+			direction.Set(1,1);
 			projectile_origin = Point2D(this->origin.GetX(), this->origin.GetY() +5 );
-			Shoot(projectile_origin, (*direction));
+			Shoot(projectile_origin, direction);
 			
-			direction->Set(0,1);
-			direction->Set(1,1);
+			direction.Set(0,1);
+			direction.Set(1,1);
 			projectile_origin = Point2D(this->origin.GetX() +3, this->origin.GetY() +5 );
-			Shoot(projectile_origin, (*direction));
-			
-			delete direction;
+			Shoot(projectile_origin, direction);
 
 			this->timer = game->GetTime();
 		}
 	}
     return update_result;
-
 }
 
-
-void BunkerB::Draw( ViewPort *view ){
-	Bunker::Draw( view );
-
-}
 
 
 

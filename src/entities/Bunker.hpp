@@ -14,11 +14,13 @@ class Bunker : public Entity, public Damageable {
 
 		virtual bool Update(GameEngine* game);
 
-		virtual void Draw(ViewPort* view);
-
+		/**
+		 * @brief Genera un proiettile.
+		 * PreCondition: projectile_origin e direction diversi da NULL.
+		 * @param projectile_origin Origine del proiettile.
+		 * @param direction Direzione del proiettile.
+		 */
 		Projectile *Shoot(Point2D projectile_origin, Vector direction );
-
-		int random(int range);
 
 		virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 

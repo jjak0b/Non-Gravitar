@@ -1,9 +1,5 @@
 #include "BunkerA.hpp"
-#include "Bunker.hpp"
-#include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
-#include <ctime>
-#include <cstring>
 
 BunkerA::BunkerA( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerA"){
 
@@ -22,39 +18,32 @@ BunkerA::BunkerA( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 
 bool BunkerA::Update(GameEngine* game) {
     bool update_result = Bunker::Update( game );
+	Vector direction;
+	Point2D projectile_origin;
+	int r1 = 0,
+		r2 = 0;
 
 	if (update_result) {
+
+		// Genera due proiettili con direzione casuale.
 		if ((game->GetTime() - this->timer) >= 2) {
 
-			int r1 = random(4);
-			int r2 = random (4);
-			while (r1 == r2) r2 = random(4);
+			r1 = rand() % 9 + (-4);
+			int r2 = rand() % 9 + (-4);
+			while (r1 == r2) r2 = rand() % 9 + (-4);
 
-			Vector *direction = new Vector();
-			direction->Set(0,r1);
-			direction->Set(1,1);
-			Point2D projectile_origin = Point2D(this->origin.GetX() -1, this->origin.GetY() +2 );
-			Shoot( projectile_origin, (*direction));
+			direction.Set(0,r1);
+			direction.Set(1,1);
+			projectile_origin = Point2D(this->origin.GetX() -1, this->origin.GetY() +2 );
+			Shoot( projectile_origin, direction);
 
-			direction->Set(0,r2);
-			direction->Set(1,1);
+			direction.Set(0,r2);
+			direction.Set(1,1);
 			projectile_origin = Point2D(this->origin.GetX() +1, this->origin.GetY() +2 );
-			Shoot( projectile_origin, (*direction));
-
-			delete direction;
+			Shoot( projectile_origin, direction);
 
 			this->timer = game->GetTime();
     	}
-
-
     }
-	return update_result;
-	
-	
-}
-
-
-
-void BunkerA::Draw( ViewPort *view ){
-	Bunker::Draw( view );
+	return update_result;	
 }

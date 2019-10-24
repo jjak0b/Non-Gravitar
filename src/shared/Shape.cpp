@@ -1,9 +1,4 @@
 #include "Shape.hpp"
-#include "Point2D.hpp"
-#include "Vector.hpp"
-#include "Side.hpp"
-#include <cmath>
-#include "entities/Level.hpp"
 #include "Line2D.hpp"
 
 Shape::Shape() {
@@ -17,14 +12,6 @@ Shape::~Shape() {
 
 void Shape::addAbsolute( Point2D point ) {
   this->absolute_points.push_front(point);
-}
-
-void Shape::addAbsoluteList( list<Point2D> point_list ) {
-  
-  std::list<Point2D>::iterator it = point_list.begin();
-  for (it; it !=  point_list.end(); it++) {
-      addAbsolute( (*it) );
-  }
 }
 
 void Shape::addOffset( Point2D point, Point2D origin ) {

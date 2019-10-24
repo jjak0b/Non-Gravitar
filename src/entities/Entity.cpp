@@ -1,10 +1,10 @@
 #include "Entity.hpp"
 #include "engine/GameEngine.hpp"
 #include "Level.hpp"
-#include <cstring>
-#include <iostream>
 #include "engine/GameEngine.hpp"
 #include "shared/Shape.hpp"
+#include <cstring>
+#include <iostream>
 
 
 Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char classname[], Shape *shape ){
