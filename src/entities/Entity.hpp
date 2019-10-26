@@ -47,7 +47,7 @@ public:
 	 * @param origin 
 	 * @return Point2D : le coordinate normalizzate al mondo
 	 */
-	Point2D SetOrigin( Point2D origin );
+	virtual Point2D SetOrigin( const Point2D origin );
 
 	/**
 	 * @brief Restituisce la posizione attuale di questa entità nel mondo
@@ -103,9 +103,16 @@ public:
 	 * @return true se è avvenuta una collisione
 	 * @return false altrimenti
 	 */
-	virtual bool IsColliding( Entity *entity);
+
+	virtual bool IsColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+							GameEngine* game,
+#endif
+							Entity *entity);
+
 
 	Shape* GetShape();
+
 	void SetShape( Shape *shape );
 
 

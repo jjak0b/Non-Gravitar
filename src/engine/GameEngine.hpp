@@ -6,7 +6,11 @@
 #include "entities/SolarSystem.hpp"
 
 class GameEngine{
+#ifdef DEBUG
 public:
+#else
+private:
+#endif
 	ViewPort *view;
 private:
 	INPUT_TYPE input_key;

@@ -23,11 +23,25 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define INPUT_USE_FIRE 'f'
 #define INPUT_USE_BEAM 'r'
 
+
+#define ENABLE_COLLISION_ENTITIES
+#define ENABLE_COLLISION_LEVEL
+
 #define DEBUG
 #ifdef DEBUG
+
 // #define DEBUG_COLLISION_DRAWING
-// #define DEBUG_SURFACE_TERRAIN
+
+#ifdef ENABLE_COLLISION_LEVEL
+#define DEBUG_COLLISION_SURFACE_TERRAIN
+#endif
+
+#ifdef ENABLE_COLLISION_ENTITIES
+#define DEBUG_COLLISION_ENTITIES
+#endif
+
 #define DEBUG_TERMINAL_LINES 8
+
 #endif
 
 #define _DEFAULT_WINDOW_HEIGHT 30

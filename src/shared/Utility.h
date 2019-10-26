@@ -11,6 +11,9 @@
 
 #define RANDOM_RANGE( min, max ) ( (min) + (rand() % (int)( (max) - (min) )))
 #define SQR( value ) ( (value)*(value) )
+#define ISINRANGE(min, value, max ) ( (min) <= (value) && (value) <= (max) )
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 namespace Utility {
 

@@ -70,28 +70,38 @@ bool Level::Update( GameEngine *game ){
 		list<Entity*> ents = GetEntities(NULL, false, false);
 		entity_it = ents.begin();
 		Entity *entity = NULL;
-
+#ifdef ENABLE_COLLISION_LEVEL
 		while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
 			entity = *entity_it;
 			if ( IsDefined( entity ) ) {
-				if ( entity->IsColliding( this ) ) {
+				if ( this->IsColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+						game,
+#endif
+						entity ) ) {
 					entity->Callback_OnCollide(game, this);
 				}
 			}
 			entity_it++;
-		}
 #ifdef DEBUG_COLLISION_DRAWING
-		if( this->GetShape() != NULL )
-			this->GetShape()->UpdateAbsolutes( origin );
+			if( this->GetShape() != NULL )
+				this->GetShape()->UpdateAbsolutes( origin );
 #endif
-		Entity *entity2 = NULL;
+		}
+#endif
 		entity_it = ents.begin();
+#ifdef ENABLE_COLLISION_ENTITIES
+		Entity *entity2 = NULL;
 		while( !ents.empty() && entity_it != ents.end() ) {
 			entity = *entity_it;
 			entity_it_2 = ents.begin();
 			while( IsDefined( entity ) && !ents.empty() && entity_it_2 != ents.end() ) {
 				entity2 = *entity_it_2;
-				if ( entity != entity2 && IsDefined( entity2 ) && entity->IsColliding( entity2 ) ) {
+				if ( entity != entity2 && IsDefined( entity2 ) && entity->IsColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+						game,
+#endif
+						entity2 ) ) {
 					entity2->Callback_OnCollide(game, entity );
 
 				}
@@ -104,11 +114,10 @@ bool Level::Update( GameEngine *game ){
 				}
 #endif
 				entity_it_2++;
-
 			}
 			entity_it++;
 		}
-
+#endif
 		// NOTA: Soluzione temporanea ma non 100% affidabile;
 		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
 		entity_it = this->entities.begin();
@@ -183,8 +192,16 @@ void Level::Draw( ViewPort *view ){
 	}
 #else
 	Color c = Color( 255, 255, 0 );
-	std::list<Entity*> ents = GetEntities( NULL, false, false );
+	std::list<Entity*> ents;
+#ifdef DEBUG_COLLISION_ENTITIES
+	ents = GetEntities( NULL, false, false );
+#endif
+#ifdef DEBUG_COLLISION_SURFACE_TERRAIN
+#ifndef DEBUG_COLLISION_ENTITIES
+	ents.push_front( this->player );
+#endif
 	ents.push_front( this );
+#endif
 	for (std::list<Entity*>::iterator it = ents.begin(); it != ents.end(); it++) {
 		Entity* ent = *it;
 		if( IsDefined( ent  ) ){

@@ -52,7 +52,7 @@ void Entity::SetWorld( Level *_world ){
 	}
 }
 
-Point2D Entity::SetOrigin( Point2D _origin ){
+Point2D Entity::SetOrigin( const Point2D _origin ){
 	if( this->world != NULL ){
 		this->origin = this->world->GetNormalizedPoint( _origin );
 	}
@@ -91,8 +91,11 @@ Shape* Entity::GetShape() {
 void Entity::SetShape( Shape *shape ) {
 	this->shape = shape;
 }
-
+#ifdef DEBUG_COLLISION_DRAWING
+bool Entity::IsColliding( GameEngine* game,  Entity *entity ){
+#else
 bool Entity::IsColliding( Entity *entity ){
+#endif
 	bool isColliding = false;
 	Vector* ptr_bounds = NULL;
 	Vector bounds;
@@ -102,9 +105,23 @@ bool Entity::IsColliding( Entity *entity ){
 		ptr_bounds->Set( 1, 0 );
 	}
 	if( this->world != NULL && this->shape != NULL && entity->shape != NULL){
-		isColliding = this->GetShape()->IsShapeColliding( this->GetOrigin(), entity->GetOrigin(), entity->GetShape(), ptr_bounds );
+		isColliding = this->GetShape()->IsShapeColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+				game,
+#endif
+				this->GetOrigin(),
+				entity->GetOrigin(),
+				entity->GetShape(),
+				ptr_bounds );
 		if( !isColliding ){
-			isColliding = entity->GetShape()->IsShapeColliding(entity->GetOrigin(), this->GetOrigin(), this->GetShape(), ptr_bounds );
+			isColliding = entity->GetShape()->IsShapeColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+					game,
+#endif
+					entity->GetOrigin(),
+					this->GetOrigin(),
+					this->GetShape(),
+					ptr_bounds );
 		}
 	}
 	return isColliding;

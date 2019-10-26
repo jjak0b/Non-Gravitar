@@ -4,6 +4,7 @@
 
 class DynamicEntity : public Entity{
 protected:
+	Vector* previous_origin = NULL;
 	Vector* velocity = NULL;
 	Vector* previous_velocity = NULL;
 	Vector* acceleration = NULL;
@@ -18,6 +19,8 @@ public:
 
 	VECTOR_VALUE_TYPE GetMaxSpeed();
 
+	virtual Point2D SetOrigin( const Point2D origin );
+
 	void SetVelocity(const Vector velocity);
 
 	Vector GetVelocity();
@@ -29,5 +32,6 @@ public:
 	void AddAcceleration(Vector acceleration);
 
 	virtual bool Update( GameEngine *game );
+
 	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 };

@@ -1,7 +1,7 @@
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
 #include "Player.hpp"
-
+#include "shared/Utility.h"
 
 PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture, unsigned int _radius, Vector _bounds ) : Entity( world, origin, texture, "PlanetEntity" ){
 	this->radius = _radius;
@@ -47,14 +47,6 @@ bool PlanetEntity::Update( GameEngine *game ){
 		update_result = false;
 		this->Delete( game ); // Il Planetlevel associato e questa entità non saranno più significativi
 	}
-	/*else if( update_result ){
-		// Mi interessa verificare solo la collisione con l'entità giocatore per verificare se vuole entrare nel pianeta
-		Player *player = this->GetWorld()->GetPlayer();
-		if( this->IsColliding( player ) ){
-			this->Callback_OnCollide( game, player );
-			update_result = false;
-		}
-	}*/
 
 	return update_result;
 }
@@ -64,11 +56,16 @@ void PlanetEntity::Draw( ViewPort *view ){
 		DrawCircle( view, this->world, this->origin, this->radius, DEFAULT_PLANET_ENTITY_COLOR );
 }
 
-bool PlanetEntity::IsColliding( Entity *entity ){
+bool PlanetEntity::IsColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+								GameEngine* game
+#endif
+								Entity *entity ){
+
 	if( IsDefined(this) && IsDefined(entity) ){
 		Vector bounds = this->GetWorld()->GetBounds();
 		VECTOR_VALUE_TYPE dist_sqr = this->GetOrigin().DistanceSquared( entity->GetOrigin(), &bounds );
-		return dist_sqr <= ( this->radius * this->radius );
+		return dist_sqr <= SQR(this->radius);
 	}
 	return false;
 }

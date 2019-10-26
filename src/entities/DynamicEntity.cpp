@@ -2,19 +2,30 @@
 #include "engine/GameEngine.hpp"
 
 DynamicEntity::DynamicEntity(Level *world, Point2D origin, Bitmap *texture, const char classname[], VECTOR_VALUE_TYPE speed_max ) : Entity(world, origin, texture, classname){
-	this->velocity = new Vector();
-	this->previous_velocity = new Vector();
-	this->acceleration = new Vector();
+	this->previous_origin = new Vector( origin.GetSize() );
+	this->velocity = new Vector( origin.GetSize() );
+	this->previous_velocity = new Vector( origin.GetSize() );
+	this->acceleration = new Vector( origin.GetSize() );
 	this->speed_max = speed_max;
 }
 
-DynamicEntity::~DynamicEntity(){
-	delete this->velocity;
-	this->velocity = NULL;
-	delete this->previous_velocity;
-	this->previous_velocity = NULL;
-	delete this->acceleration;
-	this->acceleration = NULL;
+DynamicEntity::~DynamicEntity() {
+	if (this->previous_origin != NULL) {
+		delete this->previous_origin;
+		this->previous_origin = NULL;
+	}
+	if(  this->velocity != NULL ){
+		delete this->velocity;
+		this->velocity = NULL;
+	}
+	if( this->previous_velocity != NULL ) {
+		delete this->previous_velocity;
+		this->previous_velocity = NULL;
+	}
+	if( this->acceleration != NULL ) {
+		delete this->acceleration;
+		this->acceleration = NULL;
+	}
 }
 
 VECTOR_VALUE_TYPE DynamicEntity::GetSpeed(){
@@ -23,6 +34,11 @@ VECTOR_VALUE_TYPE DynamicEntity::GetSpeed(){
 
 VECTOR_VALUE_TYPE DynamicEntity::GetMaxSpeed(){
 	return this->speed_max;
+}
+
+Point2D DynamicEntity::SetOrigin( const Point2D origin ){
+	*this->previous_origin = this->origin;
+	return Entity::SetOrigin( origin );
 }
 
 void DynamicEntity::SetVelocity(Vector _velocity) {

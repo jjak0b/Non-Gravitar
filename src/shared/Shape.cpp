@@ -1,5 +1,5 @@
 #include "Shape.hpp"
-#include "Line2D.hpp"
+#include "Segment.hpp"
 
 Shape::Shape() {
 };
@@ -34,6 +34,17 @@ void Shape::addOffset( Point2D point, Point2D origin ) {
 	addAbsolute(origin);
 }
 
+Point2D Shape::PopOffset(){
+	this->absolute_points.pop_front();
+	Point2D offset = this->offset_points.front();
+	this->offset_points.pop_front();
+	return offset;
+}
+
+size_t Shape::GetOffsetCount(){
+	return this->offset_points.size();
+}
+
 list<Point2D> Shape::getAbsolutes() {
   return this->absolute_points;
 }
@@ -60,8 +71,11 @@ void Shape::UpdateAbsolutes( Point2D origin ) {
 }
 
 // Intersezioni
+#ifdef DEBUG_COLLISION_DRAWING
+bool Shape::IsShapeColliding( GameEngine* game, Point2D this_origin, Point2D shape_origin, Shape* collision_shape, Vector* bounds ) {
+#else
 bool Shape::IsShapeColliding( Point2D this_origin, Point2D shape_origin, Shape* collision_shape, Vector* bounds ) {
-
+#endif
 	Vector distance_offset;
 	distance_offset = BuildDirection( this_origin, shape_origin, bounds );
 
@@ -70,15 +84,59 @@ bool Shape::IsShapeColliding( Point2D this_origin, Point2D shape_origin, Shape* 
 	origin.Add(distance_offset);
 	collision_shape->UpdateAbsolutes(origin);
 
-	list<Point2D> collision_points = collision_shape->getAbsolutes();
-	std::list<Point2D>::iterator it = collision_points.begin();
 	bool is_Colliding = false;
-
+	list<Point2D> collision_points = collision_shape->getAbsolutes();
+	std::list<Point2D>::iterator it;
+#ifdef USE_COLLISION_ODD_EVEN
+	it = collision_points.begin();
 	while( !is_Colliding && it != collision_points.end() ){
 		if ( this->IsPointInShape( *it ) )
 			is_Colliding = true;
 		it++;
 	}
+#else
+	Point2D
+		this_start,
+		this_end,
+		shape_start,
+		shape_end;
+	Segment
+		side_of_this_shape,
+		side_of_shape;
+	std::list<Point2D>::iterator it_this = this->absolute_points.begin();
+	this_start = this->absolute_points.back();
+	while(
+#ifndef DEBUG_COLLISION_DRAWING
+			!is_Colliding &&
+#endif
+			it_this != this->absolute_points.end() ){
+		this_end = *it_this;
+		side_of_this_shape = Segment( this_start, this_end );
+
+		it = collision_points.begin();
+		shape_start = collision_points.back();
+		while(
+#ifndef DEBUG_COLLISION_DRAWING
+				!is_Colliding &&
+#endif
+				it != collision_points.end() ){
+			shape_end = *it;
+
+			side_of_shape = Segment( shape_start, shape_end, bounds );
+			is_Colliding = is_Colliding || side_of_this_shape.IsIntersecting(
+#ifdef DEBUG_COLLISION_DRAWING
+					game,
+#endif
+
+					side_of_shape );
+			shape_start = shape_end;
+			it++;
+		}
+
+		this_start = this_end;
+		it_this++;
+	}
+#endif
 	return	is_Colliding;
 }
 
@@ -138,8 +196,8 @@ bool Shape::IsPointInShape(Point2D point) {
 
 	for( std::list<Point2D>::iterator it = this->absolute_points.begin(); it != this->absolute_points.end(); it++ ) {
 		end = *it;
-		Side side = Side( start, end );
-		Line2D line = Line2D( side );
+		Segment side = Segment( start, end );
+		Segment line = Segment( side );
 		xp0 = start.GetX();
 		yp0 = start.GetY();
 		xp1 = end.GetX();
@@ -189,7 +247,7 @@ bool Shape::ray_Casting(Point2D point) {
 
 	// conta le intersezioni del ray con i lati del poligono
   Point2D ray_A = Point2D( ( Xmin - e/point.GetY() ) , point.GetY());
-  Side ray = Side(ray_A, point);
+  Segment ray = Segment(ray_A, point);
 
 
   bool isIntersecting = false;
@@ -198,7 +256,7 @@ bool Shape::ray_Casting(Point2D point) {
   start = this->absolute_points.back();
   end = *it;
   while( it != this->absolute_points.end() ) {
-	  Side side = Side(start, end);
+	  Segment side = Segment(start, end);
 	  // if (_areIntersecting( side, ray, world ) ) intersections ++;
 	  if (_areIntersecting( side, ray ) ) isIntersecting = !isIntersecting;
 
@@ -220,7 +278,7 @@ bool Shape::ray_Casting(Point2D point) {
 }  
 
 
-bool Shape::_areIntersecting( Side v1, Side v2 ) {
+bool Shape::_areIntersecting( Segment v1, Segment v2 ) {
 
     float v1x1 = v1.GetStart().GetX();
     float v1y1 = v1.GetStart().GetY();

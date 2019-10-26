@@ -10,6 +10,12 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D(0,0), origin);
+
+	// aggiungo un offset nella direzione di movimento per facilitare la verifica di collisione
+	Point2D offset_movement_point = Point2D();
+	offset_movement_point.Add( direction );
+	offset_movement_point.Normalize();
+	this->shape->addOffset( offset_movement_point , origin);
 }
 
 Vector Projectile::GetDirection(){
@@ -32,6 +38,10 @@ bool Projectile::Update( GameEngine *game ) {
 		if( game->GetTime() > this->deathtime || this->IsOutOfTheWorld()  ) {
 			update_result = false;
 		}
+	}
+
+	if( !update_result ){
+		this->Delete( game );
 	}
 
 	return update_result;

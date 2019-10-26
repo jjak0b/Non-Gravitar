@@ -1,11 +1,17 @@
 #pragma once
 
-#include "Side.hpp"
+#include "engine/GameConfig.h"
+#include "Point2D.hpp"
 #include <stddef.h>
-class Vector;
 
-class Line2D : public Side {
+class Vector;
+#ifdef DEBUG_COLLISION_DRAWING
+class GameEngine;
+#endif
+class Segment {
 protected:
+	Point2D start;
+	Point2D end;
 	bool isVertical;
 	bool isHorizontal;
 	VECTOR_VALUE_TYPE m; // coefficiente angolare
@@ -14,7 +20,11 @@ protected:
 
 public:
 
-	Line2D( Side segment = Side(), Vector* bounds = NULL );
+	Segment(Point2D start = Point2D(), Point2D end = Point2D(), Vector* bounds = NULL );
+
+	Point2D GetStart();
+
+	Point2D GetEnd();
 
 	/**
 	 * @brief restituisce il coefficiente angolare della retta o il suo onverso, assegnandolo a value
@@ -58,11 +68,15 @@ public:
 	/**
 	 * @brief Indica se la retta interseca line
 	 * 
-	 * @param line 
+	 * @param segment
 	 * @return true 
 	 * @return false 
 	 */
-	bool IsIntersecting( Line2D line );
+	bool IsIntersecting(
+#ifdef DEBUG_COLLISION_DRAWING
+							GameEngine* game,
+#endif
+							Segment segment );
 
 protected:
 
