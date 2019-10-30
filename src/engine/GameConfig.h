@@ -30,7 +30,7 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define DEBUG
 #ifdef DEBUG
 
-// #define DEBUG_COLLISION_DRAWING
+#define DEBUG_COLLISION_DRAWING
 
 #ifdef ENABLE_COLLISION_LEVEL
 #define DEBUG_COLLISION_SURFACE_TERRAIN

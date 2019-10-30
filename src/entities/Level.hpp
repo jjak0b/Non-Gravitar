@@ -47,6 +47,12 @@ public:
 	virtual void Generate( GameEngine *game );
 
 	/**
+	 * @return true se il giocatore si trova in / o "vede" una zona del livello che non è stata generata
+	 * @return false altrimenti
+	 */
+	virtual int ShouldGenerate(ViewPort *view);
+
+	/**
 	 * @brief Normalizza il punto in base alle dimensioni del mondo: 
 	 * se una componente del punto supera il limite del mondo per quella componente,
 	 * ricomincierà dall'inizio del mondo in modulo ( coordinata 0 ) + il valore della componente rimanente

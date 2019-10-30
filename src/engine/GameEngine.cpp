@@ -110,12 +110,23 @@ bool GameEngine::frame( double dtime ){
 	return keepPlaying;
 }
 
+ViewPort* GameEngine::GetViewport(){
+    return this->view;
+}
+
 void GameEngine::SetCameraWorldOrigin( Point2D origin ){
 	if( this->view != NULL ){
 		this->view->SetWorldOrigin( origin );
 	}
 }
 
+Point2D GameEngine::GetCameraWorldOrigin(){
+    Point2D origin;
+    if( this->view != NULL ){
+        origin = this->view->GetWorldOrigin();
+    }
+    return origin;
+}
 char GameEngine::GetkeyPressed(){
 	return this->input_key;
 }

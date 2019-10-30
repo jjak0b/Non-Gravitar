@@ -212,7 +212,7 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		}
 // #ifdef DEBUG_COLLISION_DRAWING
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
-		DrawLine(game->view, this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
+		DrawLine(game->GetViewport(), this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
 		// Utility::sleep(1000);
 
 // #endif
@@ -226,7 +226,7 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 			Projectile *proj = (Projectile*)collide_ent;
 			
 #ifdef DEBUG_COLLISION_DRAWING
-			DrawLine( game->view, this->world, proj->GetOrigin(), collide_ent->GetOrigin(), COLOR_RED );
+			DrawLine( game->GetViewport(), this->world, proj->GetOrigin(), collide_ent->GetOrigin(), COLOR_RED );
 #else
 			this->DoDamage( proj->GetDamage());
 #endif

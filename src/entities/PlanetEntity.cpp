@@ -58,7 +58,7 @@ void PlanetEntity::Draw( ViewPort *view ){
 
 bool PlanetEntity::IsColliding(
 #ifdef DEBUG_COLLISION_DRAWING
-								GameEngine* game
+								GameEngine* game,
 #endif
 								Entity *entity ){
 

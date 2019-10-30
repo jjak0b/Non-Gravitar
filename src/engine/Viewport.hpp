@@ -154,6 +154,8 @@ public:
 	 */
 	void SetWorldOrigin( Point2D WorldOrigin );
 
+    Point2D GetWorldOrigin();
+
 	protected:
 
 	/**

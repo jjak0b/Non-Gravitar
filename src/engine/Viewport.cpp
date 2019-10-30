@@ -232,6 +232,10 @@ void ViewPort::SetWorldOrigin( Point2D WorldOrigin ){
 	this->world_origin = WorldOrigin;
 }
 
+Point2D ViewPort::GetWorldOrigin(){
+    return this->world_origin;
+}
+
 void DrawLine( ViewPort *view, Level *world, Point2D start, Point2D end, Color color ){
 	bool isVertical = false; // la retta è verticale
 	double angular_coeffcient = 0.0; // coeff. angolare della retta

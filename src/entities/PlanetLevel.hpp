@@ -55,6 +55,12 @@ class PlanetLevel : public Level{
 	virtual bool Update( GameEngine *game );
 
 	/**
+	 * @Brief: vedere Level::ShouldGenerate
+	 * @param view
+	 */
+    virtual int ShouldGenerate(ViewPort *view);
+
+	/**
 	 * @brief Genera il Livello di gioco, generando il terreno e le sue entità,
 	 * se è stato generato in precedenza esso viene rigenerato ( sempre casualmente )
 	 * 

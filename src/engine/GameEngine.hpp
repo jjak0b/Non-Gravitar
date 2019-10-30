@@ -6,13 +6,8 @@
 #include "entities/SolarSystem.hpp"
 
 class GameEngine{
-#ifdef DEBUG
-public:
-#else
 private:
-#endif
 	ViewPort *view;
-private:
 	INPUT_TYPE input_key;
 	double time;
 	double deltaTime;
@@ -31,7 +26,11 @@ public:
 
 	bool frame( double dtime );
 
+	ViewPort* GetViewport();
+
 	void SetCameraWorldOrigin( Point2D origin );
+
+    Point2D GetCameraWorldOrigin();
 
 	INPUT_TYPE GetkeyPressed();
 

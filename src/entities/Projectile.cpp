@@ -15,6 +15,7 @@ Projectile::Projectile( Level *world, Point2D origin, Vector direction, double d
 	Point2D offset_movement_point = Point2D();
 	offset_movement_point.Add( direction );
 	offset_movement_point.Normalize();
+	offset_movement_point.Scale( 1.5 );
 	this->shape->addOffset( offset_movement_point , origin);
 }
 

@@ -54,7 +54,7 @@ bool Level::Update( GameEngine *game ){
 	if( !this->Entity::Update( game ) ){
 		return false;
 	}
-	else if( !this->IsGenerated() ){
+	else {
 		this->Generate( game );
 	}
 
@@ -223,6 +223,10 @@ void Level::Draw( ViewPort *view ){
 		}
 	}
 #endif
+}
+
+int Level::ShouldGenerate(ViewPort *view){
+    return false;
 }
 
 void Level::Generate( GameEngine *game ){

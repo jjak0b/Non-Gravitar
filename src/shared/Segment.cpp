@@ -160,9 +160,9 @@ bool Segment::IsIntersecting(
 	}
 #ifdef DEBUG_COLLISION_DRAWING
 	if( isIntersecting ){
-		DrawCircle( game->view, game->GetCurrentLevel(), Point2D( x, y ), 0, COLOR_ORANGE );
-		DrawLine( game->view, game->GetCurrentLevel(), segment.start, segment.end, COLOR_GREEN );
-		DrawLine( game->view, game->GetCurrentLevel(), this->start, this->end, COLOR_BLUE );
+		DrawCircle( game->GetViewport(), game->GetCurrentLevel(), Point2D( x, y ), 0, COLOR_ORANGE );
+		DrawLine( game->GetViewport(), game->GetCurrentLevel(), segment.start, segment.end, COLOR_GREEN );
+		DrawLine( game->GetViewport(), game->GetCurrentLevel(), this->start, this->end, COLOR_BLUE );
 	}
 #endif
 
