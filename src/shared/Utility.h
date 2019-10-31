@@ -16,7 +16,14 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 namespace Utility {
-
+	
+	template < class T >
+	struct range_t {
+		T min;
+		T max;
+		T value;
+	};
+	
 	/**
 	* @Brief Verifica se una stringa combacia con una seconda stringa, o contiene una sottostringa
 	* @PreCondition str e str_or_substr devono essere stringhe C

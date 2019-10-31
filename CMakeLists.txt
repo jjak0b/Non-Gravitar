@@ -68,4 +68,4 @@ add_executable(NonGravitar
         src/entities/Beam.hpp
 		src/entities/Beam_FX.cpp
         src/entities/Beam_FX.hpp
-        )
+		)

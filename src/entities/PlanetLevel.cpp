@@ -12,6 +12,38 @@
 PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level( _bounds, "PlanetLevel"){
 	this->planet_entity = planet_entity;
 	this->shape = new Shape();
+	generation_status = {
+			.global_probability = 0,
+			.info_bunkers = {
+				.probability = {
+						.min = 50,
+						.max = 100,
+						.value = 0
+				},
+				.count = {
+					.min = 3,
+					.value = 0
+				}
+			},
+			.info_fuels = {
+				.probability = {
+					.min = 50,
+					.max = 100,
+					.value = 0
+				},
+				.count = {
+					.min = 2,
+					.value = 0
+				}
+			}
+	};
+	generation_status.info_bunkers.count.max = RANDOM_RANGE(
+			generation_status.info_bunkers.count.min,
+			GetMaxWidth() * ( 5 / 100) ); // al massimo il 5% dello spazio disponibile
+	generation_status.info_fuels.count.max = RANDOM_RANGE(
+			generation_status.info_fuels.count.min,
+			generation_status.info_bunkers.count.max );
+	
 }
 
 void PlanetLevel::Delete( GameEngine* game ){
@@ -126,8 +158,68 @@ int PlanetLevel::ShouldGenerate(ViewPort *view){
     return distance;
 }
 
+Entity* PlanetLevel::TryGenerateRandomEntity( Point2D spawnPoint ){
+	int
+		random_prob_ent = 0,
+		which_ent = 0;
+	bool spawned = false;
+	Entity* entity = NULL;
+	random_prob_ent = RANDOM_RANGE(0, 100);
+	// Probabilità generazione Bunker
+	if ( !spawned
+		&& (this->generation_status.info_bunkers.count.value < this->generation_status.info_bunkers.count.max )
+		&& (random_prob_ent <= this->generation_status.info_bunkers.probability.value)
+		) {
+		
+		which_ent = RANDOM_RANGE(0, 3);
+		switch( which_ent ){
+			case 0:
+				entity = new BunkerA(this, spawnPoint );
+				break;
+			case 1:
+				entity = new BunkerB(this, spawnPoint );
+				break;
+			case 2:
+				entity = new BunkerC(this, spawnPoint );
+				break;
+		}
+		
+		this->generation_status.info_bunkers.count.value++;
+		this->generation_status.info_bunkers.probability.value = this->generation_status.info_bunkers.probability.min;
+		spawned = true;
+	}
+	else{
+		this->generation_status.info_bunkers.probability.value += 5;
+	}
+	
+	// Probabilità generazione Fuel
+	if( !spawned
+		&& (this->generation_status.info_fuels.count.value < this->generation_status.info_fuels.count.max)
+		&& (random_prob_ent <= this->generation_status.info_fuels.probability.value)
+		) {
+		which_ent = RANDOM_RANGE(0, 2);
+		switch( which_ent ){
+			case 0:
+				entity = new SmallFuel(this, spawnPoint );
+				break;
+			case 1:
+				entity = new BigFuel(this, spawnPoint );
+				break;
+		}
+		
+		this->generation_status.info_fuels.count.value++;
+		this->generation_status.info_fuels.probability.value = this->generation_status.info_fuels.probability.min;
+		spawned = true;
+	}
+	else{
+		this->generation_status.info_fuels.probability.value += 10;
+	}
+	
+	return entity;
+}
 
 void PlanetLevel::Generate( GameEngine *game ){
+	
 	VECTOR_VALUE_TYPE
 		min_point_distance_x = 7,
 		max_point_distance_x = 17,
@@ -153,93 +245,62 @@ void PlanetLevel::Generate( GameEngine *game ){
 	Point2D
 		temp = start,
 		old_temp = temp;
-
-	int random_prob_gen = 40,
-		min_prob_gen = 0,
-
-		random_prob_ent = 0,
-		which_ent = 0,
-
-		prob_Bunker = 50,
-		bunker_Counter = 0,
-		fuel_Counter = 0,
-		min_Fuel = 2,
-		min_Bunker = 3,
-		max_Bunker = RANDOM_RANGE( min_Bunker, 8 ),
-		max_Fuel = RANDOM_RANGE( min_Fuel, max_Bunker );
 	
 	Point2D midpoint = Point2D(0,0);
-	Vector bounds = world->GetBounds();
-
-	while( temp.GetX() < end.GetX() ){
-		// GENERAZIONE VERTICI DEL TERRENO
-		//do {
-			this->shape->addOffset(temp, origin);
-			//new BunkerA(this, temp);
-
-		if (!temp.Equals(old_temp)) {
-			GetOffSet(&offset_x , old_temp, temp, BOUND_INDEX_WIDTH,  &bounds);
-			GetOffSet(&offset_y , old_temp, temp, BOUND_INDEX_HEIGHT,  NULL);
-			midpoint = Point2D( (old_temp).GetX() + offset_x/2, (old_temp).GetY() + offset_y/2 );
-			// // PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
-		// random_prob_gen = RANDOM_RANGE(0, 100);
-
-			if (random_prob_gen <= min_prob_gen ) {
-				random_prob_ent = RANDOM_RANGE(0, 100);
-
-				// Probabilità generazione Bunker
-				if ( (random_prob_ent <= prob_Bunker) && (bunker_Counter < max_Bunker) ) {
-
-					which_ent = RANDOM_RANGE(0, 4);
-					if ( which_ent == 1 ) {
-
-						new BunkerA(this,midpoint);
-					}
-					else if ( which_ent == 2) {
-						new BunkerB(this, midpoint);
-					}
-					else {
-						new BunkerC(this, midpoint);
-					}
-
-					bunker_Counter++;
-					prob_Bunker = prob_Bunker - 20;
-				}
-
-				// Probabilità generazione Fuel
-				else if( fuel_Counter < max_Fuel ) {
-					which_ent = RANDOM_RANGE(0, 3);
-					if ( which_ent == 1 ) {
-						new SmallFuel(this, midpoint);
-					}
-					else if ( which_ent == 2) {
-						new BigFuel(this, midpoint);
-					}
-
-					fuel_Counter++;
-					prob_Bunker = prob_Bunker + 20;
-				}			
-			}
-
-			// I punti vuoti vengono inseriti in una lista
-			else {
-				surface_empty.push_front(midpoint);
-				min_prob_gen = min_prob_gen + 5;
-			}
-
+	
+ 
+	if( shape->GetOffsetCount() < 2 ){
+		shape->addOffset( Point2D(0,0), origin, ADD_FRONT );
+		// shape->addOffset( end, origin, ADD_FRONT );
+	}
+	list<Point2D> generated_offsets = shape->getOffsetPoints();
+	Point2D
+		back = generated_offsets.back(),
+		front = generated_offsets.front();
+	
+	VECTOR_VALUE_TYPE distance_generation;
+	
+	
+	VECTOR_VALUE_TYPE dist;
+	if( generated_offsets.size() > 1 ) {
+		dist = front.DistanceSquared(back, &bounds);
+		
+		if (!back.Equals(front) && generated_offsets.size() > 20 ) {
+			isGenerated = true;
 		}
-			
-		old_temp = temp;
-
+	}
+	
+	bool isPointGenerated = false;
+	
+	while( !isPointGenerated && !isGenerated && (distance_generation = ShouldGenerate( game->GetViewport() )) != 0 ) {
+		
+		// GENERAZIONE VERTICI DEL TERRENO
+		generated_offsets = shape->getOffsetPoints();
+		back = generated_offsets.back();
+		front = generated_offsets.front();
+		
+        // sul back ci metto gli offset "positivi"
+        if( distance_generation > 0 ) {
+            old_temp = front;
+        }
+        // sul front ci metto gli offset "negativi"
+        else if( distance_generation > 0 ) {
+            old_temp = back;
+        }
+        
+		
+		// // PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
+		
 		offset_x = RANDOM_RANGE(min_point_distance_x, max_point_distance_x);
 		offset_y = min_point_height + RANDOM_RANGE(min_point_distance_y, max_point_distance_y);
 		if (rand() % 100 < 50) { // scelgo se variare l'offset del punto in positivo o in negativo
 			offset_y *= -1;
 		}
 
+		
+		temp = old_temp;
 		direction.Set(0, offset_x);
 		direction.Set(1, offset_y);
-
 		temp.Add(direction);
 
 		// l'ordinata deve essere compresa tra min_point_height e max_point_height
@@ -249,40 +310,25 @@ void PlanetLevel::Generate( GameEngine *game ){
 						min_point_height));
 		//}while( temp.GetY() == old_temp.GetY() );
 		
+		GetOffSet(&offset_x , old_temp, temp, BOUND_INDEX_WIDTH,  &bounds);
+		GetOffSet(&offset_y , old_temp, temp, BOUND_INDEX_HEIGHT,  NULL);
+		midpoint = Point2D( (old_temp).GetX() + offset_x / 2.0, (old_temp).GetY() + offset_y / 2.0 );
+	 
+		if( distance_generation > 0  ){
+			shape->addOffset( temp, origin, ADD_FRONT );
+			isPointGenerated = true;
+		}
+		else if( distance_generation < 0  ){
+			shape->addOffset( temp, origin, ADD_BACK );
+			isPointGenerated = true;
+		}
 		
-
+		
+		if( isPointGenerated ){
+			TryGenerateRandomEntity( midpoint );
+		}
 		
 		//old_temp = temp;
-	}
-	this->shape->addOffset( end, origin );
-
-	// DOPO LA GENERAZIONE DEL TERRENO TENTA LA GENERAZIONE DELLE ENTITA RIMASTE
-	while ( bunker_Counter < min_Bunker && !surface_empty.empty() ) {
-		temp_point = Utility::random_element(surface_empty.begin(), surface_empty.end());
-		which_ent = RANDOM_RANGE(0, 4);
-		if ( which_ent == 1 ) {
-			new BunkerA(this,*temp_point);
-		}
-		else if ( which_ent == 2) {
-			new BunkerB(this, *temp_point);
-		}
-		else {
-			new BunkerC(this, *temp_point);
-		}
-		bunker_Counter++;
-		surface_empty.erase(temp_point);
-	}
-	while ( fuel_Counter < min_Fuel && !surface_empty.empty() ) {
-		temp_point = Utility::random_element(surface_empty.begin(), surface_empty.end());
-		which_ent = RANDOM_RANGE(0, 3);
-		if ( which_ent == 1 ) {
-			new SmallFuel(this,*temp_point);
-		}
-		else if ( which_ent == 2) {
-			new BigFuel(this, *temp_point);
-		}
-		fuel_Counter++;
-		surface_empty.erase(temp_point);
 	}
 	
 }

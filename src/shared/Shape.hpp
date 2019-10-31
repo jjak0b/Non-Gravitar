@@ -8,6 +8,11 @@ class Level;
 #ifdef DEBUG_COLLISION_DRAWING
 class GameEngine;
 #endif
+enum ShapeAddOffsetOption {
+	ADD_FRONT = 0,
+	ADD_BACK = 1
+};
+
 class Shape{
 
     protected:
@@ -22,9 +27,9 @@ class Shape{
         Shape();
         virtual ~Shape();
         
-        void addAbsolute( Point2D point );
-        void addOffset( Point2D point, Point2D origin);
-		Point2D PopOffset();
+        void addAbsolute( Point2D point, ShapeAddOffsetOption option = ADD_FRONT );
+        void addOffset( Point2D point, Point2D origin, ShapeAddOffsetOption option = ADD_FRONT );
+		Point2D PopOffset( ShapeAddOffsetOption option );
         size_t GetOffsetCount();
         list<Point2D> getAbsolutes();
 		list<Point2D> getOffsetPoints();

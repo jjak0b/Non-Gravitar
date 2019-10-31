@@ -99,7 +99,5 @@ void SolarSystem::Generate(GameEngine *game) {
         last_radius = radius;
         scale *= -1.0; // cambio il fattore di inversione dell'offset Y
     }
-}
-bool SolarSystem::IsGenerated(){
-	return !this->entities.empty();
+	isGenerated = true;
 }

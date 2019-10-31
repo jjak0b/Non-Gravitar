@@ -13,6 +13,7 @@ protected:
 	Vector bounds; // limiti del mondo ( dimensioni del livello )
 	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
 	list<Entity*> entities;
+	bool isGenerated;
 public:
 	/**
 	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le entità del livello

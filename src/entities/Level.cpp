@@ -18,7 +18,7 @@ Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(
 	this->bounds = _bounds;
 	this->player = NULL;
 	this->SetWorld( this );
-
+	this->isGenerated = false;
 }
 
 Level::~Level(){
@@ -54,7 +54,7 @@ bool Level::Update( GameEngine *game ){
 	if( !this->Entity::Update( game ) ){
 		return false;
 	}
-	else {
+	else if( !this->IsGenerated() ){
 		this->Generate( game );
 	}
 
@@ -351,7 +351,7 @@ Player *Level::GetOutPlayer(){
 }
 
 bool Level::IsGenerated(){
-	return !this->shape->getAbsolutes().empty();
+	return isGenerated;
 }
 
 

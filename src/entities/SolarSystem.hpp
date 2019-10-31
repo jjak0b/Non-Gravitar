@@ -11,6 +11,4 @@ class SolarSystem : public Level{
 	virtual bool Update( GameEngine *game );
 
     virtual void Generate( GameEngine *game );
-
-	virtual bool IsGenerated();
 };

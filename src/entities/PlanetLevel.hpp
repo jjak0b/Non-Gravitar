@@ -2,14 +2,29 @@
 
 #include "Level.hpp"
 #include "engine/GameEngine.hpp"
+#include "shared/Utility.h"
+#include <stddef.h>
+
+struct ent_generation_info {
+	Utility::range_t<float> probability;
+	Utility::range_t<size_t> count;
+};
+
+struct ent_generation_info_table {
+	float global_probability;
+	ent_generation_info info_bunkers;
+	ent_generation_info info_fuels;
+};
 
 class PlanetEntity;
 
 class PlanetLevel : public Level{
-	protected:
 
+private:
+	ent_generation_info_table generation_status;
 	
-
+protected:
+	
 	/**
 	 * @brief Entità associata a questo livello:
 	 * Quando il giocatore esce dal livello, nel frame successivo verranno aggiornati e visualizzati
@@ -59,7 +74,8 @@ class PlanetLevel : public Level{
 	 * @param view
 	 */
     virtual int ShouldGenerate(ViewPort *view);
-
+    
+    
 	/**
 	 * @brief Genera il Livello di gioco, generando il terreno e le sue entità,
 	 * se è stato generato in precedenza esso viene rigenerato ( sempre casualmente )
@@ -78,4 +94,6 @@ class PlanetLevel : public Level{
 
 	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 	
+private:
+	Entity* TryGenerateRandomEntity( Point2D spawnPoint );
 };

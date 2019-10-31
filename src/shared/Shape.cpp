@@ -10,12 +10,27 @@ Shape::~Shape() {
 };
 
 
-void Shape::addAbsolute( Point2D point ) {
-  this->absolute_points.push_front(point);
+void Shape::addAbsolute( Point2D point, ShapeAddOffsetOption option ) {
+	switch ( option ){
+		case ADD_BACK:
+			this->absolute_points.push_back(point);
+			break;
+		default:
+			this->absolute_points.push_front(point);
+			break;
+	}
 }
 
-void Shape::addOffset( Point2D point, Point2D origin ) {
-	this->offset_points.push_front(point);
+void Shape::addOffset( Point2D point, Point2D origin, ShapeAddOffsetOption option ) {
+	switch ( option ){
+		case ADD_BACK:
+			this->offset_points.push_back(point);
+			break;
+		default:
+			this->offset_points.push_front(point);
+			break;
+	}
+	
 	VECTOR_VALUE_TYPE
 		x = point.GetX(),
 		y = point.GetY();
@@ -31,13 +46,24 @@ void Shape::addOffset( Point2D point, Point2D origin ) {
 		this->max_offset.SetY( y );
 
 	origin.Add(point);
-	addAbsolute(origin);
+	addAbsolute(origin, option );
 }
 
-Point2D Shape::PopOffset(){
-	this->absolute_points.pop_front();
-	Point2D offset = this->offset_points.front();
-	this->offset_points.pop_front();
+Point2D Shape::PopOffset( ShapeAddOffsetOption option ){
+	Point2D offset;
+	switch ( option ){
+		default :
+			this->absolute_points.pop_front();
+			offset = this->offset_points.front();
+			this->offset_points.pop_front();
+			break;
+		case ADD_BACK:
+			this->absolute_points.pop_back();
+			offset = this->offset_points.back();
+			this->offset_points.pop_back();
+			break;
+	}
+
 	return offset;
 }
 
