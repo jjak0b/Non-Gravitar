@@ -3,17 +3,24 @@
 #include "Level.hpp"
 #include "engine/GameEngine.hpp"
 #include "shared/Utility.h"
-#include <stddef.h>
 
 struct ent_generation_info {
 	Utility::range_t<float> probability;
 	Utility::range_t<size_t> count;
 };
 
-struct ent_generation_info_table {
-	float global_probability;
+struct surface_generation_info {
+    Utility::range_t<VECTOR_VALUE_TYPE> distance_x;
+    Utility::range_t<VECTOR_VALUE_TYPE> distance_y;
+    Utility::range_t<VECTOR_VALUE_TYPE> bound_y;
+	bool isGeneratingNegativeDone;
+	bool isGeneratingPositiveDone;
+};
+
+struct generation_info_table {
 	ent_generation_info info_bunkers;
 	ent_generation_info info_fuels;
+	surface_generation_info info_surface;
 };
 
 class PlanetEntity;
@@ -21,7 +28,7 @@ class PlanetEntity;
 class PlanetLevel : public Level{
 
 private:
-	ent_generation_info_table generation_status;
+	generation_info_table generation_status;
 	
 protected:
 	
@@ -95,5 +102,18 @@ protected:
 	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 	
 private:
+	/**
+	 * @Brief Tenta la generazione nel punto specificato di un entità Bunker o fuel con le probabilità in generation_status.info_...
+	 * @PostCondition Se l'entità è stata generata, esse viene automaticamente aggiunta alla lista delle entità di questo livello
+	 * @param spawnPoint
+	 * @return il puntatore all'entità generata (NULL se non è stato generata )
+	 */
 	Entity* TryGenerateRandomEntity( Point2D spawnPoint );
+
+	/**
+	 * @Brief Genera un offset casuale secondo i vincoli e distanze in generation_status.info_surface
+	 * @param distance_generation
+	 * @return
+	 */
+	Point2D GenerateRandomSurfaceOffset( Point2D previous, int distance_generation );
 };

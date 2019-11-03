@@ -62,6 +62,8 @@ public:
 	 */
 	Point2D GetNormalizedPoint( Point2D origin );
 
+	Point2D GetRelativePoint( Point2D absoluteOrigin );
+
 	/**
 	 * @brief restituisce il Vettore aventi i limiti massimi del livello, nelle sue Vector.GetSize() dimensioni
 	 * 

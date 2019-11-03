@@ -13,7 +13,6 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level(
 	this->planet_entity = planet_entity;
 	this->shape = new Shape();
 	generation_status = {
-			.global_probability = 0,
 			.info_bunkers = {
 				.probability = {
 						.min = 50,
@@ -43,6 +42,26 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level(
 	generation_status.info_fuels.count.max = RANDOM_RANGE(
 			generation_status.info_fuels.count.min,
 			generation_status.info_bunkers.count.max );
+
+    generation_status.info_surface = {
+			.distance_x = {
+				.min = 7,
+				.max = 17,
+				.value = 0
+			},
+			.distance_y = {
+				.min = 3,
+				.max = 11,
+				.value = 0
+			},
+			.bound_y = {
+				.min = 3,
+				.max = ((VECTOR_VALUE_TYPE)this->GetMaxHeight()) * (VECTOR_VALUE_TYPE)(6.0/10.0),
+				.value = 0
+			},
+			.isGeneratingNegativeDone = false,
+			.isGeneratingPositiveDone = false
+    };
 	
 }
 
@@ -98,9 +117,10 @@ bool PlanetLevel::Update( GameEngine *game ){
 	return update_result;
 }
 
-bool PlanetLevel::IsFree(){
+bool PlanetLevel::IsFree() {
+	bool isFree = isGenerated;
 	list<Entity*> bunkers = this->GetEntities("Bunker", false, true );
-	bool isFree = bunkers.empty();
+	isFree = isFree && bunkers.empty();
 	bunkers.clear();
 	return isFree;
 }
@@ -219,118 +239,192 @@ Entity* PlanetLevel::TryGenerateRandomEntity( Point2D spawnPoint ){
 }
 
 void PlanetLevel::Generate( GameEngine *game ){
-	
-	VECTOR_VALUE_TYPE
-		min_point_distance_x = 7,
-		max_point_distance_x = 17,
-		min_point_distance_y = 3,
-		max_point_distance_y = 11,
-		max_point_height = (6.0/10.0)*this->GetMaxHeight(),
-		min_point_height = 3;
+	if( !isGenerated && shape != NULL ) {
+		bool isPointGenerated = false;
 
-	VECTOR_VALUE_TYPE 
-		offset_x,
-		offset_y;
+		ViewPort* view = game->GetViewport();
 
-	VECTOR_VALUE_TYPE half_width = this->GetMaxWidth() / 2.0;
-	VECTOR_VALUE_TYPE linking_height = min_point_distance_y;
+		VECTOR_VALUE_TYPE
+			half_width = this->GetMaxWidth() / 2.0,
+			linking_height = generation_status.info_surface.bound_y.min,
+			offset_x,
+			offset_y,
+			distance_required = 0;
 
-	Point2D start = Point2D( -half_width, linking_height );
-	Point2D end = Point2D( half_width - 1 , linking_height );
-	Vector direction = Vector( start.GetSize() );
+		Point2D
+			temp,
+			old_temp,
+			midpoint,
+			last_relative_positive,
+			last_relative_negative,
+			last_absolute_positive,
+			last_absolute_negative;
 
-	// temp è il punto che viene generato ed aggiunto alla lista
-	list<Point2D> surface_empty;
-	list<Point2D>::iterator temp_point;
-	Point2D
-		temp = start,
-		old_temp = temp;
-	
-	Point2D midpoint = Point2D(0,0);
-	
- 
-	if( shape->GetOffsetCount() < 2 ){
-		shape->addOffset( Point2D(0,0), origin, ADD_FRONT );
-		// shape->addOffset( end, origin, ADD_FRONT );
-	}
-	list<Point2D> generated_offsets = shape->getOffsetPoints();
-	Point2D
-		back = generated_offsets.back(),
-		front = generated_offsets.front();
-	
-	VECTOR_VALUE_TYPE distance_generation;
-	
-	
-	VECTOR_VALUE_TYPE dist;
-	if( generated_offsets.size() > 1 ) {
-		dist = front.DistanceSquared(back, &bounds);
-		
-		if (!back.Equals(front) && generated_offsets.size() > 20 ) {
-			isGenerated = true;
+		list<Point2D> generated_relative_points;
+
+		if( shape->GetOffsetCount() < 2 ){
+			generated_relative_points = shape->getOffsetPoints();
+			Point2D
+				start_positive = Point2D(),
+				start_negative = Point2D();
+
+			start_positive = GenerateRandomSurfaceOffset( start_positive,1.0 );
+			start_negative = GenerateRandomSurfaceOffset( start_negative, -1.0 );
+
+			shape->addOffset( start_positive, origin, ADD_BACK );
+			shape->addOffset( start_negative, origin, ADD_FRONT );
 		}
+
+		do {
+			generated_relative_points = shape->getOffsetPoints();
+			last_absolute_positive = GetNormalizedPoint( generated_relative_points.back() );
+			last_absolute_negative = GetNormalizedPoint( generated_relative_points.front() );
+
+			Point2D origin_to_reach = Point2D();
+			// verifico se devo generare un punto in base alla visuale del giocatore,
+			// ed eventualmente da quale lato (positivo o negativo) generare un punto
+			if (this->shape != NULL) {
+				Vector view_bounds = Vector(2);
+				Point2D
+						cameraOrigin = view->GetWorldOrigin(),
+						cameraEdgeLeftOrigin = cameraOrigin,
+						cameraEdgeRightOrigin = cameraOrigin,
+						cameraEdgeCenterOrigin = cameraOrigin;
+
+				unsigned int view_width = view->GetWidth();
+				view_bounds.Set(BOUND_INDEX_WIDTH, view_width );
+
+				cameraEdgeLeftOrigin = GetNormalizedPoint(cameraEdgeLeftOrigin);
+
+				cameraEdgeRightOrigin.Add( view_bounds );
+				cameraEdgeRightOrigin = GetNormalizedPoint(cameraEdgeRightOrigin);
+
+				cameraEdgeCenterOrigin.Add(view_bounds.Scale( 0.5 ) );
+
+				Point2D cameraEdges[] = {
+#ifndef DEBUG_LEVEL_GENERATION
+						cameraEdgeLeftOrigin,
+						cameraEdgeRightOrigin,
+#endif
+						cameraEdgeCenterOrigin
+
+				};
+
+				const int
+#ifdef DEBUG_LEVEL_GENERATION
+				n_edges = 1;
+#else
+				n_edges = 3;
+#endif
+				int i = 0;
+				while (distance_required == 0 && i < n_edges ) {
+					if( cameraEdges[i].GetX() <= half_width ) {
+						if ( !generation_status.info_surface.isGeneratingPositiveDone ) { // il bordo si trova nell prima metà
+							GetOffSet(&distance_required, last_absolute_positive, cameraEdges[i], BOUND_INDEX_WIDTH,
+									  &bounds);
+							if (distance_required < 0) // la camera precede l'ultimopunto
+								distance_required = 0;
+						}
+					}
+					else { // si trova nella seconda metà
+						if ( !generation_status.info_surface.isGeneratingNegativeDone ) {
+							GetOffSet(&distance_required, last_absolute_negative, cameraEdges[i],
+									  BOUND_INDEX_WIDTH,
+									  &bounds);
+							if (distance_required > 0) // la camera succede l'ultimopunto
+								distance_required = 0;
+						}
+					}
+					origin_to_reach = cameraEdges[i];
+					i++;
+				}
+			}
+
+			if (distance_required != 0) {
+
+				// GENERAZIONE VERTICI DEL TERRENO
+				generated_relative_points = shape->getOffsetPoints();
+				last_relative_positive = generated_relative_points.back(); // generation_list_positive.front();
+				last_relative_negative = generated_relative_points.front(); // generation_list_negative.front();
+
+				if (distance_required > 0) {
+					old_temp = last_relative_positive;
+				}
+				else if (distance_required < 0) {
+					old_temp = last_relative_negative;
+				}
+				temp = GenerateRandomSurfaceOffset(old_temp, distance_required);
+
+				if (!generation_status.info_surface.isGeneratingPositiveDone && distance_required > 0) {
+					// generation_list_positive.push_front( temp );
+					if( temp.GetX() >= half_width ){
+						temp.SetY( linking_height );
+						temp.SetX( half_width );
+						generation_status.info_surface.isGeneratingPositiveDone = true;
+					}
+					shape->addOffset(temp, origin, ADD_BACK );
+					isPointGenerated = true;
+				}
+				else if (!generation_status.info_surface.isGeneratingNegativeDone && distance_required < 0) {
+					if( temp.GetX() <= -half_width ){
+						temp.SetY( linking_height );
+						temp.SetX( -half_width );
+						generation_status.info_surface.isGeneratingNegativeDone = true;
+					}
+					// generation_list_negative.push_front( temp );
+					shape->addOffset(temp, origin, ADD_FRONT );
+					isPointGenerated = true;
+				}
+
+				// PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
+				if (isPointGenerated) {
+					GetOffSet(&offset_x, old_temp, temp, BOUND_INDEX_WIDTH, &bounds);
+					GetOffSet(&offset_y, old_temp, temp, BOUND_INDEX_HEIGHT, NULL);
+					midpoint = Point2D(old_temp.GetX() + offset_x / 2.0, old_temp.GetY() + offset_y / 2.0);
+					midpoint = GetNormalizedPoint( midpoint );
+					TryGenerateRandomEntity(midpoint);
+				}
+
+				if( generation_status.info_surface.isGeneratingNegativeDone && generation_status.info_surface.isGeneratingPositiveDone ){
+					isGenerated = true;
+				}
+			}
+			// continua finchè la distanza richiesta non è nulla e non è stato generato un punto
+		} while (!isGenerated && distance_required != 0 && !isPointGenerated );
 	}
-	
-	bool isPointGenerated = false;
-	
-	while( !isPointGenerated && !isGenerated && (distance_generation = ShouldGenerate( game->GetViewport() )) != 0 ) {
-		
-		// GENERAZIONE VERTICI DEL TERRENO
-		generated_offsets = shape->getOffsetPoints();
-		back = generated_offsets.back();
-		front = generated_offsets.front();
-		
-        // sul back ci metto gli offset "positivi"
-        if( distance_generation > 0 ) {
-            old_temp = front;
-        }
-        // sul front ci metto gli offset "negativi"
-        else if( distance_generation > 0 ) {
-            old_temp = back;
-        }
-        
-		
-		// // PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
-		
-		offset_x = RANDOM_RANGE(min_point_distance_x, max_point_distance_x);
-		offset_y = min_point_height + RANDOM_RANGE(min_point_distance_y, max_point_distance_y);
-		if (rand() % 100 < 50) { // scelgo se variare l'offset del punto in positivo o in negativo
+}
+
+Point2D PlanetLevel::GenerateRandomSurfaceOffset( Point2D previous, int distance_generation ){
+	Vector temp = Vector( previous.GetSize() );
+	Point2D point = previous;
+	const unsigned int attempt_max = 3;
+	unsigned int attempt = 0;
+	do {
+		VECTOR_VALUE_TYPE
+				offset_x = RANDOM_RANGE(
+								   generation_status.info_surface.distance_x.min,
+								   generation_status.info_surface.distance_x.max)
+						   * (distance_generation >= 0 ? 1.0 : -1.0),
+				offset_y = RANDOM_RANGE(
+								   generation_status.info_surface.distance_y.min,
+								   generation_status.info_surface.distance_y.max)
+						   + generation_status.info_surface.bound_y.min;
+		if (RANDOM_RANGE(0, 100) < 50) { // scelgo se variare l'offset del punto in positivo o in negativo
 			offset_y *= -1;
 		}
 
-		
-		temp = old_temp;
-		direction.Set(0, offset_x);
-		direction.Set(1, offset_y);
-		temp.Add(direction);
+		point.SetX(offset_x);
+		point.Add(previous);
+		point.SetY(offset_y);
 
 		// l'ordinata deve essere compresa tra min_point_height e max_point_height
-		temp.SetY(
+		point.SetY(
 				max(
-						min(temp.GetY(), max_point_height),
-						min_point_height));
-		//}while( temp.GetY() == old_temp.GetY() );
-		
-		GetOffSet(&offset_x , old_temp, temp, BOUND_INDEX_WIDTH,  &bounds);
-		GetOffSet(&offset_y , old_temp, temp, BOUND_INDEX_HEIGHT,  NULL);
-		midpoint = Point2D( (old_temp).GetX() + offset_x / 2.0, (old_temp).GetY() + offset_y / 2.0 );
-	 
-		if( distance_generation > 0  ){
-			shape->addOffset( temp, origin, ADD_FRONT );
-			isPointGenerated = true;
-		}
-		else if( distance_generation < 0  ){
-			shape->addOffset( temp, origin, ADD_BACK );
-			isPointGenerated = true;
-		}
-		
-		
-		if( isPointGenerated ){
-			TryGenerateRandomEntity( midpoint );
-		}
-		
-		//old_temp = temp;
-	}
-	
+						min(offset_y, generation_status.info_surface.bound_y.max),
+						generation_status.info_surface.bound_y.min));
+		attempt++;
+	} while( attempt <= attempt_max && point.GetY() <= generation_status.info_surface.bound_y.min );
+    return point;
 }
 
 void PlanetLevel::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {

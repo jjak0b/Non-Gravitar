@@ -46,6 +46,19 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 	return _origin;
 }
 
+Point2D Level::GetRelativePoint( Point2D absoluteOrigin ){
+    VECTOR_VALUE_TYPE
+        value,
+        value_bound;
+    bounds.Get( BOUND_INDEX_WIDTH, &value_bound );
+    value = absoluteOrigin.GetX();
+    if( value >= value_bound / 2.0  ){
+        value = - ( value - (value_bound / 2.0) );
+        absoluteOrigin.SetX( value );
+    }
+    return absoluteOrigin;
+}
+
 Vector Level::GetBounds(){
 	return this->bounds;
 }
@@ -148,14 +161,17 @@ void Level::Draw( ViewPort *view ){
 #ifndef DEBUG_COLLISION_DRAWING
 	if (this->shape != NULL) {
 		list<Point2D> surface_points = this->shape->getOffsetPoints();
-		std::list<Point2D>::iterator surface_it, surface_next_it;
+		std::list<Point2D>::iterator surface_it;
 		surface_it = surface_points.begin();
 		Color surface = COLOR_GREEN;
 		Point2D
-			start =  surface_points.back(),
+			start,
 			end;
-
-		while( surface_it != surface_points.end() ){
+		if( !surface_points.empty() ){
+			start = *surface_it;
+			*surface_it++;
+		}
+		while( !surface_points.empty() && surface_it != surface_points.end() ){
 			end = *surface_it;
 			start = this->GetNormalizedPoint( start );
 			end = this->GetNormalizedPoint( end );

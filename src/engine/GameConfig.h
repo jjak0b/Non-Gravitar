@@ -30,6 +30,7 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define DEBUG
 #ifdef DEBUG
 
+// #define DEBUG_LEVEL_GENERATION // se attivo genera SOLO il punto immediatamente successive ( o precedenti ) alla posizione del player
 // #define DEBUG_COLLISION_DRAWING
 
 #ifdef ENABLE_COLLISION_LEVEL
