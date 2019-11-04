@@ -245,7 +245,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 		ViewPort* view = game->GetViewport();
 
 		VECTOR_VALUE_TYPE
-			half_width = this->GetMaxWidth() / 2.0,
+			half_width = (double)this->GetMaxWidth() / 2.0,
 			linking_height = generation_status.info_surface.bound_y.min,
 			offset_x,
 			offset_y,
@@ -354,10 +354,23 @@ void PlanetLevel::Generate( GameEngine *game ){
 					old_temp = last_relative_negative;
 				}
 				temp = GenerateRandomSurfaceOffset(old_temp, distance_required);
-
-				if (!generation_status.info_surface.isGeneratingPositiveDone && distance_required > 0) {
+				
+				// verifico se i due estremi sono relativamente vicini
+				bool shouldForceLinking = last_absolute_positive.DistanceSquared( last_absolute_negative, &bounds ) <= SQR( generation_status.info_surface.distance_x.max );
+				if( shouldForceLinking ){ // se sono vicini allora li collego aggiungedo 2 punti "comuni" estremi
+					temp.SetY( linking_height );
+					temp.SetX( half_width );
+					shape->addOffset(temp, origin, ADD_BACK );
+					temp.SetX( -half_width );
+					shape->addOffset(temp, origin, ADD_FRONT );
+					generation_status.info_surface.isGeneratingNegativeDone = true;
+					generation_status.info_surface.isGeneratingPositiveDone = true;
+					isPointGenerated = true;
+				}
+				// altrimenti controllo da quale parte generare e procedo
+				else if (!generation_status.info_surface.isGeneratingPositiveDone && distance_required > 0) {
 					// generation_list_positive.push_front( temp );
-					if( temp.GetX() >= half_width ){
+					if( temp.GetX() > half_width){
 						temp.SetY( linking_height );
 						temp.SetX( half_width );
 						generation_status.info_surface.isGeneratingPositiveDone = true;
@@ -366,7 +379,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 					isPointGenerated = true;
 				}
 				else if (!generation_status.info_surface.isGeneratingNegativeDone && distance_required < 0) {
-					if( temp.GetX() <= -half_width ){
+					if( temp.GetX() < -half_width ){
 						temp.SetY( linking_height );
 						temp.SetX( -half_width );
 						generation_status.info_surface.isGeneratingNegativeDone = true;
@@ -375,7 +388,11 @@ void PlanetLevel::Generate( GameEngine *game ){
 					shape->addOffset(temp, origin, ADD_FRONT );
 					isPointGenerated = true;
 				}
-
+#ifdef DEBUG_LEVEL_GENERATION
+				Point2D test = temp;
+				test.SetY( GetMaxHeight()-1 );
+				DrawLine( view, this, temp, test, COLOR_ORANGE );
+#endif
 				// PROBABILITA DI GENERAZIONE ENTITA SUL PUNTO GENERATO
 				if (isPointGenerated) {
 					GetOffSet(&offset_x, old_temp, temp, BOUND_INDEX_WIDTH, &bounds);
