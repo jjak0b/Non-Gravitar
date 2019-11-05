@@ -215,7 +215,7 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
 			return;
 		}
-#ifndef DEBUG
+#ifdef DEBUG
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
 		DrawLine(game->GetViewport(), this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
 		// Utility::sleep(1000);
@@ -224,8 +224,6 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		// Collisione contro il terreno
 		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
 #ifndef DEBUG
-			
-			Utility::sleep( 1000 );
 			this->DoDamage( this->GetHealth() );
 #endif
 		}

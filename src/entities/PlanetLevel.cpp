@@ -15,7 +15,7 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level(
 	generation_status = {
 			.info_bunkers = {
 				.probability = {
-						.min = 50,
+						.min = 40,
 						.max = 100,
 						.value = 0
 				},
@@ -26,7 +26,7 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level(
 			},
 			.info_fuels = {
 				.probability = {
-					.min = 50,
+					.min = 40,
 					.max = 100,
 					.value = 0
 				},
@@ -46,7 +46,7 @@ PlanetLevel::PlanetLevel( PlanetEntity *planet_entity, Vector _bounds ) : Level(
     generation_status.info_surface = {
 			.distance_x = {
 				.min = 7,
-				.max = 17,
+				.max = 13,
 				.value = 0
 			},
 			.distance_y = {
@@ -125,6 +125,7 @@ bool PlanetLevel::IsFree() {
 	return isFree;
 }
 
+// TODO: remove
 /**
  * @Brief:
  * Indica se il livello dovrebbe generarsi in asse X positiva o negativa rispetto all'origine;
@@ -262,15 +263,18 @@ void PlanetLevel::Generate( GameEngine *game ){
 
 		list<Point2D> generated_relative_points;
 
-		if( shape->GetOffsetCount() < 2 ){
+		if( shape->GetOffsetCount() < 4 ){
 			generated_relative_points = shape->getOffsetPoints();
 			Point2D
-				start_positive = Point2D(),
-				start_negative = Point2D();
-
+				start_positive = Point2D(0, linking_height ),
+				start_negative = Point2D(0, linking_height );
+			shape->addOffset( start_positive, origin, ADD_BACK );
+			shape->addOffset( start_negative, origin, ADD_FRONT );
+			
 			start_positive = GenerateRandomSurfaceOffset( start_positive,1.0 );
 			start_negative = GenerateRandomSurfaceOffset( start_negative, -1.0 );
-
+			
+			
 			shape->addOffset( start_positive, origin, ADD_BACK );
 			shape->addOffset( start_negative, origin, ADD_FRONT );
 		}
@@ -300,7 +304,8 @@ void PlanetLevel::Generate( GameEngine *game ){
 				cameraEdgeRightOrigin = GetNormalizedPoint(cameraEdgeRightOrigin);
 
 				cameraEdgeCenterOrigin.Add(view_bounds.Scale( 0.5 ) );
-
+				cameraEdgeCenterOrigin = GetNormalizedPoint(cameraEdgeCenterOrigin);
+				
 				Point2D cameraEdges[] = {
 #ifndef DEBUG_LEVEL_GENERATION
 						cameraEdgeLeftOrigin,
@@ -356,7 +361,10 @@ void PlanetLevel::Generate( GameEngine *game ){
 				temp = GenerateRandomSurfaceOffset(old_temp, distance_required);
 				
 				// verifico se i due estremi sono relativamente vicini
-				bool shouldForceLinking = last_absolute_positive.DistanceSquared( last_absolute_negative, &bounds ) <= SQR( generation_status.info_surface.distance_x.max );
+				VECTOR_VALUE_TYPE diff_x = 0;
+				bool shouldForceLinking = shouldForceLinking = GetOffSet(&diff_x, last_absolute_negative, last_absolute_positive, BOUND_INDEX_WIDTH, &bounds );
+				diff_x = abs( diff_x );
+				shouldForceLinking = shouldForceLinking && diff_x <= generation_status.info_surface.distance_x.max;
 				if( shouldForceLinking ){ // se sono vicini allora li collego aggiungedo 2 punti "comuni" estremi
 					temp.SetY( linking_height );
 					temp.SetX( half_width );

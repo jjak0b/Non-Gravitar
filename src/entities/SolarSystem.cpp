@@ -63,7 +63,7 @@ void SolarSystem::Generate(GameEngine *game) {
     double scale = 1.0; // fattore di inversione dell'offset Y
     VECTOR_VALUE_TYPE offset; // distanza di variazione in una singola componente
     for( unsigned int i = 0; i < count_planets; i++ ){
-        unsigned int circumference = MaxWidth + (rand() % MaxWidth ); // TEMP
+        unsigned int circumference = MaxWidth + RANDOM_RANGE( 0, MaxWidth ); // TEMP
         unsigned int radius = 4 + circumference % 5;
         planet_bounds.Set( BOUND_INDEX_WIDTH, circumference );
         planet_bounds.Set( BOUND_INDEX_HEIGHT, MaxHeight );
