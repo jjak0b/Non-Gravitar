@@ -5,6 +5,7 @@
 #include <cstring>
 
 Bunker::Bunker( Level *world, Point2D origin, double health, const char classname[] ) : Entity( world, origin, NULL, classname ), Damageable( health ) {
+	this->enableCollisionLevelDetection = false;
 }
 
 bool Bunker::Update(GameEngine* game) {

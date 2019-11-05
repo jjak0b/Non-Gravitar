@@ -7,6 +7,9 @@ Beam_FX::Beam_FX( Level *world, Point2D origin) : Entity(world, origin ,NULL, "B
 	const BITMAP_DATA_TYPE raw_texturer0[] = "\xB1";
 	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0};
 	this->texture->Load( rawtexture, NULL, 1, 1);
+	
+	this->isCollidable = false;
+	this->enableCollisionLevelDetection = false;
 }
 
 void Beam_FX::addNext( Point2D origin ) {

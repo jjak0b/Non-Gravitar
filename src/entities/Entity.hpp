@@ -18,6 +18,8 @@ protected:
 	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
 	bool shouldDeleteOnUpdate = false; // che che indica se l'entità deve essere eliminata in Entity::Update
 	Shape *shape = NULL;
+	bool isCollidable;
+	bool enableCollisionLevelDetection;
 
 public:
 	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "", Shape *shape = NULL );
@@ -114,8 +116,11 @@ public:
 	Shape* GetShape();
 
 	void SetShape( Shape *shape );
-
-
+	
+	bool IsCollidable() const;
+	
+	void setIsCollidable(bool isCollidable);
+	
 	/**
 	 * @brief funzione di callback o risposta che deve essere richiamata nel caso questa entità collida con un altra
 	 * e ne gestirà il comportamento

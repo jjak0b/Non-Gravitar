@@ -15,6 +15,8 @@ PlanetEntity::PlanetEntity( SolarSystem *world, Point2D origin, Bitmap *texture,
 	this->escape_point.Add( default_escape_point_offset );
 
 	this->shape = new Shape();
+	
+	this->enableCollisionLevelDetection = false;
 }
 
 PlanetEntity::~PlanetEntity(){}

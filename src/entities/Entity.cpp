@@ -5,7 +5,7 @@
 #include "shared/Shape.hpp"
 #include <cstring>
 #include <iostream>
-
+#include "shared/Utility.h"
 
 Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char classname[], Shape *shape ){
 	this->garbage = false;
@@ -15,6 +15,8 @@ Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char class
 		_world->AddEntity( this );
 	}
 	this->SetOrigin( origin );
+	isCollidable = true;
+	enableCollisionLevelDetection = true;
 }
 Entity::~Entity(){
 	if (shape != NULL) {
@@ -96,6 +98,13 @@ bool Entity::IsColliding( GameEngine* game,  Entity *entity ){
 #else
 bool Entity::IsColliding( Entity *entity ){
 #endif
+	if( !IsDefined(entity) || !this->isCollidable || ( IsDefined(entity) && !entity->isCollidable ) ) {
+		return false;
+	}
+
+	bool imLevel = Utility::CheckEqualsOrSubstring( this->str_classname, "Level" , true );
+	bool entIsLevel = Utility::CheckEqualsOrSubstring( entity->str_classname, "Level" , true );
+	
 	bool isColliding = false;
 	Vector* ptr_bounds = NULL;
 	Vector bounds;
@@ -104,24 +113,31 @@ bool Entity::IsColliding( Entity *entity ){
 		ptr_bounds = &bounds;
 		ptr_bounds->Set( 1, 0 );
 	}
-	if( this->world != NULL && this->shape != NULL && entity->shape != NULL){
-		isColliding = this->GetShape()->IsShapeColliding(
-#ifdef DEBUG_COLLISION_DRAWING
-				game,
-#endif
-				this->GetOrigin(),
-				entity->GetOrigin(),
-				entity->GetShape(),
-				ptr_bounds );
-		if( !isColliding ){
-			isColliding = entity->GetShape()->IsShapeColliding(
+	if( this->world != NULL && this->shape != NULL && entity->shape != NULL) {
+		if( (!imLevel && !entIsLevel)
+			|| ( (this->enableCollisionLevelDetection && entIsLevel)
+				|| ( entity->enableCollisionLevelDetection && imLevel ) )
+			) {
+			
+			isColliding = this->GetShape()->IsShapeColliding(
 #ifdef DEBUG_COLLISION_DRAWING
 					game,
 #endif
-					entity->GetOrigin(),
 					this->GetOrigin(),
-					this->GetShape(),
-					ptr_bounds );
+					entity->GetOrigin(),
+					entity->GetShape(),
+					ptr_bounds);
+			
+			if (!isColliding) {
+				isColliding = entity->GetShape()->IsShapeColliding(
+#ifdef DEBUG_COLLISION_DRAWING
+						game,
+#endif
+						entity->GetOrigin(),
+						this->GetOrigin(),
+						this->GetShape(),
+						ptr_bounds);
+			}
 		}
 	}
 	return isColliding;
@@ -142,6 +158,14 @@ bool Entity::IsOutOfTheWorld(){
 void Entity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ){
 	
 
+}
+
+bool Entity::IsCollidable() const {
+	return isCollidable;
+}
+
+void Entity::setIsCollidable(bool isCollidable) {
+	Entity::isCollidable = isCollidable;
 }
 	
 

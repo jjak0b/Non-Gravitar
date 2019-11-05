@@ -86,7 +86,7 @@ bool Level::Update( GameEngine *game ){
 #ifdef ENABLE_COLLISION_LEVEL
 		while( IsDefined(this) && !ents.empty() && entity_it != ents.end() ) {
 			entity = *entity_it;
-			if ( IsDefined( entity ) ) {
+			if ( IsDefined( entity ) && entity->IsCollidable() ) {
 				if ( this->IsColliding(
 #ifdef DEBUG_COLLISION_DRAWING
 						game,
@@ -110,7 +110,11 @@ bool Level::Update( GameEngine *game ){
 			entity_it_2 = ents.begin();
 			while( IsDefined( entity ) && !ents.empty() && entity_it_2 != ents.end() ) {
 				entity2 = *entity_it_2;
-				if ( entity != entity2 && IsDefined( entity2 ) && entity->IsColliding(
+				if ( entity != entity2
+					&& IsDefined( entity2 )
+					&& entity2->IsCollidable()
+					&& entity2->IsCollidable()
+					&& entity->IsColliding(
 #ifdef DEBUG_COLLISION_DRAWING
 						game,
 #endif

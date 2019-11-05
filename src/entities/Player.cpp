@@ -76,13 +76,15 @@ bool Player::Update( GameEngine *game ){
 				this->lastMove = direction;
 			}
 #else
+			double fuel_used_amount = 0.0;
 			Vector _acceleration = direction;
 			if ( !direction.IsNull() ) { // aggiorno la posizione solo il vettore spostamento non è nullo
 				Vector direction_inverted = direction;
 				direction_inverted.Scale( -1.0 );
 
+				VECTOR_VALUE_TYPE speed = this->GetSpeed();
 				if( this->lastMove.Equals( direction_inverted ) ){ // Se il giocatore vuole andare nella direzione opposta, allora lo rallento
-					_acceleration.Scale( -this->GetSpeed() );
+					_acceleration.Scale( -speed );
 				}
 				else{ // altrimenti va nella direzione di movimento
 					_acceleration.Scale( PLAYER_MAX_SPEED );
@@ -92,6 +94,7 @@ bool Player::Update( GameEngine *game ){
 				_acceleration.Scale( PLAYER_MAX_ACCELERATION );
 				this->AddAcceleration( _acceleration );
 				this->lastMove = direction;
+				fuel_used_amount += PLAYER_MAX_ACCELERATION * (2.0/100.0);
 			}
 			// ricevo un rallentamento di "attrito" nella direzione opposta a quella di movimento per rallentare il giocatore, migliorando il suo controllo
 			_acceleration.Add( GetVelocity().Scale( -PLAYER_FRICTION_COEFFICIENT ) ); // a_f = - v * C
@@ -100,14 +103,16 @@ bool Player::Update( GameEngine *game ){
 
 			if( GetSpeed() > 0.1 ){
 			#ifndef DEBUG
-				this->RemoveFuel( 1 );
+				this->RemoveFuel( fuel_used_amount );
 			#endif
 			}
 #endif		
 			// Generazione proiettile
 			if (this->ShouldFire(input)) {
 				Vector direction = this->GetVelocity();
-				direction.Normalize();
+				if( !direction.IsNull() )
+					direction.Normalize();
+				
 #ifndef DEBUG
 				this->Fire( direction );
 #else
@@ -210,7 +215,7 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
 			return;
 		}
-#ifdef DEBUG
+#ifndef DEBUG
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
 		DrawLine(game->GetViewport(), this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
 		// Utility::sleep(1000);
@@ -218,8 +223,11 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 #endif
 		// Collisione contro il terreno
 		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
-			// TODO: temp
-			// this->DoDamage( this->GetHealth() );
+#ifndef DEBUG
+			
+			Utility::sleep( 1000 );
+			this->DoDamage( this->GetHealth() );
+#endif
 		}
 		// Collisione contro un proiettile
 		else if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){

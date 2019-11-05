@@ -1,8 +1,10 @@
 #include "SmallFuel.hpp"
+#include "Player.hpp"
 
 SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
     
-    this->size = 50;
+    this->healthSize = 50;
+    this->fuelSize = PLAYER_MAX_FUEL * 0.25;
 
 	this->texture = new Bitmap( 1, 4, COLOR_BLUE );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " [\xFE]";

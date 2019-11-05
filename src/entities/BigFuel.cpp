@@ -1,9 +1,10 @@
 #include "BigFuel.hpp"
-
+#include "Player.hpp"
 BigFuel::BigFuel( Level *world, Point2D origin) : Fuel( world, origin) {
     
-	this->size = 100;
-
+	this->healthSize = PLAYER_HEALTH * 0.5;
+	this->fuelSize = PLAYER_MAX_FUEL;
+	
 	this->texture = new Bitmap( 2, 4, COLOR_BLUE );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " \xC9\xDC\xBB";
 	const BITMAP_DATA_TYPE raw_texturer1[] = " \xC8\xDF\xBC";

@@ -9,7 +9,7 @@ class Projectile;
 class Beam;
 
 #define PLAYER_HEALTH 500
-#define PLAYER_MAX_FUEL 500
+#define PLAYER_MAX_FUEL 1500
 #define PLAYER_MAX_SPEED 20
 #define PLAYER_MAX_ACCELERATION 150
 #define PLAYER_FRICTION_COEFFICIENT 1.0
