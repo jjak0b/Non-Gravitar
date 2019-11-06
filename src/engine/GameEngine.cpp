@@ -44,7 +44,7 @@ bool GameEngine::frame( double dtime ){
 			Vector _bounds = Vector( 2 );
 			_bounds.Set( BOUND_INDEX_WIDTH, this->view->GetWidth() );
 			_bounds.Set( BOUND_INDEX_HEIGHT, this->view->GetHeight() );
-			this->SetCurrentLevel( new SolarSystem( _bounds, 4 ) );
+			this->SetCurrentLevel( new SolarSystem( _bounds, RANDOM_RANGE( 1, 5 ) ) );
 
 			// logica di spawn o trasferimento giocatore da un sistema solare ad un altro
 			Point2D spawn_point = Point2D( 0, this->GetCurrentLevel()->GetMaxHeight()/2.0 );
