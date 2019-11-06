@@ -10,13 +10,17 @@
 Entity::Entity( Level *_world, Point2D origin, Bitmap *texture, const char classname[], Shape *shape ){
 	this->garbage = false;
 	this->str_classname = _strdup( classname );
-	this->texture = NULL;
+	this->texture = texture;
+	this->world = NULL;
 	if( IsDefined( _world ) ){
 		_world->AddEntity( this );
 	}
 	this->SetOrigin( origin );
-	isCollidable = true;
-	enableCollisionLevelDetection = true;
+	this->shape = shape;
+	this->shouldDeleteOnUpdate = false;
+	this->isCollidable = true;
+	this->enableCollisionLevelDetection = true;
+	
 }
 Entity::~Entity(){
 	if (shape != NULL) {

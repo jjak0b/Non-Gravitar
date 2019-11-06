@@ -308,7 +308,8 @@ void Level::Delete( GameEngine* game ){
 	this->GetOutPlayer();
 
 	// pulisce i dati riigardanti la superficie
-	this->shape->deleteAbsolutes();
+	if( this->shape != NULL )
+		this->shape->deleteAbsolutes();
 
 	// pulisco i dati riguardanti le entità in questo livello, e le elimina
 	list<Entity*>::iterator entity_iterator = this->entities.begin();

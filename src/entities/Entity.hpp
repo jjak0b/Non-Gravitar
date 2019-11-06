@@ -11,13 +11,13 @@ class ViewPort;
 
 class Entity{
 protected:
-	Level *world = NULL;
+	Level *world;
 	Point2D origin ; // Coordinate dell'entità nel mondo di gioco
-	Bitmap *texture = NULL; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
-	char *str_classname = NULL; // nome della classe che specifica il tipo di questa entità
-	bool garbage = false; // indica se questa entità dovrebbe essere cancellata
-	bool shouldDeleteOnUpdate = false; // che che indica se l'entità deve essere eliminata in Entity::Update
-	Shape *shape = NULL;
+	Bitmap *texture; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
+	char *str_classname; // nome della classe che specifica il tipo di questa entità
+	bool garbage; // indica se questa entità dovrebbe essere cancellata
+	bool shouldDeleteOnUpdate; // che che indica se l'entità deve essere eliminata in Entity::Update
+	Shape *shape;
 	bool isCollidable;
 	bool enableCollisionLevelDetection;
 
