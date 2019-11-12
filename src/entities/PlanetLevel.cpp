@@ -253,6 +253,8 @@ void PlanetLevel::Generate( GameEngine *game ){
 			distance_required = 0;
 
 		Point2D
+			start_link = Point2D( -half_width, linking_height ),
+			end_link = Point2D( half_width, linking_height ),
 			temp,
 			old_temp,
 			midpoint,
@@ -277,9 +279,17 @@ void PlanetLevel::Generate( GameEngine *game ){
 			
 			shape->addOffset( start_positive, origin, ADD_BACK );
 			shape->addOffset( start_negative, origin, ADD_FRONT );
+			
+			// aggiungo dei punti per essere utilizzati dal controllo collisione come punti di "giunzione" tra back e front
+			shape->addOffset( start_link, origin, ADD_FRONT );
+			shape->addOffset( end_link, origin, ADD_BACK );
 		}
 
 		do {
+			// rimuovo i punti di giunzione per poter aggiungere i successivi punti generati
+			start_link = shape->PopOffset( ADD_FRONT );
+			end_link = shape->PopOffset( ADD_BACK );
+			
 			generated_relative_points = shape->getOffsetPoints();
 			last_absolute_positive = GetNormalizedPoint( generated_relative_points.back() );
 			last_absolute_negative = GetNormalizedPoint( generated_relative_points.front() );
@@ -379,8 +389,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 				else if (!generation_status.info_surface.isGeneratingPositiveDone && distance_required > 0) {
 					// generation_list_positive.push_front( temp );
 					if( temp.GetX() > half_width){
-						temp.SetY( linking_height );
-						temp.SetX( half_width );
+						temp = end_link;
 						generation_status.info_surface.isGeneratingPositiveDone = true;
 					}
 					shape->addOffset(temp, origin, ADD_BACK );
@@ -388,8 +397,7 @@ void PlanetLevel::Generate( GameEngine *game ){
 				}
 				else if (!generation_status.info_surface.isGeneratingNegativeDone && distance_required < 0) {
 					if( temp.GetX() < -half_width ){
-						temp.SetY( linking_height );
-						temp.SetX( -half_width );
+						temp = start_link;
 						generation_status.info_surface.isGeneratingNegativeDone = true;
 					}
 					// generation_list_negative.push_front( temp );
@@ -416,6 +424,13 @@ void PlanetLevel::Generate( GameEngine *game ){
 			}
 			// continua finchè la distanza richiesta non è nulla e non è stato generato un punto
 		} while (!isGenerated && distance_required != 0 && !isPointGenerated );
+		
+		// se non è stato generato completamente riaggiungo gli offset estremi
+		// per essere utilizzati dal controllo collisione come punti di "giunzione"
+		if( !isGenerated ){
+			shape->addOffset( start_link, origin, ADD_FRONT );
+			shape->addOffset( end_link, origin, ADD_BACK );
+		}
 	}
 }
 
