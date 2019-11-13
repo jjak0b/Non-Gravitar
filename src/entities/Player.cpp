@@ -16,13 +16,20 @@ Player::Player( Level *world, Point2D origin, double health = PLAYER_HEALTH ) : 
 	this->MaxFuel = PLAYER_MAX_FUEL;
 	this->fuel = this->MaxFuel;
 	this->score = 0;
-
-	this->texture = new Bitmap( 3, 5, COLOR_RED );
-	const BITMAP_DATA_TYPE raw_texturer0[] = " /^\\ ";
-	const BITMAP_DATA_TYPE raw_texturer1[] = "|___|";
-	const BITMAP_DATA_TYPE raw_texturer2[] = "/   \\";
-	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1, raw_texturer2 };
-	this->texture->Load( rawtexture, NULL, 3, 5 );
+	
+	this->texture = new Bitmap( 2, 9, COLOR_RED );
+	const BITMAP_DATA_TYPE  raw_texturer0[] = "  /%\xB1\xB1\\  ";
+	const BITMAP_DATA_TYPE  raw_texturer1[] = "(%\xDB\xDB\xDB\xDB\xDB\xDB)";
+	const BITMAP_DATA_TYPE *rawtexture[] = { raw_texturer0, raw_texturer1 };
+	
+	const Color COLOR_LIGHTBLUE = Color( 135, 206, 250 );
+	const Color COLOR_STEELBLUE = Color( 70, 130, 180 );
+	
+	const Color colors_r0[] = { COLOR_TRANSPARENT, COLOR_TRANSPARENT, COLOR_GREY, COLOR_LIGHTBLUE, COLOR_LIGHTBLUE, COLOR_LIGHTBLUE, COLOR_GREY, COLOR_TRANSPARENT, COLOR_TRANSPARENT };
+	const Color colors_r1[] = { COLOR_GREY, COLOR_LIGHTBLUE, COLOR_STEELBLUE, COLOR_STEELBLUE, COLOR_STEELBLUE, COLOR_STEELBLUE, COLOR_STEELBLUE, COLOR_STEELBLUE, COLOR_GREY };
+	const Color *colorTable[] = { colors_r0, colors_r1 };
+	this->texture->Load( rawtexture, colorTable, 2, 9 );
+	
 	
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D( -2, 6 ), origin);
@@ -157,7 +164,6 @@ Projectile *Player::Fire( Vector direction ){
 	
 	// TODO: dopo tests sostituire temp con dirextion senza Scale
 	Vector temp = direction;
-	temp.Scale(6); // Scalo la direzione per farlo sparare oltre la collision shape
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
 	Projectile *p = new Projectile( this->world, projectile_origin, direction, 50, "Player_Projectile", this->GetMaxSpeed() + 5 );
@@ -172,7 +178,7 @@ Beam *Player::Fire_Beam( ){
 	Vector temp = direction;
 
 	// TODO: dopo tests sostituire temp con dirextion senza Scale
-	temp.Scale(6); // Scalo la direzione per farlo sparare oltre la collision shape
+	temp.Scale(2); // Scalo la direzione per farlo sparare oltre la collision shape
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
 	Beam *p = new Beam( this->world, projectile_origin, direction );

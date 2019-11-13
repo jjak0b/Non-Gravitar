@@ -75,7 +75,7 @@ Color Bitmap::GetColor( unsigned int row, unsigned int column ){
 bool Bitmap::Load( const BITMAP_DATA_TYPE **texture, const Color **color_table, unsigned int _rows, unsigned int _columns ){
 	bool result = true;
 	if( texture != NULL) {
-		result = result && Matrix<BITMAP_DATA_TYPE>::Load( texture, _rows, _columns );
+		result = Matrix<BITMAP_DATA_TYPE>::Load( texture, _rows, _columns );
 	}
 
 	if( this->colors != NULL && color_table != NULL ){

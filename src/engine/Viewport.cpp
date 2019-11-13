@@ -45,8 +45,8 @@ void ViewPort::Draw( Bitmap *texture, Level *world, Point2D world_point ){
 			// correggo le coordinate relative alla view, per far si che la texture sia centrata rispetto alla coordinata
 			// ( cioè per partire a copiare da in alto a sinistra;
 			Vector offset_from_bitmap_point_to_texture_top_left = Vector( point_on_bitmap.GetSize() );
-			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns()/2.0) );
-			offset_from_bitmap_point_to_texture_top_left.Set( 1, 1 - (int)(texture->GetRows()) ); // l'1 è riferito alla riga "extra" della viewport che contiene 2 caratteri
+			offset_from_bitmap_point_to_texture_top_left.Set( 0, -(int)(texture->GetColumns()/ 2 ) );
+			offset_from_bitmap_point_to_texture_top_left.Set( 1, -(int)(texture->GetRows()) / 2 ); // l'1 è riferito alla riga "extra" della viewport che contiene 2 caratteri
 			point_on_bitmap.Add( offset_from_bitmap_point_to_texture_top_left );
 
 			data->Copy( texture, point_on_bitmap.GetY(), point_on_bitmap.GetX() );

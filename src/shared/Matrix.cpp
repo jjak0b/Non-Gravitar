@@ -51,16 +51,17 @@ namespace Matrix{
 
 	template < class T >
 	bool Matrix<T>::Load( const T **array2d, unsigned int _rows, unsigned int _columns ){
+		bool result = false;
 		if( array2d != NULL ){
 			unsigned int min_rows = _rows > this->rows ? this->rows : _rows;
 			unsigned int min_columns = _columns > this->columns ? this->columns : _columns;
 			for( unsigned int i = 0; i < min_rows; i++ ){
 				for( unsigned int j = 0; j < min_columns; j++ ){
-					this->SetValue( array2d[ i ][ j ], i, j );
+					result = this->SetValue( array2d[ i ][ j ], i, j );
 				}
 			}
 		}
-		return false;
+		return result;
 	}
 
 	template < class T >
