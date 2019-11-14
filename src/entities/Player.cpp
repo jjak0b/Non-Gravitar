@@ -1,5 +1,6 @@
 #include "Player.hpp"
 #include "Projectile.hpp"
+#include "PlayerProjectile.hpp"
 #include "Beam.hpp"
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
@@ -32,10 +33,10 @@ Player::Player( Level *world, Point2D origin, double health = PLAYER_HEALTH ) : 
 	
 	
 	this->shape = new Shape();
-	this->shape->addOffset(Point2D( -2, 6 ), origin);
-	this->shape->addOffset(Point2D( -2, 0 ), origin);
-	this->shape->addOffset(Point2D( +2, 0 ), origin);
-	this->shape->addOffset(Point2D( +2, 6 ), origin);
+	this->shape->addOffset(Point2D( -4, 2 ), origin);
+	this->shape->addOffset(Point2D( -4, -1 ), origin);
+	this->shape->addOffset(Point2D( +4, -1 ), origin);
+	this->shape->addOffset(Point2D( +4, 2 ), origin);
 }
 
 Player::~Player(){
@@ -115,7 +116,7 @@ bool Player::Update( GameEngine *game ){
 			}
 #endif		
 			// Generazione proiettile
-			if (this->ShouldFire(input)) {
+			if (this->ShouldFire(input) && (game->GetTime() - this->fireDelay) >= 0.1) {
 				Vector direction = this->GetVelocity();
 				if( !direction.IsNull() )
 					direction.Normalize();
@@ -124,13 +125,16 @@ bool Player::Update( GameEngine *game ){
 				this->Fire( direction );
 #else
 				this->Fire(lastMove);
-#endif
+#endif		
+				this->fireDelay = game->GetTime();
 			}
 			// Generazione raggio traente
-			else if (this->ShouldBeam(input)) {
+			else if (this->ShouldBeam(input) && (game->GetTime() - this->beamDelay) >= 1) {
 				Vector direction = this->GetVelocity();
 				direction.Normalize();
 				this->Fire_Beam();
+
+				this->beamDelay = game->GetTime();
 			}
 
 			this->lastInput = input;
@@ -166,7 +170,7 @@ Projectile *Player::Fire( Vector direction ){
 	Vector temp = direction;
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
-	Projectile *p = new Projectile( this->world, projectile_origin, direction, 50, "Player_Projectile", this->GetMaxSpeed() + 5 );
+	Projectile *p = new PlayerProjectile( this->world, projectile_origin, direction, this->GetMaxSpeed() + 5 );
 	return p;
 }
 

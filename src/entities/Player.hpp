@@ -24,6 +24,8 @@ class Player : public DynamicEntity, public Damageable {
 	double fuel; // quantità di carburante rimanente
 	double MaxFuel; // massima quantità di carburante
 	unsigned int score; // contatore dei punti del giocatore
+	double fireDelay = 0; // delay sparo del proiettile
+	double beamDelay = 0; // delay raggio traente
 	
 	public:
 	Player( Level *world, Point2D origin, double health );

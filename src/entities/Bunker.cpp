@@ -1,6 +1,7 @@
 #include "Bunker.hpp"
 #include "Player.hpp"
 #include "Projectile.hpp"
+#include "PlayerProjectile.hpp"
 #include "engine/GameEngine.hpp"
 #include <cstring>
 
@@ -31,7 +32,7 @@ Projectile *Bunker::Shoot(Point2D projectile_origin, Vector direction ){
 void Bunker::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 	if( collide_ent != NULL ){
 		if( !strcmp( collide_ent->GetClassname(), "Player_Projectile" ) ){
-			Projectile *proj = (Projectile*)collide_ent;
+			PlayerProjectile *proj = (PlayerProjectile*)collide_ent;
 			this->DoDamage(proj->GetDamage());
 		}
 		else if ( !strcmp( collide_ent->GetClassname(), "Player" ) ) { 

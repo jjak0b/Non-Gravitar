@@ -60,6 +60,8 @@ add_executable(NonGravitar
         src/entities/Player.hpp
         src/entities/Projectile.cpp
         src/entities/Projectile.hpp
+		src/entities/PlayerProjectile.cpp
+        src/entities/PlayerProjectile.hpp
         src/entities/SolarSystem.cpp
         src/entities/SolarSystem.hpp
         src/entities/DynamicEntity.cpp
