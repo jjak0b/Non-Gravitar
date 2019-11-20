@@ -6,15 +6,24 @@
 class GameEngine;
 class Level;
 class Projectile;
-class Beam;
+class PlayerBeam;
 
 #define PLAYER_HEALTH 500
 #define PLAYER_MAX_FUEL 1500
 #define PLAYER_MAX_SPEED 20
 #define PLAYER_MAX_ACCELERATION 150
 #define PLAYER_FRICTION_COEFFICIENT 1.0
+
 #define PLAYER_SCORE_BUNKER_DESTROYED 500
 #define PLAYER_SCORE_PLANET_DESTROYED 5000
+
+#define PLAYER_FIRE_DAMAGE 50
+
+#define PLAYER_FIRE_DELAY 0.2
+#define PLAYER_BEAM_DELAY 0.1
+
+#define PLAYER_PROJECTILE_SPEED (PLAYER_MAX_SPEED + 5)
+#define PLAYER_BEAM_SPEED 50
 
 class Player : public DynamicEntity, public Damageable {
 	protected:
@@ -24,8 +33,8 @@ class Player : public DynamicEntity, public Damageable {
 	double fuel; // quantità di carburante rimanente
 	double MaxFuel; // massima quantità di carburante
 	unsigned int score; // contatore dei punti del giocatore
-	double fireDelay = 0; // delay sparo del proiettile
-	double beamDelay = 0; // delay raggio traente
+	double fireTime = 0; // delay sparo del proiettile
+	double beamTime = 0; // delay raggio traente
 	
 	public:
 	Player( Level *world, Point2D origin, double health );
@@ -65,7 +74,7 @@ class Player : public DynamicEntity, public Damageable {
 	 * ha sempre direzione verso il basso.
 	 * @return Beam* puntatore al raggio generato
 	*/
-	Beam *Fire_Beam();
+	PlayerBeam *Fire_Beam();
 
 	/**
 	 * @brief Restituisce la il vettore direzione corrispondente all'input inserito.

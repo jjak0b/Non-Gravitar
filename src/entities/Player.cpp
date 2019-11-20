@@ -1,7 +1,7 @@
 #include "Player.hpp"
 #include "Projectile.hpp"
 #include "PlayerProjectile.hpp"
-#include "Beam.hpp"
+#include "PlayerBeam.hpp"
 #include "PlanetEntity.hpp"
 #include "PlanetLevel.hpp"
 #include "shared/Utility.h"
@@ -116,7 +116,7 @@ bool Player::Update( GameEngine *game ){
 			}
 #endif		
 			// Generazione proiettile
-			if (this->ShouldFire(input) && (game->GetTime() - this->fireDelay) >= 0.1) {
+			if (this->ShouldFire(input) && (game->GetTime() - this->fireTime) >= PLAYER_FIRE_DELAY ) {
 				Vector direction = this->GetVelocity();
 				if( !direction.IsNull() )
 					direction.Normalize();
@@ -126,15 +126,13 @@ bool Player::Update( GameEngine *game ){
 #else
 				this->Fire(lastMove);
 #endif		
-				this->fireDelay = game->GetTime();
+				this->fireTime = game->GetTime();
 			}
 			// Generazione raggio traente
-			else if (this->ShouldBeam(input) && (game->GetTime() - this->beamDelay) >= 1) {
-				Vector direction = this->GetVelocity();
-				direction.Normalize();
+			else if (this->ShouldBeam(input) && (game->GetTime() - this->beamTime) >= PLAYER_BEAM_DELAY) {
 				this->Fire_Beam();
 
-				this->beamDelay = game->GetTime();
+				this->beamTime = game->GetTime();
 			}
 
 			this->lastInput = input;
@@ -166,26 +164,24 @@ void Player::Draw( ViewPort *view ){
 Projectile *Player::Fire( Vector direction ){
 	Point2D projectile_origin = this->GetOrigin();
 	
-	// TODO: dopo tests sostituire temp con dirextion senza Scale
 	Vector temp = direction;
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
-	Projectile *p = new PlayerProjectile( this->world, projectile_origin, direction, this->GetMaxSpeed() + 5 );
+	Projectile *p = new PlayerProjectile( this->world, projectile_origin, direction, PLAYER_PROJECTILE_SPEED, PLAYER_FIRE_DAMAGE );
 	return p;
 }
 
-Beam *Player::Fire_Beam( ){
+PlayerBeam *Player::Fire_Beam( ){
 	Point2D projectile_origin = this->GetOrigin();
 	Vector direction;
 	direction.Set(1, -1);
 	projectile_origin.Add( direction );
 	Vector temp = direction;
-
-	// TODO: dopo tests sostituire temp con dirextion senza Scale
+	
 	temp.Scale(2); // Scalo la direzione per farlo sparare oltre la collision shape
 	projectile_origin.Add( temp ); // non lo genero nelle stesse coordinate del giocatore
 
-	Beam *p = new Beam( this->world, projectile_origin, direction );
+	PlayerBeam *p = new PlayerBeam( this->world, projectile_origin, direction, PLAYER_BEAM_SPEED );
 	return p;
 }
 

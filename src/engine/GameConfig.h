@@ -27,10 +27,14 @@ typedef char INPUT_TYPE; // nel caso venga cambiata la definizione in una più c
 #define ENABLE_COLLISION_ENTITIES
 #define ENABLE_COLLISION_LEVEL
 
-//#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
 
-// #define DEBUG_LEVEL_GENERATION // se attivo genera SOLO il punto immediatamente successive ( o precedenti ) alla posizione del player
+// #define DEBUG_LEVEL_GENERATION // se attivo genera il terreno in base alla DEBUG_VIEW_DISTANCE
+#ifdef DEBUG_LEVEL_GENERATION
+#define DEBUG_LEVEL_VIEW_DISTANCE 0.5 // in % quindi se 1.0 equivale alla VIEW_DISTANCE DI DEFAULT
+#endif
+
 // #define DEBUG_SURFACE_TERRAIN
 // #define DEBUG_COLLISION_DRAWING
 
