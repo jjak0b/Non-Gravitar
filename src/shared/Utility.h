@@ -43,13 +43,13 @@ namespace Utility {
 		void ClearScreen();
 		
 		/**
-		 * @Brief Wrapper o implementazione conio.h::_kbhit()
+		 * @Brief Wrapper di conio.h::_kbhit()
 		 * @returne
 		 */
 		bool IsKeyPressed();
 		
 		/**
-		 * @Brief Wrapper o implementazione conio.h::_getch()
+		 * @Brief Wrapper di conio.h::_getch()
 		 * @returne
 		 */
 		int GetKeyboardInput();
