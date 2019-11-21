@@ -58,5 +58,3 @@ public:
  * @return false 
  */
 bool IsDefined( Entity *entity );
-
-bool OsSupportAnsiEscape();

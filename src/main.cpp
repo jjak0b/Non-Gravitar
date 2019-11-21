@@ -56,7 +56,7 @@ char GetInput(){
 
 int main(){
 	#ifdef __WIN32__
-	if( OsSupportAnsiEscape() ){
+	if( Utility::GUI::Terminal::OsSupportAnsiEscape() ){
 		HANDLE hOut= GetStdHandle(STD_OUTPUT_HANDLE);
 		DWORD mode;
 		GetConsoleMode(hOut, &mode);
@@ -80,7 +80,7 @@ int main(){
 	Point2D screen_size = Point2D( 1, 1);
 	Utility::GUI::ClearScreen();
 
-	srand( time( 0 ) );// inizializzo generatori pseudocasuali
+	srand( time( NULL ) );// inizializzo generatori pseudocasuali
 	GameEngine engine = GameEngine( screen_size.GetX(), screen_size.GetY() );
 	do{
 		// attende solo se il tempo di attesa è positivo, altrimenti l'esecuzione è in ritardo ... (lag)

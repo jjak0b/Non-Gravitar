@@ -7,10 +7,6 @@
 #include "shared/Utility.h"
 #include <cstring>
 
-#ifdef __WIN32__ // TODO: Rimuovere dopo test
-#include <windows.h>
-#endif
-
 Player::Player( Level *world, Point2D origin, double health = PLAYER_HEALTH ) : DynamicEntity( world, origin, NULL, "Player", PLAYER_MAX_SPEED ), Damageable(health) {
 
 	this->moveOverride = NULL;

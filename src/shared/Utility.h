@@ -47,6 +47,8 @@ namespace Utility {
 			void SetTerminalCursor(int x, int y);
 
 			Point2D GetTerminalSize();
+			
+			bool OsSupportAnsiEscape();
 
 		}
 	}
