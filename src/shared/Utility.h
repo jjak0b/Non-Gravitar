@@ -41,6 +41,18 @@ namespace Utility {
 	namespace GUI {
 
 		void ClearScreen();
+		
+		/**
+		 * @Brief Wrapper o implementazione conio.h::_kbhit()
+		 * @returne
+		 */
+		bool IsKeyPressed();
+		
+		/**
+		 * @Brief Wrapper o implementazione conio.h::_getch()
+		 * @returne
+		 */
+		int GetKeyboardInput();
 
 		namespace Terminal {
 

@@ -1,6 +1,5 @@
 #include <iostream>
 #include <ctime>
-#include <conio.h>
 // dipendenti da SO
 #ifdef __WIN32__
 #include <Windows.h>
@@ -25,12 +24,12 @@
 
 char GetInput(){
 	char c = '\0';
-	c = _getch();
+	c = Utility::GUI::GetKeyboardInput();
 	if( c == '\e' || c == INPUT_CODE_KEY_PREARROW ){  // se il carattere è il carattere di escape o di pre freccia
 		if( c == '\e' ){
-			_getch(); // salto il carattere [
+			Utility::GUI::GetKeyboardInput(); // salto il carattere [
 		}
-		c = _getch(); // memorizzo il carattere che identifica il tipo della freccia
+		c = Utility::GUI::GetKeyboardInput(); // memorizzo il carattere che identifica il tipo della freccia
 		switch (c) { // the real value
 			case INPUT_CODE_ESC_KEY_UP:
 			case INPUT_CODE_KEY_UP:
@@ -90,7 +89,7 @@ int main(){
 
 		Utility::GUI::Terminal::SetTerminalCursor(0, 0);
 		key = '\0';
-		if( _kbhit() ){
+		if( Utility::GUI::IsKeyPressed() ){
 			key = GetInput();
 		}
 		current_time = clock();

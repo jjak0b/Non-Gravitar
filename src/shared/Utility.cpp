@@ -1,13 +1,17 @@
 #include "Utility.h"
 #include "engine/GameConfig.h"
 #include <string>
+#include <iostream>
 
 #ifdef __WIN32__
 #include <windows.h>
 #include <versionhelpers.h>
 #else
 #include <unistd.h>
+#include <sys/ioctl>
 #endif
+
+#include <conio.h>
 
 namespace Utility {
 	bool CheckEqualsOrSubstring(const char *str, const char *str_or_substr, bool check_as_subString) {
@@ -51,17 +55,30 @@ namespace Utility {
 	namespace GUI {
 
 		void ClearScreen(){
+			if( Terminal::OsSupportAnsiEscape() ) {
+				std::cout << "\033[2J";
+			}
+			else {
 #ifdef __WIN32__
-			system( "cls");
+				system("cls");
 #else
-			system( "CLEAR");
+				system( "CLEAR");
 #endif
+			}
 		}
-
+		
+		bool IsKeyPressed(){
+			return _kbhit();
+		}
+		
+		int GetKeyboardInput(){
+			return _getch();
+		}
+		
 		namespace Terminal {
 
 			void SetTerminalCursor(int x, int y){
-#ifdef __WIN32__
+#ifdef __WIN32_
 				HANDLE hOut;
 				COORD Position;
 
@@ -71,7 +88,7 @@ namespace Utility {
 				Position.Y = y;
 				SetConsoleCursorPosition(hOut, Position);
 #else
-				cout << "\e[" << y << ";" << x << "H");
+				std::cout << "\e[" << y << ";" << x << "H";
 #endif
 			}
 
@@ -86,7 +103,6 @@ namespace Utility {
 				rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 				return Point2D( columns, rows );
 #else
-				// WARNING: non testato
 				struct winsize w;
 				ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 				return Point2D( w.ws_col, w.ws_row );
