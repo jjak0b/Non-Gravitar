@@ -14,6 +14,6 @@ SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
 	this->shape = new Shape();
 	this->shape->addOffset(Point2D( -1, 0 ), origin);
 	this->shape->addOffset(Point2D( +1, 0 ), origin);
-	this->shape->addOffset(Point2D( +1, +2 ), origin);
-	this->shape->addOffset(Point2D( -1, +2 ), origin);
+	this->shape->addOffset(Point2D( +1, +1 ), origin);
+	this->shape->addOffset(Point2D( -1, +1 ), origin);
 }

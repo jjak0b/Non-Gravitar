@@ -10,8 +10,8 @@ BunkerC::BunkerC( Level *world, Point2D origin) : Bunker( world, origin, 300, "B
 	this->texture->Load( rawtexture, NULL, 2, 6 );
 
 	this->shape = new Shape();
-	this->shape->addOffset(Point2D( -2, -1 ), origin);
-	this->shape->addOffset(Point2D( +2, -1 ), origin);
+	this->shape->addOffset(Point2D( -2, 0 ), origin);
+	this->shape->addOffset(Point2D( +2, 0 ), origin);
 	this->shape->addOffset(Point2D( +2, +2 ), origin);
 	this->shape->addOffset(Point2D( -2, +2 ), origin);
 }
