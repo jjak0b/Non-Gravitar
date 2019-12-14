@@ -2,6 +2,7 @@
 #include "Segment.hpp"
 
 Shape::Shape() {
+	last_origin = Point2D( 0, 0 );
 };
 
 Shape::~Shape() {
@@ -78,18 +79,25 @@ list<Point2D> Shape::getOffsetPoints() {
   return this->offset_points;
 }
 
-void Shape::UpdateAbsolutes( Point2D origin ) {
-    Point2D point;
-    list<Point2D>::iterator it_offset, it_absolute;
-    it_offset = this->offset_points.begin();
-    it_absolute = this->absolute_points.begin();
-    
-    for (; it_offset != this->offset_points.end(); it_offset++, it_absolute++ ) {
-      point = origin;
-      point.Add(*it_offset);
-      
-      (*it_absolute) = point;
-    }
+void Shape::UpdateAbsolutes( Point2D _origin ) {
+	// aggiorna l'intera lista solo se la posizione è diversa
+	if( !this->last_origin.Equals( _origin ) ){
+		this->last_origin = _origin;
+		Point2D point;
+		list<Point2D>::iterator it_offset, it_absolute;
+		it_offset = this->offset_points.begin();
+		it_absolute = this->absolute_points.begin();
+		
+		while( it_offset != this->offset_points.end() ) {
+			point = _origin;
+			point.Add(*it_offset);
+			
+			(*it_absolute) = point;
+
+			it_offset++;
+			it_absolute++;
+		}
+	}
 }
 
 // Intersezioni

@@ -21,6 +21,13 @@ class Shape{
 
     protected:
 		/**
+		 * @brief ultima posizione aggiornata della figura,
+		 * ad ogni UpdateAbsolute è aggiornata.
+		 * Utilizzata per tenere traccia dell'ultima origine presa in considerazione in UpdateAbsolute
+		 */
+		Point2D last_origin;
+
+		/**
 		 * @brief lista di vertici con coordinate assolute della figura
 		 * rispetto alla sua origine del livello
 		 * aggiornati tramite UpdateAbsolutes, ed utilizzati per evitare un ricalcolo per ulteriori controlli
