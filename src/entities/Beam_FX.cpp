@@ -12,17 +12,18 @@ Beam_FX::Beam_FX( Level *world, Point2D origin) : Entity(world, origin ,NULL, "B
 	this->enableCollisionLevelDetection = false;
 }
 
-void Beam_FX::addNext( Point2D origin ) {
-	if (this->next != NULL)
-		this->next->addNext( origin );
-	else
-		this->next = new Beam_FX(world, origin);
+Beam_FX* Beam_FX::Add( Point2D origin ) {
+	Beam_FX *head = new Beam_FX(world, origin);
+	head->next = this;
+	return head;
 }
 
 void Beam_FX::Delete(GameEngine *game) {
-	if (this->next != NULL)
-		this->next->Delete(game);
-	Entity::Delete(game);
+	Beam_FX *head = this;
+	while( head != NULL ){
+		head->Entity::Delete( game );
+		head = head->next;
+	}
 }
 
 

@@ -24,4 +24,6 @@ class PlayerBeam : public Projectile{
 	 * @return false 
 	 */
 	virtual bool Update( GameEngine *game );
+
+	virtual void Delete( GameEngine *game );
 };

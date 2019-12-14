@@ -13,12 +13,12 @@ class Beam_FX : public Entity{
 	public:
 	Beam_FX( Level *world, Point2D origin );
 
-
 	/**
-	 * @brief Aggiunge un nuovo Beam_FX alla fine della lista.
+	 * @brief Aggiunge un nuovo Beam_FX in testa alla lista.
 	 * @param origin Origine del nuovo elemento.
+	 * @return la testa della coda
 	*/
-	void addNext(Point2D origin);
+	Beam_FX* Add(Point2D origin);
 
 	/** 	
 	 * @brief Elimina la lista.

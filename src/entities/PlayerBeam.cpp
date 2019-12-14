@@ -9,10 +9,23 @@ bool PlayerBeam::Update(GameEngine *game) {
 	bool update_result = this->Projectile::Update(game);
 
 	// Aggiornamento texture del raggio.
-	if (update_result)
-		this->fx->addNext(origin);
-	else
-		this->fx->Delete(game);
+	if (update_result ){
+		if ( this->fx != NULL )
+			this->fx = this->fx->Add(origin);
+	}
+	else{
+		if ( this->fx != NULL ){
+			this->fx->Delete(game);
+			this->fx = NULL;
+		}
+	}
 
 	return update_result;
+}
+
+void PlayerBeam::Delete( GameEngine *game ){
+	if( this->fx != NULL ){
+		this->fx->Delete( game );
+	}
+	Projectile::Delete( game );
 }
