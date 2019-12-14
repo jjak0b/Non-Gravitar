@@ -78,10 +78,6 @@ list<Point2D> Shape::getOffsetPoints() {
   return this->offset_points;
 }
 
-void Shape::deleteAbsolutes() {
-  this->absolute_points.clear();
-}
-
 void Shape::UpdateAbsolutes( Point2D origin ) {
     Point2D point;
     list<Point2D>::iterator it_offset, it_absolute;

@@ -28,20 +28,9 @@ Bitmap::Bitmap( unsigned int _rows, unsigned int _columns, Color color ) : Matri
 Bitmap::~Bitmap(){
 	if( this->colors != NULL ){
 		delete this->colors;
+		this->colors = NULL;
 	}
 }
-
-/*unsigned int Bitmap::GetRows(){
-	return Matrix<BITMAP_DATA_TYPE>::GetRows();
-}
-
-unsigned int Bitmap::GetColumns(){
-	return Matrix<BITMAP_DATA_TYPE>::GetColumns();
-}
-
-bool Bitmap::SetValue( BITMAP_DATA_TYPE value, unsigned int row, unsigned int column ){
-	return Matrix<BITMAP_DATA_TYPE>::SetValue( value, row, column );
-}*/
 
 BITMAP_DATA_TYPE Bitmap::GetValue( unsigned int row, unsigned int column){
 	BITMAP_DATA_TYPE value;

@@ -24,6 +24,7 @@ PrintableBitmap::PrintableBitmap( unsigned int _rows, unsigned int _columns ) : 
 PrintableBitmap::~PrintableBitmap(){
 	if( this->buffer != NULL){
 		delete this->buffer;
+		this->buffer = NULL;
 	}
 }
 
