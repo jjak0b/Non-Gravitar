@@ -2,6 +2,10 @@
 
 #include "Entity.hpp"
 
+/**
+ * @brief Entità che implementa il moto uniformemente accelerato
+ * Ogni metodo auto eplicita il suo funzionamento
+ */
 class DynamicEntity : public Entity{
 protected:
 	Vector* previous_origin = NULL;
@@ -33,5 +37,4 @@ public:
 
 	virtual bool Update( GameEngine *game );
 
-	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 };

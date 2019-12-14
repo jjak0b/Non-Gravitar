@@ -28,7 +28,7 @@ class PlanetEntity;
 class PlanetLevel : public Level{
 
 private:
-	generation_info_table generation_status;
+	generation_info_table generation_status; // struttura contenente informazioni sullo stato di generazione
 	
 protected:
 	
@@ -69,23 +69,17 @@ protected:
 
 	/**
 	 * @brief funzione di aggiornamento degli stati delle delle entità
-	 * PostCondition: quando il giocatore abbandona il pianeta, questo livello sarà flaggato come IsGarbage
+	 * PostCondition: quando il giocatore abbandona il pianeta, cambia prossimo livello da caricare
+	 * con quello dell livello in cui risiede Planet Entity
 	 * @param game 
 	 * @return false se il giocatore abbandona il pianeta
 	 * @return true altrimenti
 	 */
 	virtual bool Update( GameEngine *game );
-
-	/**
-	 * @Brief: vedere Level::ShouldGenerate
-	 * @param view
-	 */
-    virtual int ShouldGenerate(ViewPort *view);
-    
     
 	/**
-	 * @brief Genera il Livello di gioco, generando il terreno e le sue entità,
-	 * se è stato generato in precedenza esso viene rigenerato ( sempre casualmente )
+	 * @brief Genera il Livello di gioco, generando casualmente il terreno e le sue entità bunker e fuel,
+	 * secondo la distanza di della schermata data dalla ViewPort del giocatore a runtime, quindi la generazione è procedurale
 	 * 
 	 * @param game 
 	 */
@@ -98,22 +92,22 @@ protected:
 	 * @return false altrimenti
 	 */
 	bool IsFree();
-
-	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 	
 private:
 	/**
 	 * @Brief Tenta la generazione nel punto specificato di un entità Bunker o fuel con le probabilità in generation_status.info_...
 	 * @PostCondition Se l'entità è stata generata, esse viene automaticamente aggiunta alla lista delle entità di questo livello
-	 * @param spawnPoint
+	 * @param spawnPoint punto in cui generare l'entità
 	 * @return il puntatore all'entità generata (NULL se non è stato generata )
 	 */
 	Entity* TryGenerateRandomEntity( Point2D spawnPoint );
 
 	/**
 	 * @Brief Genera un offset casuale secondo i vincoli e distanze in generation_status.info_surface
-	 * @param distance_generation
+	 * @param previous punto precedente generato nella stessa direzione direzione
+	 * @param generation_direction può essere <,> o = 0: consiste nel coeeficiente di direzione
+	 * della generazione del punto sulla componente ciclica x
 	 * @return
 	 */
-	Point2D GenerateRandomSurfaceOffset( Point2D previous, int distance_generation );
+	Point2D GenerateRandomSurfaceOffset( Point2D previous, int generation_direction );
 };

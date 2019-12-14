@@ -220,8 +220,6 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 #ifdef DEBUG
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
 		DrawLine(game->GetViewport(), this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
-		// Utility::sleep(1000);
-
 #endif
 		// Collisione contro il terreno
 		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
@@ -242,7 +240,6 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		// Collisione contro un Bunker
 		else if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Bunker", true ) ){
 			this->DoDamage( this->GetHealth() );
-			Utility::sleep(1000);
 		}
 		else if( !strcmp( collide_ent->GetClassname(), "PlanetEntity" ) ) {
 			PlanetEntity* planet = (PlanetEntity*)collide_ent;
@@ -274,8 +271,10 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 					Vector direction = Vector(spawn_point.GetSize());
 					direction.Set(1, -1);
 					VECTOR_VALUE_TYPE speed = this->GetSpeed();
+					// Azzero la velocità attuale, così la velocità iniziale sarà 0
+					// ed entrerà nel pianeta con velocità molto rallentata
 					this->SetVelocity(
-							Vector(direction.GetSize())); // Azzero la velocità attuale, così la velocità iniziale sarà 0
+							Vector(direction.GetSize())); 
 					this->SetVelocity(direction.Scale(speed));
 
 					game->SetCurrentLevel(planet->GetPlanetLevel());
@@ -283,11 +282,6 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 			}
 		}
 	}
-}
-		
-
-void Player::SetWorld( Level *_world){
-	this->Entity::SetWorld( _world );
 }
 
 void Player::SetMoveOverride( Vector *direction ){

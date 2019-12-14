@@ -40,6 +40,16 @@ class PlanetEntity : public Entity{
 	PlanetLevel *planet_level;
 
 	public:
+	/**
+	 * @brief Costruttore di un'entità pianeta di un certo raggio, con il suo livello pianeta associato aventi le dimensioni di bounds fornite
+	 * Assegna di default un punto di fuga in cui si piazzerà il giocatore quando esce dal pianeta e la direzione di fuga
+	 * e flag enableCollisionLevelDetection = false
+	 * @param _world 
+	 * @param origin 
+	 * @param texture 
+	 * @param int 
+	 * @param _bounds 
+	 */
 	PlanetEntity( SolarSystem *_world = NULL, Point2D origin = Point2D(0,0), Bitmap *texture = NULL, unsigned int _radius = 4, Vector _bounds = Vector( 2 ) );
 
 	/**
@@ -48,24 +58,50 @@ class PlanetEntity : public Entity{
 	virtual ~PlanetEntity();
 
 	/**
-	 * @brief Dealloca le risorse occupate da questa'entità ( Vedere anche Entity::Delete() )
+	 * @brief Elimina le risorse occupate da questa'entità, eliminando anche il livello associato (PlanetLevel::Delete)
 	 * PostCondition: il giocatore nel livello di questo pianeta non viene deallocato
 	 */
 	virtual void Delete( GameEngine* game );
 	
+	/**
+	 * @brief Restituisce il riferimento al livello questo pianeta
+	 * 
+	 * @return PlanetLevel* 
+	 */
 	PlanetLevel *GetPlanetLevel();
 
+	/**
+	 * @brief Imposta il riferimento al livello questo pianeta, senza eliminare quello precedente
+	 * 
+	 * @param planet_world 
+	 */
 	void SetPlanetLevel( PlanetLevel *planet_world );
 
+	/**
+	 * @brief Aggiorna lo stato di esistenza di questo pianeta.
+	 * viene eliminato ed il punteggio del giocatore è aggiornato se è stato liberato
+	 * 
+	 * @param game 
+	 * @return true se è un entità significativa
+	 * @return false altrimenti
+	 */
 	virtual bool Update( GameEngine *game );
 
+	/**
+	 * @brief Disegna nella viewport un cerchio vuoto con il raggio del pianeta
+	 * 
+	 * @param view 
+	 */
 	virtual void Draw( ViewPort *view );
 
+	/**
+	 * @brief Indica se la posizione del giocatore è interna al cerchio, 
+	 * tramite un norma euclidea delle distanze
+	 */
 	virtual bool IsColliding(
 #ifdef DEBUG_COLLISION_DRAWING
 								GameEngine* game,
 #endif
 								Entity *entity );
 
-	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 };

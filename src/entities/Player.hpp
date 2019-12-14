@@ -33,18 +33,38 @@ class Player : public DynamicEntity, public Damageable {
 	double fuel; // quantità di carburante rimanente
 	double MaxFuel; // massima quantità di carburante
 	unsigned int score; // contatore dei punti del giocatore
-	double fireTime = 0; // delay sparo del proiettile
-	double beamTime = 0; // delay raggio traente
+	double fireTime = 0; // tempo dal quale può sparare
+	double beamTime = 0; // tempo dal quale può usare il raggio
 	
 	public:
+	/**
+	 * @brief Costruttore del giocatore
+	 * 
+	 * @param world 
+	 * @param origin 
+	 * @param health 
+	 */
 	Player( Level *world, Point2D origin, double health );
 
 	virtual ~Player();
 
 	virtual void Delete( GameEngine* game );
 
+	/**
+	 * @brief Aggiorna velocità, accelerazione, posizione, direzione e carburante del giocatore in base all'input dell'utente rivelato dall'engine
+	 * Aggiorna i tempi di sparo del proiettile e del raggio
+	 * @param game 
+	 * @return true se l'entità risulta significativa
+	 * @return false altrimenti
+	 */
 	virtual bool Update( GameEngine *game );
 
+	/**
+	 * @brief Disegna La texture dell'entità stessa l'interfaccia grafica che mostra
+	 * vita, punteggio, e carburante attuali in alto a sinistra della ViewPort
+	 * 
+	 * @param view 
+	 */
 	virtual void Draw( ViewPort *view );
 
 	/**
@@ -62,35 +82,38 @@ class Player : public DynamicEntity, public Damageable {
 	bool ShouldBeam(INPUT_TYPE input);
 
 	/**
-	 * @brief Spara un proiettile. Il proiettile viene generato oltre la collision shape del giocatore e 
-	 * ha come direzione quella passata come parametro.
+	 * @brief Genera un proiettile nel livello. Il proiettile ha come direzione quella passata come parametro.
 	 * @param direction Direzione del proiettile
 	 * @return Projectile* puntatore al proiettile generato
 	*/
 	Projectile *Fire( Vector direction );
 
 	/**
-	 * @brief Spara un raggio traente. Il raggio viene generato oltre la collision shape del giocatore e 
-	 * ha sempre direzione verso il basso.
+	 * @brief Genera un raggio nel livello. Il raggio ha sempre direzione verso il basso.
 	 * @return Beam* puntatore al raggio generato
 	*/
 	PlayerBeam *Fire_Beam();
 
 	/**
-	 * @brief Restituisce la il vettore direzione corrispondente all'input inserito.
+	 * @brief Restituisce il vettore direzione corrispondente all'input inserito.
 	 * Se l'input non corrisponde a nessuna viene restituito il vettore direzione nullo.
 	 * @param input 
 	 * @return Vector vettore direzione corrispondente
 	 */
 	Vector GetDirectionFromInput( INPUT_TYPE input );
 
-	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 	/**
-	 * @brief il giocatore abbandona il mondo corrente, viene aggiunto al livello specificato, e lo assegna come suo mondo in cui risiede
-	 * 
-	 * @param world 
+	 * @brief Callback di gestione collisione del giocatore
+	 * Gestisce il comportamento alla collisione con:
+	 * - PlanetEntity
+	 * - Projectile
+	 * - PlayerProjectile
+	 * - Bunker
+	 * - Level
+	 * @param game 
+	 * @param collide_ent 
 	 */
-	void SetWorld( Level *world );
+	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 
 	/**
 	 * @brief Imposta il movimento che il giocatore deve compiere forzatamente durante l'update succesivo di questa entità alla chiamata di questo metodo.

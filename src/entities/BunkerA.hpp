@@ -2,6 +2,10 @@
 
 #include "Bunker.hpp"
 
+/**
+ * @brief Implementazione di un Bunker che spara due proiettili in direzioni casuali
+ * 
+ */
 class BunkerA : public Bunker{
 	
 	public:

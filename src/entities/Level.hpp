@@ -2,6 +2,7 @@
 
 #include "Entity.hpp"
 
+// indici componenti vettoriali dei limiti del mondo
 #define BOUND_INDEX_WIDTH 0
 #define BOUND_INDEX_HEIGHT 1
 
@@ -11,13 +12,13 @@ class Player;
 class Level : public Entity{
 protected:
 	Vector bounds; // limiti del mondo ( dimensioni del livello )
-	Player *player; // il giocatore dovrebbe essere tra le StaticEnts ? ( per esempio in StaticEnts[0] )
-	list<Entity*> entities;
-	bool isGenerated;
+	Player *player; // Riferimento del giocatore se risiede in questo livello
+	list<Entity*> entities; // lista della entità presenti nel livello
+	bool isGenerated; // indica se il livello è stato completamente generato
 public:
 	/**
-	 * @brief Istanzia tutte le entità nel mondo, genera il terreno e le entità del livello
-	 * PostCondition: se player != NULL allora esso non viene reinstanziato
+	 * @brief Costruttore nel livello
+	 * Nota: il livello di un livello è se stesso
 	 */
 	Level( Vector _bounds = Vector( 2 ), const char _className[] = "Level" );
 	/**
@@ -26,43 +27,38 @@ public:
 	virtual ~Level();
 
 	/**
-	 * @brief Aggiorna lo stato delle entità del mondo, richiamando internamente i loro metodi Update( ... )
-	 * Restituisce true se il giocatore si trova in questo Livello, altrimenti se lo ha
-	 * PostCondition: Dealloca le entità il cui metodo Update( ... ) restituisce valore false, quindi ne invoca il metodo Delete()
+	 * @brief Aggiorna lo stato delle entità del mondo, verificando prima gli stati di collisione e richiamando internamente i loro metodi Update( ... )
+	 * Restituisce true 
+	 * PostCondition: Elimina le entità il cui metodo Update( ... ) restituisce valore false o non risultano più significative, quindi ne invoca il metodo Delete()
+	 * ( Player::Delete non è richiamato )
 	 * @param game 
+	 * @return true se il livello è significativo
+	 * @return false altrimenti oppure se l'entità del giocatore non risulta più significativa
 	 */
 	virtual bool Update( GameEngine *game );
 
 	/**
-	 * @brief Disegna nella Viewport tutte le entità del mondo, richiamando internamente i loro metodi Draw( ... ) 
+	 * @brief Disegna nella Viewport i segmenti che costituiscono la forma del livello
+	 * e tutte le sue entità, richiamando i loro metodi Draw( ... )
 	 * @param view 
 	 */
 	virtual void Draw( ViewPort* view );
 
 	/**
 	 * @brief Interfaccia Dedicata per generare il Livello di gioco, generando il terreno e le sue entità,
-	 * se è stato generato in precedenza esso viene rigenerato ( sempre casualmente )
-	 * 
+	 * secondo la logica di generazione del livello stesso
 	 * @param game 
 	 */
 	virtual void Generate( GameEngine *game );
 
 	/**
-	 * @return true se il giocatore si trova in / o "vede" una zona del livello che non è stata generata
-	 * @return false altrimenti
-	 */
-	virtual int ShouldGenerate(ViewPort *view);
-
-	/**
-	 * @brief Normalizza il punto in base alle dimensioni del mondo: 
+	 * @brief Adatta il punto in base alle dimensioni del mondo: 
 	 * se una componente del punto supera il limite del mondo per quella componente,
 	 * ricomincierà dall'inizio del mondo in modulo ( coordinata 0 ) + il valore della componente rimanente
 	 * @param origin 
 	 * @return Point2D 
 	 */
 	Point2D GetNormalizedPoint( Point2D origin );
-
-	Point2D GetRelativePoint( Point2D absoluteOrigin );
 
 	/**
 	 * @brief restituisce il Vettore aventi i limiti massimi del livello, nelle sue Vector.GetSize() dimensioni
@@ -98,16 +94,6 @@ public:
 	void AddEntity( Entity *entity );
 
 	/**
-	 * @brief Verifica se l'entità specificata collide con il mondo di gioco
-	 * PreCondition: impostare puntatore collisionOrigin = NULL se non si vuole ottenere il punto di collisione
-	 * PostCondition: se avviene una collisione: il valore puntato da collisionOrigin contiene la posizione di collisione
-	 * @param entity 
-	 * @return true 
-	 * @return false 
-	 */
-	//bool IsColliding( Entity *entity, Point2D *collisionOrigin );
-
-	/**
 	 * @brief Elimina le entità nel mondo, deallocando le risorse occupate
 	 * PostCondition: il giocatore non verrà eliminato, quindi deve essere rimosso prima di richiamare questo metodo
 	 */
@@ -139,7 +125,7 @@ public:
 	Player *GetOutPlayer();
 
 	/**
-	 * @brief Indica se la superficie del livello è stato generato
+	 * @brief Indica se la superficie del livello è stato generata
 	 * 
 	 * @return true se la superficie del livello è stata generata
 	 * @return false altrimenti

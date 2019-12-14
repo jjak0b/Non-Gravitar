@@ -127,60 +127,6 @@ bool PlanetLevel::IsFree() {
 	return isFree;
 }
 
-// TODO: remove
-/**
- * @Brief:
- * Indica se il livello dovrebbe generarsi in asse X positiva o negativa rispetto all'origine;
- * Se è resituito 0 allora la telecamera è interna alla supercie generata
- * @param view
- * @return la distanza sull'asse x tra l'ultimo punto generato (nella direzione relativa al segno del valore restituito),
- * e il punto sul bordo della telecamera che "supera" tale punto
- */
-int PlanetLevel::ShouldGenerate(ViewPort *view){
-    VECTOR_VALUE_TYPE distance = 0;
-
-    if( this->shape != NULL ) {
-        Vector view_bounds = Vector( 2 );
-        Point2D
-            cameraOrigin = view->GetWorldOrigin(),
-            cameraEdgeLeftOrigin = cameraOrigin,
-            cameraEdgeRightOrigin = cameraOrigin;
-        view_bounds.Set( BOUND_INDEX_WIDTH, view->GetWidth() );
-
-        cameraEdgeRightOrigin.Add( view_bounds );
-        cameraEdgeRightOrigin = GetNormalizedPoint( cameraEdgeRightOrigin );
-
-        cameraEdgeLeftOrigin.Add( view_bounds.Scale( -1.0 ) );
-        cameraEdgeLeftOrigin = GetNormalizedPoint( cameraEdgeLeftOrigin );
-
-        list<Point2D> generated_points = this->shape->getAbsolutes();
-        Point2D
-            last_forward = generated_points.front(),
-            last_backward = generated_points.back();
-
-        Point2D cameraEdges[] = {
-                cameraEdgeLeftOrigin,
-                cameraEdgeRightOrigin
-        };
-
-        int i = 0;
-        while( distance != 0 && i < 2 ) {
-            if (cameraEdges[i].GetX() < GetMaxWidth() / 2.0) { // il bordo si trova nell prima metà
-                GetOffSet(&distance, last_forward, cameraEdges[i], BOUND_INDEX_WIDTH, &bounds);
-                if (distance < 0) // la camera precede l'ultimopunto
-                    distance = 0;
-            }
-            else { // si trova nella seconda metà
-                GetOffSet(&distance, last_backward, cameraEdges[i], BOUND_INDEX_WIDTH, &bounds);
-                if (distance > 0) // la camera succede l'ultimopunto
-                    distance = 0;
-            }
-            i++;
-        }
-    }
-    return distance;
-}
-
 Entity* PlanetLevel::TryGenerateRandomEntity( Point2D spawnPoint ){
 	int
 		random_prob_ent = 0,
@@ -483,8 +429,4 @@ Point2D PlanetLevel::GenerateRandomSurfaceOffset( Point2D previous, int distance
 		point.SetY( RANDOM_RANGE(generation_status.info_surface.bound_y.min, generation_status.info_surface.bound_y.max) );
 	}
     return point;
-}
-
-void PlanetLevel::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
-	
 }

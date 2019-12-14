@@ -11,21 +11,38 @@ class ViewPort;
 
 class Entity{
 protected:
-	Level *world;
+	Level *world; // livello di gioco in cui questa entità risiede
 	Point2D origin ; // Coordinate dell'entità nel mondo di gioco
 	Bitmap *texture; // puntatore alla texture che verrà visualizzata quando è questa entità è visibile nella ViewPort
 	char *str_classname; // nome della classe che specifica il tipo di questa entità
-	bool garbage; // indica se questa entità dovrebbe essere cancellata
-	bool shouldDeleteOnUpdate; // che che indica se l'entità deve essere eliminata in Entity::Update
-	Shape *shape;
-	bool isCollidable;
-	bool enableCollisionLevelDetection;
+	bool garbage; // indica se questa entità dovrebbe essere cancellata, quindi non più significativa
+	bool shouldDeleteOnUpdate; // indica se l'entità deve essere resa non significativa in Entity::Update
+	Shape *shape; // figura di collisione associata a questa entità
+	bool isCollidable; // indica se questa entitò può collidere. sse = true il controllo di collisione è effettuato
+	bool enableCollisionLevelDetection; // indica se dovrebbe essere effettuato il controllo di collisione tra questa entità e il livello
 
 public:
+	/**
+	 * @brief Construttore dell'entità
+	 * Internamente il classname è un duplicato della stringa C fornita.
+	 * Di default questi flag sono impostati come segue:
+	 * isCollidable = true;
+	 * enableCollisionLevelDetection = true;
+	 * @PostCondition:
+	 * classname non deve essere in alcun modo modificato per tutta l'esecuzione del gioco.
+	 * L'entità è aggiunta automaticamente al livello specificato se != NULL
+	 * 
+	 * @param world 
+	 * @param origin 
+	 * @param texture 
+	 * @param classname 
+	 * @param shape 
+	 */
 	Entity( Level *world, Point2D origin, Bitmap *texture = NULL, const char classname[] = "", Shape *shape = NULL );
 
 	/**
-	 * PreCondition: chiamare prima Delete( GameEngine* ) prima di deallocare tramite costruttore.
+	 * @brief Distruttore dell'entità e di tutte le risorse che utilizza
+	 * @PreCondition: chiamare prima Delete( GameEngine* ) prima di deallocare tramite costruttore.
 	 */
 	virtual ~Entity();
 
@@ -77,10 +94,10 @@ public:
 
 	/**
 	 * @brief Aggiorna lo stato di questa entità quale la posizione, funzionalità e logica che deve avere nel gioco
-	 * 
+	 * @PreCondition: Ogni sottoclasse deve richiamare prima l'Update di ogni superclasse fino a richiamare questo
 	 * @param game 
-	 * @return true la questa entità esisterà anche il prossimo frame.
-	 * @return false questa entità dovrà essere eliminata 
+	 * @return true la questa entità risulta significativa
+	 * @return false questa entità non risulta più significativa
 	 */
 	virtual bool Update( GameEngine *game );
 
@@ -99,8 +116,6 @@ public:
 
 	/**
 	 * @brief Verifica se questa entità sta collidendo con quella specificata,
-	 * PreCondition: impostare puntatore collisionOrigin = NULL se non si vuole ottenere il punto di collisione
-	 * PostCondition: se avviene una collisione: il valore puntato da collisionOrigin contiene la posizione di collisione
 	 * @param entity : entità da controllare
 	 * @return true se è avvenuta una collisione
 	 * @return false altrimenti
@@ -113,13 +128,27 @@ public:
 							Entity *entity);
 
 
+	/**
+	 * @brief Restituisce il riferimento alla forma di collisione
+	 * 
+	 * @return Shape* 
+	 */
 	Shape* GetShape();
 
+	/**
+	 * @brief Imposta il riferimento alla forma di collisione
+	 * 
+	 * @param shape 
+	 */
 	void SetShape( Shape *shape );
 	
+	/**
+	 * @brief Indica se questa entità può collidere
+	 * 
+	 * @return true 
+	 * @return false 
+	 */
 	bool IsCollidable() const;
-	
-	void setIsCollidable(bool isCollidable);
 	
 	/**
 	 * @brief funzione di callback o risposta che deve essere richiamata nel caso questa entità collida con un altra
@@ -129,15 +158,12 @@ public:
 	virtual void Callback_OnCollide( GameEngine *game, Entity *collide_ent );
 
 	/**
-	 * @brief Indica se questa entità si trova in una posizione esterna al pianeta preso in considerazione
+	 * @brief Indica se questa entità si trova in una posizione esterna al livello preso in considerazione
 	 * 
 	 * @param entity 
 	 * @return true 
 	 * @return false 
 	 */
 	bool IsOutOfTheWorld();
-
-
-
 
 };

@@ -13,6 +13,10 @@
 #define COLOR_TRANSPARENT Color( 0, 0, 0, 0 )
 #define NUMBER_OF_CHAR_DEDICATED_TO_ANSI 19
 
+/**
+ * @brief Classe rappresentante un colore in formato RGBa
+ * 
+ */
 class Color{
 	protected:
 	COLOR_COMPONENT_TYPE r, g, b, a; // componenti colori red, green, blue, alpha in 2^8 = 256 valori (alpha 0 = transparente)

@@ -10,12 +10,11 @@ class GameEngine;
 #endif
 class Segment {
 protected:
-	Point2D start;
-	Point2D end;
-	bool isVertical;
-	bool isHorizontal;
-	VECTOR_VALUE_TYPE m; // coefficiente angolare
-	VECTOR_VALUE_TYPE m_inverse; // (m)^-1 inversa del coefficiente angolare
+	Point2D start; // punto iniziale del segmento
+	Point2D end; // punto finale del segmento
+	bool isVertical; // indica se il segmento appartiene ad una retta verticale
+	bool isHorizontal; // indica se il segmento appartiene ad una retta orizzontale
+	VECTOR_VALUE_TYPE m; // coefficiente angolare della retta a cui il segmento appartiene
 	VECTOR_VALUE_TYPE q; // ordinata all'origine
 
 public:
@@ -27,18 +26,14 @@ public:
 	Point2D GetEnd();
 
 	/**
-	 * @brief restituisce il coefficiente angolare della retta o il suo onverso, assegnandolo a value
+	 * @brief restituisce il coefficiente angolare della retta, assegnandolo a value
 	 * @PreCondition: value != NULL
 	 * @param value
-	 * @param inverse := se true assegnerà l'inversa del coefficiente angolare, altrimenti no
+	 * 
 	 * @return true se a value è stato assegnato un valore
-	 * 		-> se inverse = false la retta non è verticale
-	 * 		-> se inverse = true la retta non è orizzontale
-	 * @return false altrimenti -> M è nullo
-	 * 		-> se inverse = false la retta à verticale
-	 * 		-> se inverse = true la retta à orizzontale
+	 * @return false altrimenti, cioè la retta è verticale
 	 */
-	bool GetM( VECTOR_VALUE_TYPE* value, bool inverse );
+	bool GetM( VECTOR_VALUE_TYPE* value );
 
 	/**
 	 * @brief restituisce il valore dell'ordinata all'origine, assegnandolo a value

@@ -50,14 +50,6 @@ namespace Matrix {
 		bool SetValue( const T value, unsigned int row, unsigned int column );
 
 		/**
-		 * @brief restituisce il dato da della row-esima riga e column-esima colonna
-		 *
-		 * @param row
-		 * @param column
-		 * @return T
-		 */
-
-		/**
 		 * @brief Restituisce il dato della row-esima riga e column-esima colonna, e lo assegna al valore punatato da value
 		 * @PreCondition: value != NULL
 		 * @param value

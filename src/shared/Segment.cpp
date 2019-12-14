@@ -40,7 +40,6 @@ void Segment::evaluate(Vector* bounds ){
 	}
 
 	if( difference_y != 0 ){
-		m_inverse = difference_x / difference_y ;
 		isHorizontal = false;
 	}
 	else{
@@ -48,30 +47,18 @@ void Segment::evaluate(Vector* bounds ){
 	}
 }
 
-bool Segment::GetM( VECTOR_VALUE_TYPE* value, bool inverse ){
-
-	if( inverse ){
-		if( isHorizontal ){
-			return false;
-		}
-		else{
-			*value = m_inverse;
-			return true;
-		}
+bool Segment::GetM( VECTOR_VALUE_TYPE* value){
+	if( isVertical || value == NULL ){
+		return false;
 	}
 	else{
-		if( isVertical ){
-			return false;
-		}
-		else{
-			*value = m;
-			return true;
-		}
+		*value = m;
+		return true;
 	}
 }
 
 bool Segment::GetQ( VECTOR_VALUE_TYPE* value ){
-	if( isVertical ){
+	if( isVertical || value == NULL ){
 		return false;
 	}
 	else{
@@ -95,7 +82,7 @@ bool Segment::IsIntersecting(
 #endif
 								Segment segment ){
 
-
+	// indica se si deve verificare se il punto è nel range delle componenti dei due segmenti
 	bool check_point_on_segment = false;
 	bool isIntersecting = false;
 	VECTOR_VALUE_TYPE
@@ -125,24 +112,24 @@ bool Segment::IsIntersecting(
 		|| this_y_max < segment_y_min || segment_y_max < this_y_min) {
 		isIntersecting = false;
 	}
-	else if (this->IsVertical() && !segment.IsVertical()) {
-		segment.GetM(&m2, false);
+	else if (this->IsVertical() && !segment.IsVertical()) { // verticale e non verticale
+		segment.GetM(&m2);
 		segment.GetQ(&q2);
 		x = this->start.GetX();
 		y = (m2 * x) + q2;
 		check_point_on_segment = true;
 	}
-	else if (segment.IsVertical() && !this->IsVertical()) {
-		this->GetM(&m1, false);
+	else if (segment.IsVertical() && !this->IsVertical()) { // non verticale e verticale
+		this->GetM(&m1);
 		this->GetQ(&q1);
 		x = segment.start.GetX();
 		y = (m1 * x) + q1;
 		check_point_on_segment = true;
 	}
-	else {
-		this->GetM(&m1, false);
+	else { // entrambi non verticali 
+		this->GetM(&m1);
 		this->GetQ(&q1);
-		segment.GetM(&m2, false);
+		segment.GetM(&m2);
 		segment.GetQ(&q2);
 
 		if (m1 != m2) {
@@ -152,6 +139,7 @@ bool Segment::IsIntersecting(
 		}
 	}
 
+	// controllo se x e y sono nel range delle componenti dei segmenti
 	if (check_point_on_segment) {
 		if (ISINRANGE(this_x_min, x, this_x_max) && ISINRANGE(segment_x_min, x, segment_x_max)
 			&& ISINRANGE(this_y_min, y, this_y_max) && ISINRANGE(segment_y_min, y, segment_y_max)) {

@@ -8,6 +8,7 @@ using namespace std;
 
 Level::Level( Vector _bounds, const char _className[] ) : Entity( NULL, Point2D(0,0), NULL, _className ){
 	VECTOR_VALUE_TYPE bound_value = 1;
+	// le dimensioni non possono essere negative o nulle
 	for( int i = 0; i < _bounds.GetSize(); i++ ){
 		if( _bounds.Get( i, &bound_value ) ){
 			if( bound_value <= 0 ){
@@ -46,34 +47,17 @@ Point2D Level::GetNormalizedPoint( Point2D _origin ){
 	return _origin;
 }
 
-Point2D Level::GetRelativePoint( Point2D absoluteOrigin ){
-    VECTOR_VALUE_TYPE
-        value,
-        value_bound;
-    bounds.Get( BOUND_INDEX_WIDTH, &value_bound );
-    value = absoluteOrigin.GetX();
-    if( value >= value_bound / 2.0  ){
-        value = - ( value - (value_bound / 2.0) );
-        absoluteOrigin.SetX( value );
-    }
-    return absoluteOrigin;
-}
-
 Vector Level::GetBounds(){
 	return this->bounds;
 }
 
 bool Level::Update( GameEngine *game ){
+	bool shouldUpdateNextFrame = true;
 	if( !this->Entity::Update( game ) ){
-		return false;
+		shouldUpdateNextFrame = false;
 	}
 	else if( !this->IsGenerated() ){
 		this->Generate( game );
-	}
-
-	bool shouldUpdateNextFrame = false;
-	if( IsDefined( this->GetPlayer() ) ){
-		shouldUpdateNextFrame = this->GetPlayer()->Update( game );
 	}
 
 	if( shouldUpdateNextFrame ){
@@ -135,8 +119,10 @@ bool Level::Update( GameEngine *game ){
 			entity_it++;
 		}
 #endif
-		// NOTA: Soluzione temporanea ma non 100% affidabile;
-		// Se il valore puntato da entity_it_next è elimnato da (*entity_it)->Update, nel ciclo successivo entity_it potrebbe accedere ad un area di memoria che potrebbe essere stata eliminata
+		if( IsDefined( this->player ) ){
+			shouldUpdateNextFrame = this->player->Update( game );
+		}
+
 		entity_it = this->entities.begin();
 		while( !this->entities.empty() && entity_it != this->entities.end() ){
 			entity = *entity_it;
@@ -245,10 +231,6 @@ void Level::Draw( ViewPort *view ){
 #endif
 }
 
-int Level::ShouldGenerate(ViewPort *view){
-    return false;
-}
-
 void Level::Generate( GameEngine *game ){
 	// La classe base Level non fornisce alcuna generazione del terreno, dovranno essere le classe derivate a implementare questo metodo
 }
@@ -290,26 +272,8 @@ void Level::AddEntity( Entity *entity ){
 	}
 }
 
-// bool Level::IsColliding( Entity *entity, Point2D *collisionOrigin ){
-// 	if( entity->GetOrigin().GetY() <= 0
-// 	 || entity->GetOrigin().GetY() >= this->GetMaxHeight() ){
-// 		 if( collisionOrigin != NULL ){
-// 			 *collisionOrigin = entity->GetOrigin();
-// 		 }
-// 		 return true;
-// 	}
-// 	else{
-// 		 // TODO: Controllo il segmento/i di terrreno più vicini all'entità
-// 	}
-// 	return false;
-// }
-
 void Level::Delete( GameEngine* game ){
 	this->GetOutPlayer();
-
-	// pulisce i dati riigardanti la superficie
-	if( this->shape != NULL )
-		this->shape->deleteAbsolutes();
 
 	// pulisco i dati riguardanti le entità in questo livello, e le elimina
 	list<Entity*>::iterator entity_iterator = this->entities.begin();
@@ -374,5 +338,3 @@ Player *Level::GetOutPlayer(){
 bool Level::IsGenerated(){
 	return isGenerated;
 }
-
-

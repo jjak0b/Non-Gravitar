@@ -160,19 +160,8 @@ bool Entity::IsOutOfTheWorld(){
 }
 
 void Entity::Callback_OnCollide( GameEngine *game, Entity *collide_ent ){
-	
-
 }
 
 bool Entity::IsCollidable() const {
 	return isCollidable;
 }
-
-void Entity::setIsCollidable(bool isCollidable) {
-	Entity::isCollidable = isCollidable;
-}
-	
-
-
-
-

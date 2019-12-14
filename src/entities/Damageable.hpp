@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+ * @brief Classe indipendente indicante un oggetto danneggiabile
+ * 
+ */
 class Damageable {
 	protected:
 	double MaxHealth;
@@ -23,11 +27,8 @@ class Damageable {
 	double GetMaxHealth();
 
 	/**
-	 * @brief infigge una quantità di danno a questa entità, specificando eventualmente colui che lo ha inflitto, l'origine del danno
-	 * PostCondition: richiama Entity::this.Callback_onHit(...)
+	 * @brief infigge una quantità di danno a questa entità,
 	 * @param amount 
-	 * @param attacker 
-	 * @param damageOrigin 
 	 */
 	void DoDamage( double amount );
 
@@ -39,8 +40,6 @@ class Damageable {
 	 */
 	double DoHeal( double amount );
 
-	
-	
 	protected:
 	/**
 	 * @brief Imposta la vita massima si questa entità
