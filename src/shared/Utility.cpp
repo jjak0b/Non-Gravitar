@@ -8,7 +8,7 @@
 #include <versionhelpers.h>
 #else
 #include <unistd.h>
-#include <sys/ioctl>
+#include <sys/ioctl.h>
 #endif
 
 #include <conio.h>
