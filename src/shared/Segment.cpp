@@ -3,7 +3,7 @@
 #include <cmath>
 #include <utility>
 #include "Utility.h"
-#include "Engine/GameConfig.h"
+#include "engine/GameConfig.h"
 
 #ifdef DEBUG_COLLISION_DRAWING
 #include "Engine/Viewport.hpp"
