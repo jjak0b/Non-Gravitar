@@ -17,7 +17,7 @@ Il giocatore controlla una navicella che può muovere utilizzando le freccie dir
 Il movimento della navicella consuma carburante, che può essere ricaricato da taniche di carburante generate nei pianeti.
 Il gioco inizia in una schermata di un sistema solare nel quale sono presenti dei pianeti che il giocatore può "invadere" muovendosi con la navicella verso il pianeta stesso.
 Il gioco cambia dunque dalla visuale del sistema solare a quella del pianeta, in questa visuale viene generato casualmente il terreno dove sono presenti bunker che il giocatore deve distruggere e taniche di carburante che il giocatore deve raccogliere.
-Per distruggere i Bunker il giocatore può sparare utilizzando il tasto F e per raccogliere il carburante il tasto R.
+Per distruggere i Bunker il giocatore può sparare nella direzione di movimento utilizzando il tasto F e per raccogliere il carburante il tasto R utilizzando il raggio traente.
 Durante lo spostamento della navicella, essa potrebbe collidere contro il terreno o i bunker stessi, causando danni mortali alla navicella.
 I bunker esistono di varie tipologie, con diverse modalità di attacco, ed i carburanti possono fornire diverse quantità di rifornimenti.
 Nella visuale del pianeta andando a sinistra/destra dello schermo è visualizzata la parte precedente/successiva del pianeta durante lo spostamento della navicella.
@@ -30,11 +30,14 @@ Il gioco termina quando la vita del giocatore scende a zero oppure quando esauri
 Attualmente è garantito il suo funzionamento su piattaforme Windows con ambiente di compilazione MinGW64, ma potrebbe funzionare anche su altre piattaforme come ad esempio linux con GCC (G++).
 
 # Installazione
-Il gioco richiede le librerie standard C/C++, e le librerie Windows API (Windows.h) se viene compilato su windows.
+Il gioco richiede:
+ - librerie standard C/C++,
+ - libreria non standard conio ( solo per kbhit() e getch() )
+ - librerie Windows API (Windows.h) se viene compilato su windows.
 
 ** Prerequisiti **
-- Piattaforma Windows ( funzionamento non testato su altre non Windows ma potrebbe funzionare )
-- Installazione di un ambiente di compilazione ( consigliato e sviluppato con [MinGW64](https://mingw-w64.org) )
+- Piattaforma Windows ( funzionamento non testato su altre non Windows ma potrebbe funzionare se supportano i codici ESCAPE su terminale )
+- Installazione di un ambiente di compilazione ( consigliato e sviluppato con [MinGW64](https://mingw-w64.org) e fornisce libreria conio )
 - Installazione di [CMake](https://cmake.org/download/)
 
 ** Guida alla compilazione **
