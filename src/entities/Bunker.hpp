@@ -5,6 +5,8 @@
 
 class Projectile;
 
+#define BUNKER_FIRE_DAMAGE 1
+#define BUNKER_HEALTH 5
 /**
  * @brief Entità bunker rappresentate il nemico da distruggere
  * 

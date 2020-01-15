@@ -221,11 +221,15 @@ void Player::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 		cout << " DETECTED COLLISION: " << collide_ent->GetClassname() << endl << "( " << collide_ent->GetOrigin().GetX() << " , " << collide_ent->GetOrigin().GetY() << " ) "<<endl;
 		DrawLine(game->GetViewport(), this->world, this->origin, collide_ent->GetOrigin(), COLOR_RED );
 #endif
-		// Collisione contro il terreno
+		// Collisione contro il terreno -> infligge danno e riporta il giocatore in una posizione opposta a quella di movimento
 		if( Utility::CheckEqualsOrSubstring( collide_ent->GetClassname(), "Level", true ) ){
 #ifndef DEBUG
-			this->DoDamage( this->GetHealth() );
+			this->DoDamage( PLAYER_COLLISION_DAMAGE );
 #endif
+			Point2D safe_origin = this->GetOrigin();
+			safe_origin.Add( this->GetVelocity().Scale( -1.0 ) );
+			this->SetVelocity( Vector( safe_origin.GetSize() ) );
+			this->SetOrigin( safe_origin );
 		}
 		// Collisione contro un proiettile
 		else if( !strcmp( collide_ent->GetClassname(), "Projectile" ) ){

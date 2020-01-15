@@ -1,7 +1,7 @@
 #include "BunkerB.hpp"
 #include "engine/GameEngine.hpp"
     
-BunkerB::BunkerB( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerB"){
+BunkerB::BunkerB( Level *world, Point2D origin) : Bunker(world, origin, BUNKER_HEALTH, "BunkerB"){
 
    this->texture = new Bitmap( 3, 8, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = " \xDC  \xDC  \xDC";

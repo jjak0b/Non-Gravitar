@@ -1,7 +1,9 @@
 #include "BunkerC.hpp"
 #include "engine/GameEngine.hpp"
-    
-BunkerC::BunkerC( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerC"){
+
+#define BUNKERC_FIRE_DELAY 1.5
+
+BunkerC::BunkerC( Level *world, Point2D origin) : Bunker(world, origin, BUNKER_HEALTH, "BunkerC"){
 
     this->texture = new Bitmap( 2, 6, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = "  _\xDC_ ";
@@ -24,18 +26,23 @@ bool BunkerC::Update(GameEngine* game) {
    if (update_result) {
 	
 	// Genera due proiettili nella stessa direzione.
-		if ((game->GetTime() - this->timer) >= 1.5) {
+		if ((game->GetTime() - this->timer) >= BUNKERC_FIRE_DELAY ) {
 
-			Vector *direction = new Vector();
+			Vector direction = Vector();
 			
-			direction->Set(0,0);
-			direction->Set(1,1);
+			direction.Set(0,0);
+			direction.Set(1,1);
 			Point2D projectile_origin = Point2D(this->origin.GetX(), this->origin.GetY() +2 );
-			Shoot(projectile_origin, (*direction));
-			
-			delete direction;
+			Shoot(projectile_origin, direction);
+			count_projectile_fired++;
 
-			if ((game->GetTime() - this->timer) >= 1.6) this->timer = game->GetTime();;
+			if( count_projectile_fired < 2 ) {
+				this->timer += 4*FRAME_TIME; // aspetta altri 4 frame prima di risparare
+			}
+			else{
+				count_projectile_fired = 0;
+				this->timer = game->GetTime();;
+			}
 		}
 
     }

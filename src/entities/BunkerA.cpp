@@ -1,7 +1,7 @@
 #include "BunkerA.hpp"
 #include "engine/GameEngine.hpp"
 
-BunkerA::BunkerA( Level *world, Point2D origin) : Bunker( world, origin, 300, "BunkerA"){
+BunkerA::BunkerA( Level *world, Point2D origin) : Bunker(world, origin, BUNKER_HEALTH, "BunkerA"){
 
     this->texture = new Bitmap( 2, 3, COLOR_RED );
 	const BITMAP_DATA_TYPE raw_texturer0[] = "q_p";

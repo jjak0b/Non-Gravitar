@@ -3,7 +3,7 @@
 
 SmallFuel::SmallFuel( Level *world, Point2D origin) : Fuel( world, origin) {
     
-    this->healthSize = 50;
+    this->healthSize = PLAYER_HEALTH * 0.25;
     this->fuelSize = PLAYER_MAX_FUEL * 0.25;
 
 	this->texture = new Bitmap( 1, 4, COLOR_BLUE );
