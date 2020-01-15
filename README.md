@@ -40,7 +40,9 @@ Il gioco richiede:
 - Installazione di un ambiente di compilazione ( consigliato e sviluppato con [MinGW64](https://mingw-w64.org) e fornisce libreria conio )
 - Installazione di [CMake](https://cmake.org/download/)
 
+
 ** Guida alla compilazione **
-1. Generazione MakeFile: Su linea di comando dirigersi nella cartella root del progetto, dove è presente il file  ```CMakeLists.txt``` e inserire il comando ```cmake -G "MinGW Makefiles" -S . -B build``` ( Dove "MinGW Makefiles" può essere sostituito da un altro ambiente di compilazione; per ulteriori informazioni sui generatori di MakeFile vedere ```cmake -G``` ). Questa operazione genererà i file necessari per CMake e il Makefile per compilare nella cartella `build` i sorgenti della cartella attuale.
+0. Se il sistema operativo è una versione di Windows che non supporta nativamente o tramite emulazione i codici escape ANSI sul terminale ( vedere differenze di piattaforma sopra citate ), commentare la definizione ```ENABLE_ANSI_IF_SUPPORTED``` in `engine/GameConfig.h` 
+1. Generazione MakeFile (Windows): Su linea di comando dirigersi nella cartella root del progetto, dove è presente il file  ```CMakeLists.txt``` e inserire il comando ```cmake -G "MinGW Makefiles" -S . -B build``` ( Dove "MinGW Makefiles" può essere sostituito da un altro ambiente di compilazione; per ulteriori informazioni sui generatori di MakeFile vedere ```cmake -G``` ). Questa operazione genererà i file necessari per CMake e il Makefile per compilare nella cartella `build` i sorgenti della cartella attuale.
 2. Compilazione: Su linea di comando dirigersi nella cartella ```build```, dove è presente il Makefile, e digitare il comando ```make``` (```mingw32-make``` su compilatore mingw, mingw64 )
 3. Avviare l'eseguibile compilato nella cartella ```build```
