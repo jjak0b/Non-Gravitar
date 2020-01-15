@@ -78,7 +78,7 @@ namespace Utility {
 		namespace Terminal {
 
 			void SetTerminalCursor(int x, int y){
-#ifdef __WIN32_
+#ifdef __WIN32__
 				HANDLE hOut;
 				COORD Position;
 
