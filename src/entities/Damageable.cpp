@@ -31,27 +31,18 @@ double Damageable::GetMaxHealth() {
 
 void Damageable::DoDamage( double amount ) {
 	this->health -= amount;
-	if (this->health <= 0) {
+	if (this->health < 0) {
 		this->health = 0;
 	}
 }
 
-	/**
-	 * @brief recupera una quantità di vita a questa entità
-	 * 
-	 * @param amount 
-	 * @return double 
-	 */
 double Damageable::DoHeal( double amount ) {
-	if (this->health += amount > this->MaxHealth) {
+	this->health += amount;
+	if (this->health > this->MaxHealth) {
 		this->health = this->MaxHealth;
 	}
-	else
-	{
-		this->health += amount;
-	}
+
 	return health;
-	
 }
 
 
