@@ -18,7 +18,7 @@ void Fuel::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
 			Player *player = this->world->GetPlayer();
 			if( IsDefined( player ) ) {
 				player->DoHeal(healthSize);
-				player->AddFuel(healthSize);
+				player->AddFuel(fuelSize);
 			}
 			this->shouldDeleteOnUpdate = true;
 		}

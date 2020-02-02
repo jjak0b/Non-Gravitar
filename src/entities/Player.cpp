@@ -318,14 +318,10 @@ double Player::GetMaxFuel() {
 
 
 void Player::AddFuel( double amount ) {
-	if (this->fuel + amount > this->MaxHealth) {
+	this->fuel += amount;
+	if (this->fuel > this->MaxFuel) {
 		this->fuel = this->MaxFuel;
 	}
-	else
-	{
-		this->fuel += amount;
-	}
-
 }
 
 void Player::RemoveFuel( double amount ) {
