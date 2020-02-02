@@ -1,5 +1,6 @@
 #include "Shape.hpp"
 #include "Segment.hpp"
+#include "shared/Utility.h"
 
 Shape::Shape() {
 	last_origin = Point2D( 0, 0 );
@@ -127,6 +128,24 @@ bool Shape::IsShapeColliding(
 	Segment
 		side_of_this_shape,
 		side_of_shape;
+
+	// controllo bounding box
+	this_start = this->min_offset;
+	this_end = this->max_offset;
+	shape_start = collision_shape->min_offset;
+	shape_end = collision_shape->max_offset;
+	shape_start.Add( distance_offset );
+	shape_end.Add( distance_offset );
+
+	bool AreBoundingBoxesIntersecting = (ISINRANGE( this_start.GetX(), shape_start.GetX(), this_end.GetX() )
+											&& ISINRANGE( this_start.GetY(), shape_start.GetY(), this_end.GetY() ) )
+										|| (ISINRANGE( this_start.GetX(), shape_end.GetX(), this_end.GetX() )
+											&& ISINRANGE( this_start.GetY(), shape_end.GetY(), this_end.GetY() ) );
+
+	if( !AreBoundingBoxesIntersecting ){
+		return false;
+	}
+
 	std::list<Point2D>::iterator it_this = this->absolute_points.begin();
 	this_start = this->absolute_points.back();
 	while(
