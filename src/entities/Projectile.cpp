@@ -1,5 +1,6 @@
 #include "Projectile.hpp"
 #include "engine/GameEngine.hpp"
+#include <cstring>
 
 Projectile::Projectile( Level *world, Point2D origin, Vector direction, double damage, const char classname[], VECTOR_VALUE_TYPE speed, double _lifetime ) : DynamicEntity( world, origin, NULL , classname, speed){
 	this->direction = direction;
@@ -49,7 +50,8 @@ bool Projectile::Update( GameEngine *game ) {
 }
 
 void Projectile::Callback_OnCollide( GameEngine *game, Entity *collide_ent ) {
-	this->shouldDeleteOnUpdate = true;
+	if( strcmp( this->GetClassname(), collide_ent->GetClassname() ) )
+		this->shouldDeleteOnUpdate = true;
 }
 
 
