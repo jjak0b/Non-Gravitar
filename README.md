@@ -1,6 +1,8 @@
 # Non-Gravitar
 Progetto d'esame del corso di programmazione (a.a 2018/2019) basato sul gioco "Gravitar" con caratteristiche diverse rispetto all'originale.
 
+![Game preview](https://repository-images.githubusercontent.com/159226524/a680ce80-46ac-11ea-88f7-392cdf5d57a8)
+
 ** Differenze **
 - Nessuna gravità
 - Generazione del terreno e strutture a runtime
